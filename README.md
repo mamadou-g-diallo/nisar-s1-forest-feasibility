@@ -1,56 +1,54 @@
-# NISAR vs Sentinel-1 — faisabilité détection de coupes rases (Vosges / Alsace)
+# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges / Alsace)
 
-*🇬🇧 English version: [README_en.md](README_en.md)*
-
-Test de faisabilité préparatoire au stage SERTIT/ICube (bandes L et P : NISAR, BIOMASS).
+Feasibility test prepared for the SERTIT/ICube internship (L and P bands: NISAR, BIOMASS).
 
 ## Question
-Sur une coupe rase récente (Vosges/Alsace, juin–nov. 2026), la cohérence et la rétrodiffusion
-**NISAR (bande L, produits GUNW / GCOV)** distinguent-elles mieux la coupe de la forêt intacte
-que **Sentinel-1 (bande C)** ? Validation par différence de NDVI **Sentinel-2**.
+On a recent clear-cut (Vosges/Alsace, June–Nov. 2026), do **NISAR (L-band, GUNW / GCOV products)**
+coherence and backscatter separate the clear-cut from intact forest better than **Sentinel-1 (C-band)**?
+Validation with the **Sentinel-2** NDVI difference.
 
-## Étapes
-| # | Étape | État |
-|---|-------|------|
-| 0 | Environnement, structure, dépôt, SNAP 14, accès Earthdata | ✅ |
-| 1 | Cadrage — [FR](docs/cadrage/cadrage_fr.md) · [EN](docs/cadrage/cadrage_en.md) | ✅ |
-| 2 | Inventaire S1 / NISAR / BIOMASS (niveaux, polarisations, couverture, répétitivité) | ⏳ |
-| 3 | Choix du site (coupe ≥ 5 ha + forêt témoin) et référence NDVI S2 | ⏳ |
-| 4 | Téléchargement (`asf_search`) | ⏳ |
-| 5 | Traitement et comparaison (cohérence, γ⁰ HH/HV, AUC, JM, prototype de détection) | ⏳ |
-| 6 | Rapport LaTeX en deux versions complètes, française et anglaise (ROSE-L et ISCE3 cités) | ⏳ |
+## Steps
+| # | Step | Status |
+|---|------|--------|
+| 0 | Environment, structure, repository, SNAP 14, Earthdata access | ✅ |
+| 1 | Scoping — [EN](docs/cadrage/cadrage_en.md) · [FR](docs/cadrage/cadrage_fr.md) | ✅ |
+| 2 | S1 / NISAR / BIOMASS inventory (levels, polarisations, coverage, revisit) | ⏳ |
+| 3 | Site selection (clear-cut ≥ 5 ha + control forest) and S2 NDVI reference | ⏳ |
+| 4 | Download (`asf_search`) | ⏳ |
+| 5 | Processing and comparison (coherence, HH/HV γ⁰, AUC, JM, detection prototype) | ⏳ |
+| 6 | LaTeX report in two complete versions, French and English (ROSE-L and ISCE3 cited) | ⏳ |
 
-Paramètres : [config/params.yaml](config/params.yaml).
+Parameters: [config/params.yaml](config/params.yaml).
 
-## Chaîne réutilisable
-La logique de traitement est dans le paquet importable `src/nisar_s1/` (lecture GUNW/GCOV, grille commune,
-statistiques, détection), pensé pour être réutilisé sur d'autres sites et transposé à **ROSE-L**.
-Les scripts de `scripts/` ne font qu'appeler ces modules. Détails : § 9 du cadrage.
+## Reusable chain
+Processing logic lives in the importable package `src/nisar_s1/` (GUNW/GCOV readers, common grid,
+statistics, detection), designed for reuse on other sites and for transfer to **ROSE-L**.
+Scripts in `scripts/` only call these modules. Details: § 9 of the scoping document.
 
 ```bash
 conda activate nisar_s1
-pip install -e .          # rend « import nisar_s1 » disponible partout
+pip install -e .          # makes "import nisar_s1" available everywhere
 ```
 
-## Organisation
+## Layout
 ```
-config/        paramètres (emprise, dates, seuils) — pas de secrets
-docs/          documents d'étape, en FR et en EN
+config/        parameters (footprint, dates, thresholds) — no secrets
+docs/          step documents, in FR and EN
 notebooks/     exploration
-scripts/       orchestration des étapes (appellent nisar_s1)
-snap_graphs/   graphes SNAP (.xml)
-src/nisar_s1/  modules réutilisables
-tests/         tests sur données synthétiques
-results/       tables et petites sorties
-reports/       figures + rapports LaTeX (FR et EN)
-data/raw, data/processed -> liens vers /media/dell/Transcend1/nisar_data (non versionné)
+scripts/       step orchestration (calls nisar_s1)
+snap_graphs/   SNAP graphs (.xml)
+src/nisar_s1/  reusable modules
+tests/         tests on synthetic data
+results/       tables and small outputs
+reports/       figures + LaTeX reports (FR and EN)
+data/raw, data/processed -> links to /media/dell/Transcend1/nisar_data (not versioned)
 ```
 
-## Environnement
+## Environment
 ```bash
 conda env create -f environment.yml
 conda activate nisar_s1
 ```
-Identifiants : `~/.netrc` (Earthdata, `chmod 600`, script `scripts/setup/create_netrc.sh`), `.env` (tokens ESA/GEE) — exclus de Git.
-SNAP 14 (`~/esa-snap`, `-Xmx5G`) ; test : `bash scripts/setup/test_gpt.sh`.
-Contraintes machine : ~8 Go de RAM → SNAP sur petite zone (TOPSAR-Split, 2–3 bursts).
+Credentials: `~/.netrc` (Earthdata, `chmod 600`, script `scripts/setup/create_netrc.sh`), `.env` (ESA/GEE tokens) — excluded from Git.
+SNAP 14 (`~/esa-snap`, `-Xmx5G`); test: `bash scripts/setup/test_gpt.sh`.
+Machine constraints: ~8 GB RAM → SNAP on a small area (TOPSAR-Split, 2–3 bursts).

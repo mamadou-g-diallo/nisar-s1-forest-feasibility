@@ -101,11 +101,11 @@ indisponibles, coupe trop petite) est **un résultat de faisabilité valable** e
 
 ## 8. Livrables et calendrier indicatif
 
-Les livrables destinés à être lus (rapport, documents d'étape, README) existent en **deux versions complètes, française et anglaise**.
+Le **rapport final** existe en **deux versions complètes, française et anglaise**. Le README est en anglais.
 
 | Étape | Livrable |
 |-------|----------|
-| 2. Inventaire | `docs/inventaire/inventaire_fr.md` + `inventaire_en.md` + `results/tables/inventaire_*.csv` |
+| 2. Inventaire | `docs/inventaire/inventaire.md` + `results/tables/inventaire_*.csv` |
 | 3. Site | `config/site.geojson` (coupe + témoin) + figure NDVI |
 | 4. Téléchargement | `scripts/04_download.py` (appelle `nisar_s1.download`), journal des fichiers |
 | 5. Traitement | graphes SNAP, modules `src/nisar_s1/`, tables de statistiques, figures |
