@@ -105,7 +105,7 @@ The **final report** exists in **two complete versions, French and English**. Th
 
 | Step | Deliverable |
 |------|-------------|
-| 2. Inventory | `docs/inventaire/inventaire.md` + `results/tables/inventaire_*.csv` |
+| 2. Inventory | `docs/inventaire/inventaire_fr.md` + `inventaire_en.md` + `results/tables/inventaire_*.csv` |
 | 3. Site | `config/site.geojson` (clear-cut + control) + NDVI figure |
 | 4. Download | `scripts/04_download.py` (calls `nisar_s1.download`), file log |
 | 5. Processing | SNAP graphs, `src/nisar_s1/` modules, statistics tables, figures |

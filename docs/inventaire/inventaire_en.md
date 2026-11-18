@@ -1,5 +1,7 @@
 # Step 2 — Product inventory (Sentinel-1, NISAR, BIOMASS)
 
+*🇫🇷 Version française : [inventaire_fr.md](inventaire_fr.md)*
+
 *Search footprint: Vosges / Alsace, bbox `[6.70, 47.70, 7.70, 48.80]` (WGS84). Period: 2026-06-01 → 2026-11-30.
 Catalogue queried on 2026-11-18 via ASF (`asf_search` 14.1). Reproduce with `python scripts/02_inventory.py`;
 tables in `results/tables/inventory_*.csv`.*
