@@ -1,0 +1,65 @@
+# ---- Identifiants / secrets (ne JAMAIS versionner) ----
+.netrc
+_netrc
+*.netrc
+.env
+.env.*
+!.env.example
+*token*
+*credentials*
+*secret*
+*.key
+*.pem
+.config/earthengine/
+config/*.local.*
+config/secrets*
+
+# ---- Données (stockées sur /media/dell/Transcend1/nisar_data) ----
+data/raw
+data/processed
+data/*
+!data/README.md
+*.zip
+*.SAFE/
+*.h5
+*.hdf5
+*.nc
+*.tif
+*.tiff
+*.vrt
+*.dim
+*.data/
+*.img
+*.hdr
+*.jp2
+*.SEN3/
+*.npy
+*.npz
+*.parquet
+
+# ---- Sorties lourdes ----
+results/**/*.tif
+reports/latex/*.aux
+reports/latex/*.log
+reports/latex/*.out
+reports/latex/*.toc
+reports/latex/*.bbl
+reports/latex/*.blg
+reports/latex/*.synctex.gz
+reports/latex/*.fdb_latexmk
+reports/latex/*.fls
+
+# ---- Python / Jupyter ----
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+*.egg-info/
+.pytest_cache/
+
+# ---- SNAP / OS / éditeurs ----
+.snap/
+*.log
+.DS_Store
+.vscode/
+.idea/
+*~

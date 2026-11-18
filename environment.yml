@@ -1,0 +1,37 @@
+name: nisar_s1
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  # Recherche / téléchargement
+  - asf_search
+  - earthaccess
+  - pystac-client
+  - requests
+  # Raster / SAR / HDF5 (NISAR GUNW/GCOV)
+  - numpy
+  - scipy
+  - xarray
+  - dask
+  - h5py
+  - h5netcdf
+  - netcdf4
+  - gdal
+  - rasterio
+  - rioxarray
+  # Vecteur
+  - geopandas
+  - shapely
+  - pyproj
+  # Optique (S2 / GEE)
+  - earthengine-api
+  # Analyse / figures
+  - pandas
+  - matplotlib
+  - seaborn
+  - scikit-image
+  - jupyterlab
+  - ipykernel
+  - tqdm
+  - python-dotenv
