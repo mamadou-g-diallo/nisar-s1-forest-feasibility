@@ -1,5 +1,7 @@
 # Étape 1 — Cadrage
 
+*🇬🇧 English version: [cadrage_en.md](cadrage_en.md)*
+
 *Test de faisabilité préparatoire au stage SERTIT/ICube « Exploration des bandes L et P (NISAR, BIOMASS) pour la détection de la déforestation et des glissements de terrain ».*
 
 ## 1. Question et hypothèses
@@ -93,16 +95,44 @@ indisponibles, coupe trop petite) est **un résultat de faisabilité valable** e
 | Comparer la détection de la déforestation S1 / NISAR / BIOMASS | Étape 5 (BIOMASS : constat de non-couverture) |
 | Tester l'apport de la polarimétrie | HH / HV / HV÷HH (GCOV) |
 | Comparer les interférogrammes sur versants boisés touchés par des glissements | Perspective (aperçu qualitatif de la cohérence sur versant si le temps le permet) |
-| Adapter la chaîne de traitement à la bande L | Modules réutilisables dans `src/nisar_s1/` (lecture GUNW/GCOV, statistiques par polygone) |
+| Adapter la chaîne de traitement à la bande L | Modules réutilisables dans `src/nisar_s1/` (voir § 9) |
 | Méthode de détection automatique | Prototype par seuillage + évaluation F1 |
-| Préparer ROSE-L | Discussion dans le rapport |
+| Préparer ROSE-L | Chaîne indépendante du capteur (§ 9) ; ROSE-L (2028) et ISCE3 cités dans le rapport |
 
 ## 8. Livrables et calendrier indicatif
 
+Les livrables destinés à être lus (rapport, documents d'étape, README) existent en **deux versions complètes, française et anglaise**.
+
 | Étape | Livrable |
 |-------|----------|
-| 2. Inventaire | `docs/inventaire.md` + `results/tables/inventaire_*.csv` |
+| 2. Inventaire | `docs/inventaire/inventaire_fr.md` + `inventaire_en.md` + `results/tables/inventaire_*.csv` |
 | 3. Site | `config/site.geojson` (coupe + témoin) + figure NDVI |
-| 4. Téléchargement | `scripts/04_download.py` (asf_search), journal des fichiers |
-| 5. Traitement | graphes SNAP, `src/nisar_s1/`, tables de statistiques, figures |
-| 6. Rapport | `reports/latex/` : mini-rapport en français + résumé en anglais |
+| 4. Téléchargement | `scripts/04_download.py` (appelle `nisar_s1.download`), journal des fichiers |
+| 5. Traitement | graphes SNAP, modules `src/nisar_s1/`, tables de statistiques, figures |
+| 6. Rapport | `reports/latex/rapport_fr.tex` **et** `reports/latex/report_en.tex` (deux rapports complets) |
+
+## 9. Chaîne réutilisable (préparation de ROSE-L)
+
+Le code n'est **pas** un ensemble de scripts jetables. Toute la logique se trouve dans le paquet importable
+`src/nisar_s1/`. Les fichiers de `scripts/` et les notebooks ne font qu'appeler ces modules avec les
+paramètres de `config/params.yaml`.
+
+| Module | Rôle | Réutilisation visée |
+|--------|------|---------------------|
+| `config.py` | lecture de `params.yaml`, chemins | tout le projet |
+| `search.py` / `download.py` | recherche et téléchargement ASF (asf_search, earthaccess) par emprise et période | autres sites ; ROSE-L via ASF ou Copernicus |
+| `io_nisar.py` | lecture des produits NISAR L2 **GUNW** (cohérence, phase) et **GCOV** (γ⁰ HH/HV) en HDF5 → `xarray` géoréférencé | toute donnée NISAR ; modèle pour un lecteur ROSE-L |
+| `io_s1.py` | lecture des sorties SNAP (BEAM-DIMAP/GeoTIFF) → `xarray` | chaîne S1 existante |
+| `snap.py` | lancement des graphes `gpt` paramétrés (`snap_graphs/*.xml`) | toute chaîne SNAP |
+| `grid.py` | reprojection et rééchantillonnage sur une grille commune | comparaison multi-capteurs |
+| `stats.py` | statistiques par polygone, Δ, d de Cohen, AUC, distance de Jeffries-Matusita | toute comparaison coupe/témoin |
+| `detect.py` | détection de changement par seuillage + évaluation (précision, rappel, F1) | cartes de suivi des zones sensibles |
+| `plots.py` | figures standardisées | rapport |
+
+**Principes :**
+- fonctions documentées en anglais (docstrings) et typées, sans chemins écrits en dur ;
+- un lecteur par **format de produit**, et non par étude, pour qu'un futur lecteur ROSE-L se branche sur `grid`, `stats` et `detect` sans les modifier ;
+- tests minimaux (`tests/`) sur données synthétiques, comme le test `gpt` déjà en place.
+
+Le rapport situera cette chaîne par rapport à **ISCE3** (logiciel de traitement officiel de NISAR, qui produit
+GUNW et GCOV) et à **ROSE-L** (mission Copernicus en bande L, lancement prévu en 2028), pour laquelle elle doit rester transposable.

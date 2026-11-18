@@ -1,0 +1,12 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nisar_s1"
+version = "0.1.0"
+description = "Reusable L-band (NISAR, future ROSE-L) vs C-band (Sentinel-1) forest change analysis tools"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["src"]
