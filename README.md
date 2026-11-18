@@ -10,13 +10,15 @@ que **Sentinel-1 (bande C)** ? Validation par différence de NDVI **Sentinel-2**
 ## Étapes
 | # | Étape | État |
 |---|-------|------|
-| 0 | Environnement, structure, dépôt | ✅ |
-| 1 | Cadrage | ⏳ |
-| 2 | Inventaire S1 / NISAR / BIOMASS | ⏳ |
-| 3 | Choix du site + référence (NDVI S2) | ⏳ |
+| 0 | Environnement, structure, dépôt, SNAP 14, accès Earthdata | ✅ |
+| 1 | Cadrage — [docs/cadrage/cadrage.md](docs/cadrage/cadrage.md) | ✅ |
+| 2 | Inventaire S1 / NISAR / BIOMASS (niveaux, polarisations, couverture, répétitivité) | ⏳ |
+| 3 | Choix du site (coupe ≥ 5 ha + forêt témoin) et référence NDVI S2 | ⏳ |
 | 4 | Téléchargement (`asf_search`) | ⏳ |
-| 5 | Traitement et comparaison | ⏳ |
-| 6 | Mini-rapport LaTeX | ⏳ |
+| 5 | Traitement et comparaison (cohérence, γ⁰ HH/HV, AUC, JM, prototype de détection) | ⏳ |
+| 6 | Mini-rapport LaTeX (FR + résumé EN ; perspectives : glissements, bande P, ROSE-L) | ⏳ |
+
+Paramètres : [config/params.yaml](config/params.yaml).
 
 ## Organisation
 ```

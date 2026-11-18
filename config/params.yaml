@@ -1,0 +1,46 @@
+# Paramètres du test de faisabilité NISAR vs Sentinel-1 (pas de secrets ici).
+# Les valeurs marquées "a_affiner" seront précisées aux étapes 2-3.
+
+projet:
+  nom: nisar-s1-forest-feasibility
+  crs_travail: EPSG:32632          # UTM 32N (Vosges / Alsace)
+
+chemins:
+  data_root: /media/dell/Transcend1/nisar_data
+  raw: /media/dell/Transcend1/nisar_data/raw
+  processed: /media/dell/Transcend1/nisar_data/processed
+  gpt: ~/esa-snap/bin/gpt
+
+# Emprise de recherche (étape 2). Massif vosgien + piémont alsacien, en WGS84.
+aoi_recherche:
+  nom: vosges_alsace
+  bbox_wgs84: [6.70, 47.70, 7.70, 48.80]   # [lon_min, lat_min, lon_max, lat_max] — a_affiner
+
+periode:
+  debut: 2026-06-01
+  fin: 2026-11-30
+
+capteurs:
+  sentinel1:
+    plateforme: [S1A, S1C, S1D]
+    mode: IW
+    produit: SLC
+    polarisations: [VV, VH]
+    bursts_max: 3                  # contrainte RAM (~8 Go)
+  nisar:
+    bande: L
+    produits: [GUNW, GCOV]         # L2 ; noms exacts des collections a_affiner (étape 2)
+    polarisations_cibles: [HH, HV]
+  biomass:
+    bande: P
+    attendu: pas d'acquisition sur l'Europe de l'Ouest (à documenter)
+  sentinel2:
+    produit: L2A
+    nuages_max_pct: 20
+
+comparaison:
+  intervalle_coherence_jours: 12   # même intervalle temporel pour S1 et NISAR
+  surface_coupe_min_ha: 5
+  buffer_interieur_m: 20           # érosion des polygones (un pixel radar) — a_affiner
+  seuil_dndvi: -0.2                # à calibrer à l'étape 3
+  metriques: [delta_moyen, cohen_d, auc, jeffries_matusita, f1_detection]
