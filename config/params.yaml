@@ -23,6 +23,7 @@ periode:
 capteurs:
   sentinel1:
     plateforme: [S1A, S1C, S1D]
+    orbites_prioritaires: [139, 88]   # D139 couvre 100 %, A88 92 %
     mode: IW
     produit: SLC
     polarisations: [VV, VH]
@@ -31,14 +32,20 @@ capteurs:
     bande: L
     produits: [GUNW, GCOV]         # L2 ; noms exacts des collections a_affiner (étape 2)
     polarisations_cibles: [HH, HV]
+    geometries_prioritaires:      # issu de l'inventaire (étape 2)
+      - {direction: A, track: 144, frame: 26}
+      - {direction: D, track: 138, frame: 64}
+      - {direction: A, track: 72, frame: 26}
+    mode_cible: "2005"             # 20+5 MHz, HH/HV -> GCOV et cohérence GUNW à 20 m
   biomass:
     bande: P
-    attendu: pas d'acquisition sur l'Europe de l'Ouest (à documenter)
+    disponible: false             # zone d'exclusion SOTR (Europe, Amérique du Nord)
   sentinel2:
     produit: L2A
     nuages_max_pct: 20
 
 comparaison:
+  grille_m: 20
   intervalle_coherence_jours: 12   # même intervalle temporel pour S1 et NISAR
   surface_coupe_min_ha: 5
   buffer_interieur_m: 20           # érosion des polygones (un pixel radar) — a_affiner
