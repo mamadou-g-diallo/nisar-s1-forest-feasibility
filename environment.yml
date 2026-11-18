@@ -35,3 +35,5 @@ dependencies:
   - ipykernel
   - tqdm
   - python-dotenv
+  - pyyaml
+  - pytest
