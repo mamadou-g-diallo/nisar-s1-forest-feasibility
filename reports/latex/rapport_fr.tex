@@ -38,12 +38,14 @@ blocs.
 \item \textbf{Cohérence} : en bande L, la paire qui encadre la coupe sépare presque parfaitement coupe et forêt
   (AUC 0,995, cohérence 0,29 contre 0,69), même sur 24~jours. En bande C, la forêt est déjà décorrélée en
   12~jours (0,28) et la cohérence n'apporte presque rien (AUC 0,71--0,74).
-\item \textbf{Rétrodiffusion} : la chute en polarisation croisée atteint $-4{,}3$~dB en L (AUC 0,97), contre
-  $-2{,}2$~dB en C (AUC 0,91).
-\item \textbf{Persistance} : le contraste en bande L persiste jusqu'en novembre, alors que celui de la bande C
-  disparaît en octobre.
+\item \textbf{Rétrodiffusion} : en géométrie montante, la chute en polarisation croisée atteint $-4{,}3$~dB en L
+  (AUC 0,97), contre $-2{,}2$~dB en C (AUC 0,91). À géométrie égale (descendante), la bande C fait cependant aussi
+  bien que la bande L (AUC 0,91 contre 0,84).
+\item \textbf{Persistance} : en géométrie montante, le contraste en bande L persiste jusqu'en novembre, alors que
+  celui de la bande C s'affaiblit en octobre ; en descendante, la persistance est équivalente dans les deux bandes.
 \end{itemize}
-Les quatre hypothèses du cadrage sont confirmées sur ce site. La chaîne de traitement, écrite en modules Python
+Les hypothèses H1, H2 et H4 sont confirmées sur ce site ; H3 ne l'est que partiellement. L'avantage robuste de la
+bande L est interférométrique : en rétrodiffusion, il dépend de la géométrie d'acquisition. La chaîne de traitement, écrite en modules Python
 réutilisables, est directement transposable à la future mission Copernicus en bande L, ROSE-L.
 \end{abstract}
 
@@ -269,12 +271,15 @@ variables. Le \cref{tab-best} donne la meilleure variable à 20~m par capteur et
   bandes (AUC 0,55--0,77). C'est donc \emph{l'événement} de coupe, et non l'état final, que la cohérence capte.
 \end{itemize}
 
-\paragraph{Rétrodiffusion.} Les deux bandes détectent la coupe, mais la bande L plus fortement.
+\paragraph{Rétrodiffusion.} Les deux bandes détectent la coupe ; l'avantage de la bande L dépend de la géométrie.
 \begin{itemize}
 \item En polarisation croisée, la chute atteint $-4{,}3$~dB en A144 (AUC 0,97) et $-3{,}7$~dB en A72 (AUC 0,94).
   En VH Sentinel-1, elle est de $-2{,}2$~dB (AUC 0,91).
 \item En co-polarisation, on mesure $-4{,}2$~dB en HH (AUC 0,96) contre $-2{,}5$~dB en VV (AUC 0,90).
 \item La géométrie descendante NISAR D138 est nettement moins discriminante ($-2{,}3$~dB en HV, AUC 0,84).
+\item \textbf{À géométrie égale} (NISAR D138 et Sentinel-1 D139, toutes deux descendantes), la chute est comparable
+  ($-2{,}3$ contre $-2{,}2$~dB) et la bande C sépare un peu mieux (AUC 0,91 contre 0,84). L'avantage de la bande L
+  en rétrodiffusion n'apparaît donc que dans les géométries montantes.
 \end{itemize}
 
 \subsection{Évolution temporelle et persistance du contraste}
@@ -288,7 +293,9 @@ de séparation date par date.
   octobre (AUC VH 0,52 le 25/10).
 \end{itemize}
 Le \cref{tab-persistence} quantifie ce comportement : entre août--septembre et octobre--novembre, l'AUC HV de NISAR
-A144 passe seulement de 0,95 à 0,91, alors que l'AUC VV de Sentinel-1 passe de 0,86 à 0,66.
+A144 passe seulement de 0,95 à 0,91, alors que l'AUC VV de Sentinel-1 passe de 0,86 à 0,66. En géométrie
+descendante, en revanche, l'AUC HV de NISAR D138 en octobre--novembre (0,76) est équivalente à l'AUC VH de
+Sentinel-1 (0,74) : la meilleure persistance de la bande L n'est établie qu'en géométrie montante.
 
 \begin{figure}[htbp]
 \centering
@@ -309,7 +316,8 @@ témoin (bleu), moyenne $\pm$ écart-type ; la bande grise indique la fenêtre d
 \centering
 \includegraphics[width=\linewidth]{comparison_persistence.png}
 \caption{AUC de séparation coupe / témoin date par date pour la rétrodiffusion, en polarisation croisée (à gauche)
-et en co-polarisation (à droite). Le contraste reste élevé en bande L et s'effondre en octobre en bande C.}
+et en co-polarisation (à droite). Le contraste reste élevé en bande L montante et s'effondre en octobre en bande C ; en descendante, NISAR D138 et
+Sentinel-1 se comportent de façon comparable.}
 \label{fig-persist}
 \end{figure}
 
@@ -345,6 +353,25 @@ Avec les polygones érodés de 20~m, toutes les séparabilités augmentent :
 \end{itemize}
 Les conclusions ne dépendent donc pas des pixels de bordure, et l'écart entre bandes L et C en cohérence demeure.
 
+\subsection{Synthèse à géométrie égale}
+
+La \cref{fig-summary} rassemble les trois indicateurs clés pour chaque géométrie. La comparaison la plus juste
+entre bandes est celle des deux géométries descendantes (NISAR D138 et Sentinel-1 D139, contour noir).
+\begin{itemize}
+\item \textbf{Cohérence} : la bande L l'emporte dans les trois géométries (AUC 0,91--0,995 contre 0,74). C'est le
+  résultat le plus robuste du test.
+\item \textbf{Rétrodiffusion et persistance} : la bande L l'emporte en géométrie montante, mais pas à géométrie
+  égale, où les deux bandes se valent (AUC 0,84 contre 0,91 ; persistance 0,76 contre 0,74).
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{summary_L_vs_C.png}
+\caption{AUC de séparation coupe / forêt pour les trois indicateurs clés, par géométrie (grille de 20~m). Contour
+noir : géométries descendantes, comparaison à géométrie égale entre bande L et bande C.}
+\label{fig-summary}
+\end{figure}
+
 \subsection{Bilan des hypothèses}
 
 \begin{table}[htbp]
@@ -357,7 +384,8 @@ Les conclusions ne dépendent donc pas des pixels de bordure, et l'écart entre 
 \midrule
 H1 & Cohérence de la forêt à 12~j : 0,64--0,70 en L contre 0,28 en C. Même à 24~j, elle vaut 0,69 en L. & confirmée \\
 H2 & Cohérence de la paire sur la coupe : AUC 0,995 en L contre 0,71--0,74 en C. & confirmée \\
-H3 & $\Delta\gamma^0$ croisé : $-4{,}3$~dB (L) contre $-2{,}2$~dB (C) ; contraste persistant en L, transitoire en C. & confirmée \\
+H3 & $\Delta\gamma^0$ croisé : $-4{,}3$ et $-3{,}7$~dB (L montante) contre $-2{,}2$~dB (C). À géométrie égale
+(descendante) : $-2{,}3$~dB et AUC 0,84 en L contre 0,91 en C ; persistance équivalente. & partielle \\
 H4 & En L, HV $\geq$ HH dans les trois géométries (AUC 0,97 / 0,96, 0,94 / 0,92, 0,84 / 0,72). La cohérence (HH)
 fait toutefois encore mieux. & confirmée, à nuancer \\
 \bottomrule
@@ -377,7 +405,8 @@ fait toutefois encore mieux. & confirmée, à nuancer \\
   valeur de la cohérence en bande C pour cet usage.
 \item \textbf{Persistance} : la bande C est plus sensible à la rugosité et à l'humidité de surface. À l'automne, le
   sol nu humide et les rémanents de la coupe rediffusent assez pour égaler la forêt, alors que la bande L, moins
-  sensible à ces petites structures, conserve le contraste.
+  sensible à ces petites structures, conserve le contraste. Ce comportement n'est toutefois observé qu'en
+  géométrie montante, et l'explication par l'humidité reste à vérifier avec des données météorologiques.
 \end{itemize}
 Pour un suivi opérationnel, cette persistance est un atout majeur. Une coupe reste détectable en bande L des mois
 après l'événement, même si une acquisition est manquée.
@@ -392,7 +421,14 @@ après l'événement, même si une acquisition est manquée.
 
 \paragraph{Géométrie d'acquisition.} Les deux géométries montantes (A144, A72) séparent mieux que la descendante
 (D138). Sur un relief marqué, l'effet de bord et d'ombre d'une coupe dépend de la direction de
-visée~\cite{bouvet2018shadow}. La combinaison de plusieurs géométries, possible avec NISAR, est donc souhaitable.
+visée~\cite{bouvet2018shadow}. L'heure d'acquisition diffère aussi (vers 6~h~20 locales en montante, 20~h~40 en
+descendante), ce qui peut modifier l'humidité et la rosée de la végétation. Ces causes n'ont pas été départagées.
+Deux conséquences :
+\begin{itemize}
+\item la combinaison de plusieurs géométries, possible avec NISAR, est souhaitable ;
+\item une comparaison entre bandes n'est juste qu'à géométrie égale. Ici, elle ne vaut que pour D138 contre
+  Sentinel-1 D139, et elle ne montre un avantage de la bande L qu'en cohérence.
+\end{itemize}
 
 \paragraph{Complémentarité des deux bandes.} La revisite de Sentinel-1 date la coupe plus finement.
 \begin{itemize}
@@ -407,7 +443,10 @@ visée~\cite{bouvet2018shadow}. La combinaison de plusieurs géométries, possib
 \item \textbf{Un seul site} de 2,4~ha. Les intervalles de confiance traduisent la variabilité entre pixels, pas
   entre sites ; il faut répliquer sur plusieurs coupes (le candidat C09 est disponible).
 \item La paire NISAR sur la coupe fait \textbf{24~jours} contre 12 pour Sentinel-1. Cela défavorise la bande L, ce
-  qui renforce la conclusion.
+  qui renforce la conclusion sur la cohérence. Les estimateurs diffèrent toutefois (nombre de vues), et la
+  cohérence C, proche de zéro, est limitée par le biais de l'estimateur.
+\item \textbf{Une seule orbite} Sentinel-1 (descendante) contre trois géométries NISAR : la comparaison stricte entre
+  bandes repose sur une seule géométrie (D138).
 \item Les produits NISAR sont \textbf{provisoires} (2026), et peu de paires sont disponibles avant la coupe
   (1 à 3).
 \item À 80~m, la coupe ne contient qu'environ 4 pixels indépendants. Les AUC égales à 1 de la couche
@@ -461,16 +500,18 @@ envisageable de produire avec ISCE3 des produits équivalents à partir des donn
 \section{Conclusion}
 
 Sur une coupe rase de 2,4~ha dans les Vosges, la bande L de NISAR se montre nettement plus discriminante que la
-bande C de Sentinel-1.
+bande C de Sentinel-1 en cohérence ; en rétrodiffusion, son avantage dépend de la géométrie.
 \begin{itemize}
 \item \textbf{Cohérence} : la paire qui encadre la coupe sépare presque parfaitement coupe et forêt en bande L
   (AUC 0,995), alors que la bande C n'apporte presque rien (AUC $\approx$ 0,72), la forêt y étant déjà décorrélée.
-\item \textbf{Rétrodiffusion} : la chute en polarisation croisée est deux fois plus forte en bande L
-  ($-4{,}3$ contre $-2{,}2$~dB).
-\item \textbf{Persistance} : le contraste persiste en bande L jusqu'en novembre, alors qu'il disparaît en bande C
-  à l'automne.
+\item \textbf{Rétrodiffusion} : en géométrie montante, la chute en polarisation croisée est deux fois plus forte
+  en bande L ($-4{,}3$ contre $-2{,}2$~dB). À géométrie égale (descendante), la bande C fait aussi bien (AUC 0,91
+  contre 0,84).
+\item \textbf{Persistance} : en géométrie montante, le contraste persiste en bande L jusqu'en novembre, alors qu'il
+  s'affaiblit en bande C à l'automne ; en descendante, les deux bandes se valent.
 \end{itemize}
-Ces résultats confirment les hypothèses du cadrage et justifient l'intérêt de la bande L pour le suivi des coupes
+Ces résultats confirment H1, H2 et H4, et partiellement H3 : l'apport décisif de la bande L est interférométrique.
+Ils justifient l'intérêt de la bande L pour le suivi des coupes
 forestières. Ce suivi pourra être poursuivi avec ROSE-L. Ils devront être consolidés sur davantage de sites avant
 de concevoir un détecteur opérationnel.
 

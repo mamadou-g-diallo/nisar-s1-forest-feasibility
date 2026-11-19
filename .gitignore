@@ -74,3 +74,7 @@ reports/presentation/*.snm
 reports/presentation/*.vrb
 reports/presentation/*.fls
 reports/presentation/*.fdb_latexmk
+reports/presentation/*.bbl
+reports/presentation/*.bcf
+reports/presentation/*.blg
+reports/presentation/*.run.xml

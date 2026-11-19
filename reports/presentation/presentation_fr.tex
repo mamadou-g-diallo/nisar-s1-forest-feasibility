@@ -1,471 +1,681 @@
-\documentclass[10pt,aspectratio=169]{beamer}
-\usetheme[progressbar=frametitle,numbering=fraction]{metropolis}
+\documentclass[aspectratio=169]{beamer}
+\usetheme[numbering=fraction]{metropolis}
+
+% ── Ruban titre ───────────────────────────────────────────────
+\makeatletter
+\setlength{\metropolis@frametitle@padding}{1ex}
+\makeatother
+
+% ── Suppression des slides de transition de section ──────────
+\metroset{sectionpage=none}
+
+\usepackage[french]{babel}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{csquotes}
+\usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{caption}
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,decorations.pathmorphing}
-\usepackage{fontawesome5}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.pathmorphing}
+\usepackage{varwidth}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{appendixnumberbeamer}
 \graphicspath{{../../results/figures/}}
 
-\definecolor{Lband}{HTML}{2CA02C}
-\definecolor{Cband}{HTML}{9467BD}
-\definecolor{cut}{HTML}{D62728}
+% ================================================================
+% COULEURS
+% ================================================================
+\definecolor{myblue}{HTML}{1F4E79}
+\definecolor{myblue2}{HTML}{2E6BA8}
+\definecolor{myorange}{HTML}{E07B39}
+\definecolor{mygreen}{HTML}{2E7D32}
+\definecolor{myred}{HTML}{C0392B}
+\definecolor{myteal}{HTML}{006064}
+\definecolor{mylgray}{HTML}{F4F6F9}
+\definecolor{mymgray}{HTML}{D0D8E4}
+\definecolor{mydgray}{HTML}{4A5568}
+% bandes radar (mêmes couleurs que les figures)
+\definecolor{Lband}{HTML}{2E7D32}
+\definecolor{Cband}{HTML}{7B4FA8}
+\definecolor{cut}{HTML}{C0392B}
 \definecolor{ctrl}{HTML}{1F77B4}
-\setbeamercolor{alerted text}{fg=cut}
+
+% ================================================================
+% COULEURS BEAMER
+% ================================================================
+\setbeamercolor{frametitle}{bg=myblue, fg=white}
+\setbeamercolor{progress bar}{fg=myblue, bg=gray!20}
+\setbeamercolor{block title}{bg=myblue, fg=white}
+\setbeamercolor{block body}{bg=mylgray}
+\setbeamercolor{block title alerted}{bg=myorange, fg=white}
+\setbeamercolor{block body alerted}{bg=mylgray}
+\setbeamercolor{block title example}{bg=mygreen, fg=white}
+\setbeamercolor{block body example}{bg=mylgray}
+\setbeamercolor{alerted text}{fg=myorange}
+\setbeamercolor{bibliography entry author}{fg=myblue}
+\setbeamercolor{bibliography entry title}{fg=myblue}
+
+\captionsetup{labelfont=bf, font=small}
+
 \newcommand{\Lb}[1]{\textcolor{Lband}{\textbf{#1}}}
 \newcommand{\Cb}[1]{\textcolor{Cband}{\textbf{#1}}}
 
-\title{Bande L (NISAR) contre bande C (Sentinel-1)\\pour détecter une coupe rase en forêt vosgienne}
-\subtitle{Test de faisabilité à l'appui de ma candidature au stage SERTIT / ICube\\
-\small « Exploration des bandes L et P pour la détection de la déforestation et des glissements de terrain »}
-\author{Mamadou Galy Diallo}
+% ================================================================
+% COMMANDE SOUS-TITRE DE SLIDE
+% ================================================================
+\newcommand{\slidesubtitle}[1]{%
+	\textcolor{myblue}{\small\textbf{#1}}%
+	\par\vspace{3pt}%
+}
+% chiffre clé : couleur, valeur, légende
+\newcommand{\keynum}[3]{%
+	\begin{minipage}[t]{0.31\linewidth}\centering
+		\textcolor{#1}{\Large\textbf{#2}}\\[1pt]
+		\scriptsize #3
+	\end{minipage}}
+
+% ================================================================
+% BIBLIOGRAPHIE
+% ================================================================
+\usepackage[backend=biber, style=authoryear,
+maxcitenames=2, mincitenames=1,
+isbn=false, eprint=false, doi=false, url=false]{biblatex}
+\addbibresource{../latex/references.bib}
+
+\AtBeginDocument{%
+	\renewcommand*{\mkbibnamefamily}[1]{\textnormal{#1}}%
+	\renewcommand*{\mkbibnamegiven}[1]{\textnormal{#1}}%
+	\renewcommand*{\mkbibnameprefix}[1]{\textnormal{#1}}%
+	\renewcommand*{\mkbibnamesuffix}[1]{\textnormal{#1}}%
+}
+\DeclareCiteCommand{\parencite}
+{\usebibmacro{prenote}}
+{\textcolor{black}{(}\textcolor{myred}{\usebibmacro{cite}}\textcolor{black}{)}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+% ================================================================
+% PIED DE PAGE
+% ================================================================
+\setbeamercolor{footline}{bg=white, fg=black}
+\setbeamerfont{footline}{size=\scriptsize}
+\setbeamertemplate{footline}{%
+	\hbox{%
+		\begin{beamercolorbox}[wd=\paperwidth, ht=1.5ex,
+			dp=0.6ex, leftskip=0.4cm,
+			rightskip=0.4cm]{footline}
+			\color{black}\rule{\paperwidth}{0.3pt}\par
+			\vspace{-0.25em}
+			\hfill \insertframenumber/\inserttotalframenumber
+		\end{beamercolorbox}%
+	}%
+}
+
+% ================================================================
+% PAGE DE TITRE PERSONNALISEE
+% ================================================================
+\setbeamertemplate{title page}{%
+	\vspace*{0.4cm}
+	\vfill
+	\begin{center}
+		\footnotesize\textcolor{mydgray}{%
+			Dossier de candidature -- Stage SERTIT / ICube (Université de Strasbourg)}
+
+		\vspace{0.3em}
+		\scriptsize\textcolor{mydgray}{%
+			\og Exploration des bandes L et P pour la détection de la déforestation
+			et des glissements de terrain \fg}
+
+		\vspace{0.9em}
+
+		\begin{varwidth}{0.92\linewidth}
+			\centering
+			{\usebeamerfont{title}\usebeamercolor[fg]{title}%
+				\inserttitle\par}
+		\end{varwidth}
+
+		\vspace{0.6cm}
+
+		{\usebeamerfont{author}\usebeamercolor[fg]{author}%
+			\insertauthor\par}
+
+		\vspace{0.4cm}
+
+		{\usebeamerfont{date}\usebeamercolor[fg]{date}%
+			\insertdate\par}
+	\end{center}
+	\vfill
+}
+
+\title{\Large
+	Bande L (NISAR) contre bande C (Sentinel-1)\\
+	pour détecter une coupe rase en forêt vosgienne :\\[4pt]
+	{\normalsize test de faisabilité sur données réelles 2026}
+}
+\author{%
+	Candidat : \textbf{Mamadou G. Diallo}
+}
 \date{Novembre 2026}
 
+% ================================================================
 \begin{document}
 
-\maketitle
-
-%---------------------------------------------------------------------
-\begin{frame}{En une phrase}
-\centering
-\Large
-Sur une coupe rase réelle de 2,4~ha (Vosges, août 2026), la \Lb{cohérence interférométrique en bande L}
-sépare la coupe de la forêt presque parfaitement (\Lb{AUC 0,995}), là où la \Cb{bande C} n'y parvient pas
-(\Cb{AUC 0,74}).
-
-\vspace{0.8em}
-\normalsize
-\begin{columns}[T]
-\column{0.32\textwidth}\centering
-\faSatellite\quad\textbf{Données réelles}\\[0.2em]
-\small NISAR L2 (ISCE3), 3~géométries\\13 dates Sentinel-1
-\column{0.32\textwidth}\centering
-\faCogs\quad\textbf{Chaîne reproductible}\\[0.2em]
-\small paquet Python + graphes SNAP\\tables générées automatiquement
-\column{0.32\textwidth}\centering
-\faBalanceScale\quad\textbf{Évaluation honnête}\\[0.2em]
-\small contrôle avant coupe, bootstrap,\\comparaison à géométrie égale
-\end{columns}
+% ── PAGE DE TITRE ─────────────────────────────────────────────
+\begin{frame}
+	\titlepage
 \end{frame}
 
-%---------------------------------------------------------------------
-\section{Contexte et question}
-
-\begin{frame}{Pourquoi ce test ?}
-\begin{columns}[T]
-\column{0.55\textwidth}
-\begin{itemize}
-\item Le suivi radar des coupes repose aujourd'hui sur la \Cb{bande C} (Sentinel-1, alertes de type RADD,
-  méthode des ombres).
-\item Depuis 2025, \Lb{NISAR} (NASA-ISRO) fournit pour la première fois de la \Lb{bande L} gratuite et
-  systématique sur l'Europe. Ses produits L2 sont générés par \textbf{ISCE3}.
-\item \textbf{ROSE-L} (Copernicus, lancement prévu en 2028) assurera ensuite la bande L européenne.
-\item \textbf{BIOMASS} (bande P) n'acquiert pas sur l'Europe de l'Ouest (zone d'exclusion SOTR) : c'est une
-  perspective.
-\end{itemize}
-\column{0.42\textwidth}
-\begin{block}{Question}
-Sur une coupe rase récente des Vosges, la cohérence et la rétrodiffusion \Lb{NISAR} séparent-elles mieux la
-coupe de la forêt intacte que \Cb{Sentinel-1} ?
-\end{block}
-\begin{alertblock}{Enjeu pour le stage}
-Préparer une chaîne en bande L transposable à ROSE-L.
-\end{alertblock}
-\end{columns}
+% ── PLAN ──────────────────────────────────────────────────────
+\begin{frame}{Plan}
+	\tableofcontents
 \end{frame}
 
-\begin{frame}{La physique attendue}
-\begin{columns}[c]
-\column{0.52\textwidth}
-\begin{tikzpicture}[scale=0.85]
-  % ground
-  \fill[brown!30] (0,0) rectangle (8,0.3);
-  % trees
-  \foreach \x in {0.8,2.3,3.8} {
-    \fill[brown!70!black] (\x-0.08,0.3) rectangle (\x+0.08,2.4);
-    \fill[green!50!black,opacity=0.75] (\x,2.9) ellipse (0.65 and 0.9);
-  }
-  % clear-cut
-  \foreach \x in {5.2,6.1,7.0} { \fill[brown!60!black] (\x-0.15,0.3) rectangle (\x+0.15,0.45); }
-  \node[font=\scriptsize] at (6.1,0.75) {coupe : sol nu, rémanents};
-  % C band arrow
-  \draw[-{Latex},very thick,Cband,decorate,decoration={snake,amplitude=1.2pt,segment length=4pt}] (1.0,5.2) -- (2.2,3.4);
-  \node[Cband,font=\scriptsize\bfseries] at (0.7,5.45) {C, 5,6 cm};
-  \node[Cband,font=\scriptsize,align=right,anchor=east] at (1.45,3.9) {s'arrête\\au feuillage};
-  % L band arrow
-  \draw[-{Latex},very thick,Lband,decorate,decoration={snake,amplitude=2.2pt,segment length=9pt}] (2.9,5.2) -- (3.75,1.2);
-  \node[Lband,font=\scriptsize\bfseries] at (3.4,5.45) {L, 24 cm};
-  \node[Lband,font=\scriptsize,align=left,anchor=west] at (4.55,2.0) {atteint troncs\\et branches};
-\end{tikzpicture}
-\column{0.46\textwidth}
-\small
-\begin{description}
-\item[H1] Forêt intacte : cohérence à 12~j plus élevée en \Lb{L} qu'en \Cb{C} (troncs stables / feuilles mobiles).
-\item[H2] Donc un contraste de cohérence coupe / forêt plus fort en \Lb{L}.
-\item[H3] Une baisse de rétrodiffusion plus forte en \Lb{L} (la bande C sature sur forêt dense).
-\item[H4] HV (polarisation croisée, diffusion de volume) est l'indicateur de rétrodiffusion le plus sensible.
-\end{description}
-\vspace{0.3em}
-\footnotesize Hypothèses fixées \emph{avant} les calculs, à l'étape de cadrage.
-\end{columns}
+% ================================================================
+\section{Introduction}
+% ================================================================
+
+\begin{frame}{\phantom{x}}
+	\frametitle{Introduction (1/3)}
+	\small
+	\begin{columns}[T]
+		\column{0.60\textwidth}
+		\begin{block}{Contexte et enjeux}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{3pt}
+				\item Le suivi radar des coupes forestières repose aujourd'hui sur la \Cb{bande C} de
+				Sentinel-1 : alertes de perturbation \parencite{reiche2021radd}, effet d'ombre en bordure de
+				coupe \parencite{bouvet2018shadow}.
+				\item Depuis 2025, \Lb{NISAR} (NASA-ISRO) fournit pour la première fois une \Lb{bande L}
+				gratuite et systématique sur l'Europe \parencite{kellogg2020nisar}. Ses produits de niveau~2 sont
+				générés par \textbf{ISCE3} \parencite{isce3}.
+				\item \textbf{ROSE-L} (Copernicus, lancement prévu en 2028) assurera ensuite la bande L
+				européenne \parencite{esa2020rosel}.
+				\item \textbf{BIOMASS} (bande P) n'acquiert pas sur l'Europe de l'Ouest : c'est une perspective
+				\parencite{quegan2019biomass}.
+			\end{itemize}
+		\end{block}
+
+		\column{0.36\textwidth}
+		\vspace{-8pt}
+		\begin{block}{Objectifs}
+			\footnotesize
+			\begin{enumerate}
+				\setlength{\itemsep}{4pt}
+				\item \textbf{Trouver} une coupe rase réelle et datée en 2026 (Sentinel-2)
+				\item \textbf{Comparer} cohérence et rétrodiffusion \Lb{NISAR} et \Cb{Sentinel-1} sur ce site
+				\item \textbf{Tester} quatre hypothèses physiques fixées \emph{avant} les calculs
+				\item \textbf{Construire} une chaîne réutilisable, transposable à ROSE-L
+			\end{enumerate}
+		\end{block}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Les deux grandeurs radar utilisées}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\begin{block}{Rétrodiffusion $\gamma^0$ (dB)}
-Énergie renvoyée vers le radar, normalisée et corrigée du relief (RTC).
-\begin{itemize}\small
-\item HH, VV : co-polarisation (surface, double rebond).
-\item HV, VH : polarisation croisée, sensible à la \textbf{diffusion de volume}, donc à la biomasse.
-\end{itemize}
-\end{block}
-\column{0.48\textwidth}
-\begin{block}{Cohérence interférométrique $\gamma$ (0--1)}
-\[
-\gamma=\frac{|\langle s_1 s_2^*\rangle|}{\sqrt{\langle|s_1|^2\rangle\langle|s_2|^2\rangle}}
-\]
-\small Ressemblance entre deux images prises à 12~jours d'écart : proche de 1 si la scène n'a pas bougé, proche
-de 0 si elle a changé (feuilles, vent, coupe\ldots).
-\end{block}
-\end{columns}
-\vspace{0.5em}
-\centering\small Une coupe se voit de deux façons : \textbf{l'état change} ($\gamma^0$ baisse) et \textbf{l'événement
-décorrèle} la paire qui l'encadre (cohérence basse).
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Introduction (2/3)}
+	\slidesubtitle{Physique attendue et hypothèses}
+	\begin{columns}[c]
+		\column{0.50\textwidth}
+		\centering
+		\begin{tikzpicture}[scale=0.82]
+			\fill[brown!30] (0,0) rectangle (8,0.3);
+			\foreach \x in {0.8,2.3,3.8} {
+				\fill[brown!70!black] (\x-0.08,0.3) rectangle (\x+0.08,2.4);
+				\fill[green!50!black,opacity=0.75] (\x,2.9) ellipse (0.65 and 0.9);
+			}
+			\foreach \x in {5.2,6.1,7.0} { \fill[brown!60!black] (\x-0.15,0.3) rectangle (\x+0.15,0.45); }
+			\node[font=\scriptsize] at (6.1,0.75) {coupe : sol nu, rémanents};
+			\draw[-{Latex},very thick,Cband,decorate,decoration={snake,amplitude=1.2pt,segment length=4pt}]
+			(1.0,5.2) -- (2.2,3.4);
+			\node[Cband,font=\scriptsize\bfseries] at (0.7,5.45) {C, 5,6 cm};
+			\node[Cband,font=\scriptsize,align=right,anchor=east] at (1.45,3.9) {s'arrête\\au feuillage};
+			\draw[-{Latex},very thick,Lband,decorate,decoration={snake,amplitude=2.2pt,segment length=9pt}]
+			(2.9,5.2) -- (3.75,1.2);
+			\node[Lband,font=\scriptsize\bfseries] at (3.4,5.45) {L, 24 cm};
+			\node[Lband,font=\scriptsize,align=left,anchor=west] at (4.55,2.0) {atteint troncs\\et branches};
+		\end{tikzpicture}
+		\captionof{figure}{Interaction des ondes C et L avec la forêt.}
+
+		\column{0.48\textwidth}
+		\begin{block}{Hypothèses du cadrage}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{3pt}
+				\item[\textbf{H1}] Forêt intacte : cohérence à 12~j plus élevée en \Lb{L} qu'en \Cb{C} (troncs stables,
+				feuilles mobiles) \parencite{zebker1992decorrelation}.
+				\item[\textbf{H2}] Donc un contraste de cohérence coupe / forêt plus fort en \Lb{L}.
+				\item[\textbf{H3}] Une baisse de rétrodiffusion plus forte en \Lb{L} (la bande C sature sur forêt dense)
+				\parencite{joshi2015mapping}.
+				\item[\textbf{H4}] HV (diffusion de volume) est l'indicateur de rétrodiffusion le plus sensible.
+			\end{itemize}
+		\end{block}
+	\end{columns}
 \end{frame}
 
-%---------------------------------------------------------------------
-\section{Données et site}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Introduction (3/3)}
+	\slidesubtitle{Zone d'étude : coupe C11 (Vosges, près du Thillot)}
+	\vspace{-2pt}
+	\begin{columns}[c]
+		\column{0.66\textwidth}
+		\centering
+		\includegraphics[width=\linewidth, height=0.33\textheight, keepaspectratio]{site_ndvi_maps.png}\\
+		\includegraphics[width=\linewidth, height=0.33\textheight, keepaspectratio]{site_ndvi_timeseries.png}
+		\vspace{-4pt}
+		\captionof{figure}{NDVI Sentinel-2 avant / après et série temporelle de la coupe et du témoin.}
 
-\begin{frame}{Données et ingénierie de l'accès}
-\footnotesize
-\begin{tabular}{@{}lll@{}}
-\toprule
-& \Lb{NISAR (L, 1,26 GHz)} & \Cb{Sentinel-1 (C, 5,4 GHz)} \\
-\midrule
-Produits & L2 GCOV ($\gamma^0$ HH, HV) + GUNW (cohérence HH), ISCE3 & IW SLC (VV+VH), SNAP 14 \\
-Géométries & A144, A72 (montantes), D138 (descendante) & orbite D139 (descendante), IW2 \\
-Dates & 10--11 GCOV, 8--9 GUNW par géométrie & 13 dates, 14/06 $\to$ 06/11/2026 \\
-Paires & 12~j ; \textbf{24~j sur la coupe} (acquisition manquante) & 12~j \\
-\bottomrule
-\end{tabular}
-
-\vspace{0.4em}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\begin{exampleblock}{Lecture à distance NISAR}
-HDF5 découpé en blocs $512\times512$ : lecture HTTPS des seuls blocs du site.
-\textbf{15~s par couche au lieu de 20~min par fichier.}
-\end{exampleblock}
-\column{0.48\textwidth}
-\begin{exampleblock}{SAFE Sentinel-1 réduits}
-Lecture du zip distant par requêtes partielles : sous-fauchée IW2 seulement.
-\textbf{1,6~Go au lieu de 4,6~Go par date.}
-\end{exampleblock}
-\end{columns}
-\vspace{0.3em}
-\centering\footnotesize Volume total évité : environ 30~h de téléchargement à 1,8~Mo/s.
+		\column{0.32\textwidth}
+		\small
+		\begin{itemize}
+			\setlength{\itemsep}{5pt}
+			\item \textcolor{cut}{\textbf{Coupe}} : 2,36~ha (59 pixels de 20~m) dans une forêt continue
+			\item NDVI 0,84 $\to$ 0,44 : coupe entre le \textbf{27/07 et le 11/08/2026}
+			\parencite{drusch2012sentinel2}
+			\item \textcolor{ctrl}{\textbf{Témoin}} : anneau de forêt intacte à 100--275~m (548 pixels), même
+			versant et même peuplement
+		\end{itemize}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Trouver une vraie coupe : 16 candidats, 1 retenu}
-\begin{columns}[c]
-\column{0.58\textwidth}
-\includegraphics[width=\linewidth,height=0.8\textheight,keepaspectratio]{candidates_rgb_quicklooks.png}
-\column{0.40\textwidth}
-\small
-\begin{enumerate}
-\item Détection Sentinel-2 : NDVI avant $\geq 0{,}7$, dNDVI $\leq -0{,}3$, masque forêt WorldCover, $\geq 2$~ha.
-\item Vérification par séries temporelles.
-\item \textbf{Contrôle visuel} (couleurs vraies et SWIR) :
-\begin{itemize}\footnotesize
-\item 7 dépérissements (scolytes, sécheresse) ;
-\item étangs, lisières, ripisylve ;
-\item \textbf{C11 : vraie coupe rase} au sein d'une forêt continue.
-\end{itemize}
-\end{enumerate}
-\footnotesize Leçon : un seuil NDVI seul confond coupe et dépérissement.
-\end{columns}
+% ================================================================
+\section{Données et méthodologie}
+% ================================================================
+
+\begin{frame}{\phantom{x}}
+	\frametitle{Données et méthodologie (1/3)}
+	\vspace{-10pt}
+	\slidesubtitle{1-Données utilisées}
+	\small
+	\begin{columns}[T]
+		\column{0.48\textwidth}
+		\begin{block}{NISAR, bande L (1,26 GHz)}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{1pt}
+				\item Produits L2 ISCE3 \parencite{isce3} : GCOV ($\gamma^0$ HH, HV, RTC) et GUNW (cohérence HH)
+				\item 3 géométries : A144, A72 (montantes), D138 (descendante)
+				\item 10--11 GCOV et 8--9 GUNW par géométrie, 19/06 $\to$ 10/11/2026
+				\item Paires de 12~j ; \textbf{24~j sur la coupe} (acquisition manquante)
+			\end{itemize}
+		\end{block}
+
+		\column{0.48\textwidth}
+		\begin{block}{Sentinel-1, bande C (5,4 GHz)}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{1pt}
+				\item IW SLC VV+VH, orbite D139 (descendante), sous-fauchée IW2 \parencite{torres2012sentinel1}
+				\item 13 dates, 14/06 $\to$ 06/11/2026, paires de 12~j
+				\item Traitement SNAP 14 \parencite{snap} : $\gamma^0$ par Terrain-Flattening
+				\parencite{small2011flattening}, cohérence $10\times3$
+				\item \textbf{Référence} : Sentinel-2 (dNDVI), indépendante du radar
+			\end{itemize}
+		\end{block}
+	\end{columns}
+
+	\vspace{0.2em}
+	\scriptsize\centering
+	\textcolor{myblue}{\textbf{Ingénierie de l'accès}} : lecture à distance des seuls blocs HDF5 du site
+	(\textbf{15~s par couche au lieu de 20~min par fichier}) et SAFE Sentinel-1 réduits à IW2
+	(\textbf{1,6~Go au lieu de 4,6~Go par date}).
 \end{frame}
 
-\begin{frame}{Site C11 et forêt témoin}
-\begin{columns}[c]
-\column{0.62\textwidth}
-\includegraphics[width=\linewidth,height=0.36\textheight,keepaspectratio]{site_ndvi_maps.png}\\
-\includegraphics[width=\linewidth,height=0.4\textheight,keepaspectratio]{site_ndvi_timeseries.png}
-\column{0.36\textwidth}
-\small
-\begin{itemize}
-\item \textcolor{cut}{\textbf{Coupe}} : 2,36~ha (59 pixels de 20~m), près du Thillot.
-\item NDVI 0,84 $\to$ 0,44 : coupe entre le \textbf{27/07 et le 11/08}.
-\item \textcolor{ctrl}{\textbf{Témoin}} : anneau de forêt intacte à 100--275~m (548 pixels) : même versant, même
-  peuplement, sans effet de lisière.
-\end{itemize}
-\end{columns}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Données et méthodologie (2/3)}
+	\slidesubtitle{2-Sélection du site : 16 candidats, 1 retenu}
+	\begin{columns}[c]
+		\column{0.58\textwidth}
+		\centering
+		\includegraphics[width=\linewidth, height=0.62\textheight, keepaspectratio]{candidates_rgb_quicklooks.png}
+		\vspace{-4pt}
+		\captionof{figure}{Contrôle visuel des candidats Sentinel-2 (couleurs vraies et SWIR).}
+
+		\column{0.40\textwidth}
+		\footnotesize
+		\begin{enumerate}
+			\setlength{\itemsep}{3pt}
+			\item Détection Sentinel-2 : NDVI avant $\geq 0{,}7$, dNDVI $\leq -0{,}3$, masque forêt WorldCover
+			\parencite{zanaga2022worldcover}, $\geq 2$~ha
+			\item Vérification par séries temporelles
+			\item \textbf{Contrôle visuel} :
+			\begin{itemize}\footnotesize
+				\item 7 dépérissements (scolytes, sécheresse)
+				\item étangs, lisières, ripisylve
+				\item \textbf{C11 : vraie coupe rase}
+			\end{itemize}
+		\end{enumerate}
+		\vspace{2pt}
+		\footnotesize\textcolor{myorange}{\textbf{Leçon}} : un seuil NDVI seul confond coupe et dépérissement.
+	\end{columns}
 \end{frame}
 
-%---------------------------------------------------------------------
-\section{Méthode}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Données et méthodologie (3/3)}
+	\slidesubtitle{3-Chaîne de traitement et protocole d'évaluation}
+	\centering
+	\resizebox{0.96\linewidth}{!}{%
+		\begin{tikzpicture}[node distance=0.35cm and 0.5cm, every node/.style={font=\scriptsize},
+			box/.style={draw=myblue, rounded corners, align=center, minimum height=0.85cm, text width=2.45cm},
+			arr/.style={-{Latex}, thick, myblue}]
+			\node[box, fill=Lband!15] (n1) {NISAR L2 (ISCE3)\\GCOV + GUNW};
+			\node[box, fill=Lband!15, right=of n1] (n2) {lecture à distance\\fenêtre du site};
+			\node[box, fill=Cband!15, below=0.9cm of n1] (s1) {Sentinel-1 SLC\\SAFE réduit (IW2)};
+			\node[box, fill=Cband!15, right=of s1] (s2) {SNAP : $\gamma^0$ RTC\\+ cohérence $10\times3$};
+			\node[box, fill=mylgray] (g) at ($(n2)!0.5!(s2)+(3.4,0)$) {grille commune\\20~m UTM 32N};
+			\node[box, fill=mylgray, right=of g] (v) {variables de\\changement};
+			\node[box, fill=mylgray, right=of v] (m) {AUC, d, JM\\bootstrap blocs};
+			\node[box, fill=myorange!20, below=0.9cm of v] (r) {référence S2\\(dNDVI)};
+			\node[box, fill=mylgray, right=of r] (d) {prototype de\\détection};
+			\draw[arr] (n1)--(n2); \draw[arr] (s1)--(s2);
+			\draw[arr] (n2)--(g); \draw[arr] (s2)--(g); \draw[arr] (g)--(v); \draw[arr] (v)--(m);
+			\draw[arr] (r)--(d); \draw[arr] (v)--(d);
+	\end{tikzpicture}}
+	\captionof{figure}{Les différentes étapes de la méthodologie (paquet Python \texttt{nisar\_s1}).}
 
-\begin{frame}{Chaîne de traitement}
-\centering
-\resizebox{\linewidth}{!}{%
-\begin{tikzpicture}[node distance=0.35cm and 0.5cm, every node/.style={font=\scriptsize},
-  box/.style={draw, rounded corners, align=center, minimum height=0.85cm, text width=2.45cm},
-  arr/.style={-{Latex}, thick}]
-\node[box, fill=Lband!15] (n1) {NISAR L2 (ISCE3)\\GCOV + GUNW};
-\node[box, fill=Lband!15, right=of n1] (n2) {lecture à distance\\fenêtre du site};
-\node[box, fill=Cband!15, below=0.9cm of n1] (s1) {Sentinel-1 SLC\\SAFE réduit (IW2)};
-\node[box, fill=Cband!15, right=of s1] (s2) {SNAP : $\gamma^0$ (Terrain-Flattening)\\+ cohérence $10\times3$};
-\node[box, fill=gray!15] (g) at ($(n2)!0.5!(s2)+(3.4,0)$) {grille commune\\20~m UTM 32N};
-\node[box, fill=gray!15, right=of g] (v) {variables de\\changement};
-\node[box, fill=gray!15, right=of v] (m) {AUC, d, JM\\bootstrap blocs};
-\node[box, fill=orange!20, below=0.9cm of v] (r) {référence S2\\(dNDVI)};
-\node[box, fill=gray!15, right=of r] (d) {prototype de\\détection};
-\draw[arr] (n1)--(n2); \draw[arr] (s1)--(s2);
-\draw[arr] (n2)--(g); \draw[arr] (s2)--(g); \draw[arr] (g)--(v); \draw[arr] (v)--(m);
-\draw[arr] (r)--(d); \draw[arr] (v)--(d);
-\end{tikzpicture}}
-
-\vspace{0.6em}
-\small
-\begin{columns}[T]
-\column{0.48\textwidth}
-\begin{itemize}
-\item Même grandeur des deux côtés : $\gamma^0$ RTC et cohérence à 12~jours.
-\item Point technique : site dans un seul burst, donc \textbf{pas d'ESD} (sinon cohérence nulle).
-\end{itemize}
-\column{0.48\textwidth}
-\begin{itemize}
-\item Code : paquet \texttt{nisar\_s1} (lecture, SNAP, grille, statistiques, détection, figures) ; 11 tests.
-\item Aucun chiffre recopié à la main : les tables LaTeX sont générées.
-\end{itemize}
-\end{columns}
+	\vspace{-2pt}
+	\renewcommand{\arraystretch}{1.25}
+	\setlength{\tabcolsep}{4pt}
+	\scriptsize
+	\begin{tabular}{|>{\bfseries}l|p{4.6cm}|>{\bfseries}l|p{5.2cm}|}
+		\hline
+		Phases & \emph{avant} / \emph{après} la coupe ; paire \emph{à cheval} qui l'encadre &
+		Métriques & \textbf{AUC} (0,5 = hasard ; 1 = parfait) \parencite{hanley1982auc}, d de Cohen, JM \\
+		\hline
+		Variables & $\Delta\gamma^0$ après $-$ avant (dB) ; cohérence de la paire à cheval ; $\Delta$ cohérence &
+		Incertitude & IC 95~\% par \textbf{bootstrap par blocs} de 60~m \parencite{kunsch1989bootstrap} \\
+		\hline
+		Témoin & forêt locale, validée avant la coupe (AUC 0,51--0,62) &
+		Sensibilité & polygones érodés de 20~m (pixels de bord retirés) \\
+		\hline
+	\end{tabular}
 \end{frame}
 
-\begin{frame}{Protocole d'évaluation}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\textbf{Phases} (fenêtre de coupe 27/07--11/08) :
-\begin{itemize}\small
-\item \emph{avant} / \emph{après} : images et paires entièrement d'un côté ;
-\item \emph{à cheval} : la paire qui encadre la coupe.
-\end{itemize}
-\textbf{Variables} :
-\begin{itemize}\small
-\item $\Delta\gamma^0$ = après $-$ avant (dB) ;
-\item cohérence de la paire à cheval ;
-\item $\Delta$ cohérence après $-$ avant.
-\end{itemize}
-\column{0.48\textwidth}
-\textbf{Métriques} coupe / témoin :
-\begin{itemize}\small
-\item \textbf{AUC} : probabilité qu'un pixel de coupe soit mieux classé qu'un pixel de forêt (0,5 = hasard ;
-  1 = parfait) ;
-\item d de Cohen, distance de Jeffries-Matusita ;
-\item IC 95~\% par \textbf{bootstrap par blocs} de 60~m (pixels voisins non indépendants) : pas de p-valeurs.
-\end{itemize}
-\textbf{Garde-fous} :
-\begin{itemize}\small
-\item \textbf{contrôle avant coupe} : AUC 0,51--0,62, donc témoin valide ;
-\item sensibilité : polygones érodés de 20~m.
-\end{itemize}
-\end{columns}
+% ================================================================
+\section{Résultats et discussion}
+% ================================================================
+
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (1/6)}
+	\slidesubtitle{1-La cohérence en bande L voit l'événement de coupe}
+	\vspace{-4pt}
+	\centering
+	\includegraphics[width=0.80\linewidth, height=0.50\textheight, keepaspectratio]{comparison_ts_NISAR-L_A144F26.png}
+	\vspace{-4pt}
+	\captionof{figure}{NISAR A144 : cohérence HH, $\gamma^0$ HH et HV de la \textcolor{cut}{coupe} et du
+		\textcolor{ctrl}{témoin} ; bande grise : fenêtre de coupe.}
+
+	\vspace{-6pt}
+	\keynum{Lband}{AUC 0,995}{cohérence L de la paire à cheval\\coupe 0,29 contre forêt 0,69}\hfill
+	\keynum{Cband}{AUC 0,74}{cohérence C de la paire à cheval\\coupe 0,23 contre forêt 0,29}\hfill
+	\keynum{myblue}{0,64--0,70 / 0,28}{cohérence de la forêt intacte à 12~j\\en L / en C}
 \end{frame}
 
-%---------------------------------------------------------------------
-\section{Résultats}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (2/6)}
+	\slidesubtitle{2-La rétrodiffusion baisse dans les deux bandes}
+	\begin{columns}[c]
+		\column{0.62\textwidth}
+		\centering
+		\includegraphics[width=\linewidth, height=0.70\textheight, keepaspectratio]{comparison_ts_S1-C_T139.png}
+		\vspace{-4pt}
+		\captionof{figure}{Sentinel-1 D139 : cohérence et $\gamma^0$ VH, VV.}
 
-\begin{frame}{Résultat 1 : la cohérence en bande L voit l'événement de coupe}
-\begin{columns}[c]
-\column{0.64\textwidth}
-\includegraphics[width=\linewidth]{comparison_ts_NISAR-L_A144F26.png}
-\column{0.34\textwidth}
-\small
-Paire qui encadre la coupe (24~j) :
-\begin{itemize}
-\item \Lb{L} : coupe 0,29 contre forêt 0,69 : \Lb{AUC 0,995} (A144 et D138).
-\item \Cb{C} : coupe 0,23 contre forêt 0,29 : \Cb{AUC 0,74}.
-\end{itemize}
-Forêt intacte à 12~j : \Lb{0,64--0,70} en L contre \Cb{0,28} en C.
-
-\vspace{0.3em}
-\footnotesize En C, la forêt est déjà décorrélée : la coupe n'a « rien à faire chuter ».
-\end{columns}
+		\column{0.36\textwidth}
+		\footnotesize
+		\textbf{Polarisation croisée}, après $-$ avant :
+		\begin{itemize}
+			\setlength{\itemsep}{1pt}
+			\item \Lb{L} A144 (mont.) : $-4{,}3$~dB, AUC 0,97
+			\item \Lb{L} A72 (mont.) : $-3{,}7$~dB, AUC 0,94
+			\item \Lb{L} D138 (desc.) : $-2{,}3$~dB, AUC 0,84
+			\item \Cb{C} D139 (desc.) : $-2{,}2$~dB, AUC 0,91
+		\end{itemize}
+		\scriptsize Le 02/08, rien en bande C (AUC 0,57) ; le 14/08, la coupe est nette : la revisite C
+		\textbf{date} la coupe entre le 2 et le 11/08.
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Résultat 2 : la rétrodiffusion baisse dans les deux bandes}
-\begin{columns}[c]
-\column{0.64\textwidth}
-\includegraphics[width=\linewidth]{comparison_ts_S1-C_T139.png}
-\column{0.34\textwidth}
-\small
-Polarisation croisée, après $-$ avant :
-\begin{itemize}
-\item \Lb{L} A144 : $-4{,}3$~dB, AUC 0,97 ;
-\item \Lb{L} A72 : $-3{,}7$~dB, AUC 0,94 ;
-\item \Lb{L} D138 : $-2{,}3$~dB, AUC 0,84 ;
-\item \Cb{C} D139 : $-2{,}2$~dB, AUC 0,91.
-\end{itemize}
-\footnotesize En bande C (ci-contre), le contraste s'efface en octobre.
-\end{columns}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (3/6)}
+	\slidesubtitle{3-Persistance du contraste après la coupe}
+	\begin{columns}[c]
+		\column{0.60\textwidth}
+		\centering
+		\includegraphics[width=\linewidth, height=0.66\textheight, keepaspectratio]{comparison_persistence.png}
+		\vspace{-4pt}
+		\captionof{figure}{AUC coupe / témoin date par date (rétrodiffusion).}
+
+		\column{0.38\textwidth}
+		\centering
+		\scriptsize
+		\renewcommand{\arraystretch}{1.2}
+		\begin{tabular}{|l|c|c|}
+			\hline
+			\rowcolor{myblue}\textcolor{white}{\textbf{Pol. croisée}} & \textcolor{white}{\textbf{août--sept.}}
+			& \textcolor{white}{\textbf{oct.--nov.}} \\
+			\hline
+			\Lb{L A144 HV} & 0,95 & \textbf{0,91} \\
+			\Lb{L A72 HV} & 0,93 & \textbf{0,88} \\
+			\Lb{L D138 HV} & 0,84 & 0,76 \\
+			\Cb{C D139 VH} & 0,88 & 0,74 \\
+			\hline
+		\end{tabular}
+
+		\vspace{0.5em}
+		\raggedright\small
+		\begin{itemize}
+			\setlength{\itemsep}{3pt}
+			\item \Lb{L montante} : contraste conservé jusqu'en novembre
+			\item \Cb{C} : chute en octobre (VH 0,52 le 25/10 ; VV 0,66)
+			\item \textcolor{myorange}{\textbf{Mais}} D138 $\approx$ S1 : avantage limité à la géométrie
+			montante
+		\end{itemize}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Résultat 3 : persistance du contraste}
-\centering
-\includegraphics[width=0.92\linewidth]{comparison_persistence.png}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (4/6)}
+	\slidesubtitle{4-Cartes de changement}
+	\centering
+	\includegraphics[width=0.95\linewidth, height=0.62\textheight, keepaspectratio]{comparison_maps.png}
+	\vspace{-4pt}
+	\captionof{figure}{De gauche à droite : référence S2 ; $\Delta\gamma^0$ HV et cohérence de la paire à cheval
+		(\Lb{NISAR A144}) ; $\Delta\gamma^0$ VH et cohérence de la paire à cheval (\Cb{Sentinel-1}).}
 
-\small AUC date par date. En \Lb{L} montante, le contraste HV reste $\geq 0{,}82$ jusqu'en novembre. En \Cb{C},
-il chute en octobre (0,52 le 25/10) : sol nu humide et rémanents rediffusent en bande C.
+	\vspace{-4pt}
+	\footnotesize
+	La coupe ressort en cohérence \Lb{L}, pas en cohérence \Cb{C}. AUC de détection sur la fenêtre :
+	\Lb{0,93} (HV après) contre \Cb{0,86--0,87} (S1), mais F1 $\leq$ 0,29 (prévalence de 0,4~\%).
 \end{frame}
 
-\begin{frame}{Cartes de changement}
-\centering
-\includegraphics[width=\linewidth]{comparison_maps.png}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (5/6)}
+	\slidesubtitle{5-Synthèse à géométrie égale}
+	\vspace{-4pt}
+	\centering
+	\includegraphics[width=0.78\linewidth, height=0.46\textheight, keepaspectratio]{summary_L_vs_C.png}
+	\vspace{-4pt}
+	\captionof{figure}{AUC coupe / forêt pour les trois indicateurs clés ; contour noir : géométries
+		descendantes (comparaison juste L / C).}
 
-\small De gauche à droite : référence S2 ; $\Delta\gamma^0$ HV et cohérence de la paire à cheval
-(\Lb{NISAR A144}) ; $\Delta\gamma^0$ VH et cohérence de la paire à cheval (\Cb{Sentinel-1}).
-La coupe ressort en cohérence \Lb{L}, pas en cohérence \Cb{C}.
+	\vspace{-6pt}
+	\keynum{Lband}{0,91--0,995}{cohérence L, \textbf{3 géométries sur 3}\\contre 0,74 en C : résultat robuste}\hfill
+	\keynum{myorange}{0,84 / 0,91}{rétrodiffusion à géométrie égale\\L D138 / C D139 : C $\geq$ L}\hfill
+	\keynum{myblue}{0,76 / 0,74}{persistance oct.--nov.\\L D138 / C D139 : équivalente}
 \end{frame}
 
-\begin{frame}{Synthèse honnête : à géométrie égale}
-\centering
-\includegraphics[width=0.84\linewidth]{summary_L_vs_C.png}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Résultats et discussion (6/6)}
+	\slidesubtitle{6-Bilan des hypothèses}
+	\centering
+	\renewcommand{\arraystretch}{1.35}
+	\setlength{\tabcolsep}{4pt}
+	\footnotesize
+	\begin{tabular}{|c|p{10.2cm}|c|}
+		\hline
+		\rowcolor{myblue}\textcolor{white}{\textbf{H}} & \textcolor{white}{\textbf{Constat sur C11}} &
+		\textcolor{white}{\textbf{Verdict}} \\
+		\hline
+		H1 & Cohérence de la forêt à 12~j : 0,64--0,70 (L) contre 0,28 (C). À 24~j, encore 0,69 en L. &
+		\textcolor{mygreen}{\textbf{confirmée}} \\
+		\hline
+		H2 & Cohérence de la paire sur la coupe : AUC 0,91--0,995 (L) contre 0,74 (C). &
+		\textcolor{mygreen}{\textbf{confirmée}} \\
+		\hline
+		H3 & $-4{,}3$ / $-3{,}7$~dB (L montante) contre $-2{,}2$~dB (C). En descendante : $-2{,}3$~dB, AUC 0,84 (L)
+		contre 0,91 (C). & \textcolor{myorange}{\textbf{partielle}} \\
+		\hline
+		H4 & En L, HV $\geq$ HH dans les trois géométries ; mais la cohérence HH fait encore mieux. &
+		\textcolor{mygreen}{\textbf{confirmée}} \\
+		\hline
+	\end{tabular}
 
-\small
-\begin{columns}[T]
-\column{0.48\textwidth}
-\textbf{Robuste} : la \Lb{cohérence L} l'emporte dans les \textbf{trois} géométries (0,91--0,995 contre 0,74).
-\column{0.48\textwidth}
-\textbf{À nuancer} : en rétrodiffusion, \Lb{L} ne gagne qu'en montante. À géométrie égale (descendante),
-\Cb{C} $\approx$ \Lb{L} (0,91 contre 0,84 ; persistance 0,74 contre 0,76).
-\end{columns}
+	\vspace{0.8em}
+	\begin{alertblock}{Message scientifique}
+		L'apport décisif de la bande L sur ce site est \textbf{interférométrique} : la forêt reste cohérente,
+		et une coupe devient un événement nettement visible. En rétrodiffusion, l'avantage dépend de la géométrie.
+	\end{alertblock}
 \end{frame}
 
-\begin{frame}{Bilan des hypothèses}
-\small
-\begin{tabular}{@{}lp{9.2cm}l@{}}
-\toprule
-& Constat sur C11 & Verdict \\
-\midrule
-H1 & Cohérence de la forêt à 12~j : 0,64--0,70 (L) contre 0,28 (C). À 24~j, encore 0,69 en L. & \Lb{confirmée} \\
-H2 & Cohérence de la paire sur la coupe : AUC 0,91--0,995 (L) contre 0,74 (C). & \Lb{confirmée} \\
-H3 & $-4{,}3$ / $-3{,}7$~dB (L montante) contre $-2{,}2$~dB (C). En descendante : $-2{,}3$~dB, AUC 0,84 (L) contre
-0,91 (C). & \textbf{partielle} \\
-H4 & En L, HV $\geq$ HH dans les trois géométries ; mais la cohérence HH fait encore mieux. & \Lb{confirmée} \\
-\bottomrule
-\end{tabular}
-
-\vspace{0.8em}
-\begin{alertblock}{Message scientifique}
-L'apport décisif de la bande L sur ce site est \textbf{interférométrique} : en bande L, la forêt reste cohérente,
-et une coupe devient un événement nettement visible.
-\end{alertblock}
-\end{frame}
-
-%---------------------------------------------------------------------
+% ================================================================
 \section{Regard critique}
+% ================================================================
 
-\begin{frame}{Forces et limites de la démarche}
-\begin{columns}[T]
-\column{0.48\textwidth}
-\textbf{\faCheck\ Forces}
-\begin{itemize}\small
-\item Hypothèses physiques posées avant les calculs.
-\item Référence optique indépendante du radar.
-\item Témoin local validé par le contrôle avant coupe.
-\item Tailles d'effet et IC par bootstrap par blocs, pas de p-valeurs trompeuses.
-\item Sensibilité aux pixels de bord testée.
-\item Chaîne entièrement reproductible et versionnée.
-\end{itemize}
-\column{0.5\textwidth}
-\textbf{\faExclamationTriangle\ Limites}
-\begin{itemize}\small
-\item \textbf{Un seul site} : variabilité inter-sites inconnue.
-\item Peu de paires avant la coupe (1--3) ; produits NISAR \emph{provisoires}.
-\item Paire L de 24~j contre 12~j en C : défavorable à L, mais aussi un estimateur différent.
-\item Effets de géométrie non expliqués (D138 : visée, heure 20~h~42 contre 6~h~19).
-\item Cause de la remontée automnale en C supposée (humidité) mais non vérifiée par la météo.
-\item F1 de détection faible (0,4~\% de pixels coupés).
-\end{itemize}
-\end{columns}
+\begin{frame}{\phantom{x}}
+	\frametitle{Regard critique (1/2)}
+	\vspace{-4pt}\slidesubtitle{Forces et limites de la démarche}
+	\small
+	\begin{columns}[T]
+		\column{0.48\textwidth}
+		\begin{exampleblock}{Forces}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{1pt}
+				\item Hypothèses physiques posées avant les calculs
+				\item Référence optique indépendante du radar
+				\item Témoin local validé par le contrôle avant coupe
+				\item Tailles d'effet et IC par bootstrap par blocs, pas de p-valeurs trompeuses
+				\item Sensibilité aux pixels de bord : toutes les AUC augmentent
+				\item Chaîne reproductible, versionnée, tables générées
+			\end{itemize}
+		\end{exampleblock}
+
+		\column{0.48\textwidth}
+		\begin{alertblock}{Limites}
+			\footnotesize
+			\begin{itemize}
+				\setlength{\itemsep}{1pt}
+				\item \textbf{Un seul site} : variabilité inter-sites inconnue
+				\item Une seule orbite S1 contre trois géométries NISAR
+				\item Estimateurs de cohérence différents (nombre de vues, biais près de 0)
+				\item Heures d'acquisition différentes (6~h~20 / 20~h~40 / 7~h~40)
+				\item Peu de paires avant la coupe ; produits NISAR \emph{provisoires}
+				\item Remontée automnale en C : humidité supposée, non vérifiée
+			\end{itemize}
+		\end{alertblock}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Pourquoi le F1 est bas, et ce qu'il faudrait}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\small
-\begin{itemize}
-\item Sur la fenêtre de $3{,}7\times3{,}7$~km : 95 pixels coupés sur 25\,723 (\textbf{0,4~\%}).
-\item AUC de détection élevée (0,82--0,93), mais un seuil sur une seule variable produit plus de fausses
-  alarmes que de vrais positifs : \textbf{F1 $\leq$ 0,29}.
-\item Ce n'est pas un échec de la bande L : c'est la limite d'un détecteur à un seul seuil, à faible
-  prévalence.
-\end{itemize}
-\column{0.46\textwidth}
-\begin{block}{Détecteur réaliste (stage)}
-\small
-\begin{enumerate}
-\item Combinaison de variables : cohérence L et $\gamma^0$ HV (et C pour la réactivité).
-\item Plusieurs géométries.
-\item Filtre spatial (taille minimale d'objet).
-\item Confirmation temporelle (2 dates ou plus).
-\end{enumerate}
-\end{block}
-\end{columns}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}{\phantom{x}}
+	\frametitle{Regard critique (2/2)}
+	\slidesubtitle{Pourquoi le F1 est bas, et ce qu'il faudrait}
+	\small
+	\begin{columns}[T]
+		\column{0.50\textwidth}
+		\begin{itemize}
+			\setlength{\itemsep}{5pt}
+			\item Sur la fenêtre de $3{,}7\times3{,}7$~km : 95 pixels coupés sur 25\,723 (\textbf{0,4~\%})
+			\item AUC de détection élevée (0,82--0,93), mais un seuil unique \parencite{otsu1979threshold} produit
+			plus de fausses alarmes que de vrais positifs : \textbf{F1 $\leq$ 0,29}
+			\item Ce n'est pas un échec de la bande L : c'est la limite d'un détecteur à un seul seuil, à faible
+			prévalence
+		\end{itemize}
+
+		\column{0.46\textwidth}
+		\begin{block}{Détecteur réaliste (stage)}
+			\footnotesize
+			\begin{enumerate}
+				\setlength{\itemsep}{3pt}
+				\item Combinaison de variables : cohérence L, $\gamma^0$ HV, bande C pour la réactivité
+				\item Plusieurs géométries
+				\item Filtre spatial (taille minimale d'objet)
+				\item Confirmation temporelle (2 dates ou plus)
+			\end{enumerate}
+		\end{block}
+	\end{columns}
 \end{frame}
 
-%---------------------------------------------------------------------
-\section{Perspectives}
+% ================================================================
+\section{Conclusion et perspectives}
+% ================================================================
 
-\begin{frame}{Chaîne réutilisable, vers ROSE-L}
-\begin{columns}[T]
-\column{0.5\textwidth}
-\small
-\texttt{src/nisar\_s1/} :
-\begin{itemize}
-\item \texttt{io\_nisar} : lecture des L2 ISCE3, en local ou à distance ;
-\item \texttt{download} : extraction partielle ;
-\item \texttt{snap} + graphes XML ;
-\item \texttt{grid}, \texttt{stats}, \texttt{detect}, \texttt{plots}.
-\end{itemize}
-Nouveau site = un nouveau GeoJSON.
-\column{0.46\textwidth}
-\small
-\begin{itemize}
-\item \textbf{ROSE-L} (2028) : mêmes grandeurs ($\gamma^0$ RTC, cohérence) ; il suffit de remplacer le lecteur.
-\item \textbf{ISCE3} est ouvert : on peut produire des L2 équivalents à partir du niveau~1 des deux missions.
-\item Complémentarité : C pour \emph{dater} (revisite de 6--12~j, coupe placée entre le 2 et le 11/08), L pour
-  \emph{confirmer} et suivre.
-\end{itemize}
-\end{columns}
+\begin{frame}{\phantom{x}}
+	\frametitle{Conclusion et perspectives}
+	\vspace{-6pt}\small
+	\begin{columns}[T]
+		\column{0.50\textwidth}
+		\begin{block}{Conclusions}
+			\footnotesize
+			\begin{enumerate}
+				\setlength{\itemsep}{4pt}
+				\item \textbf{Cohérence} : la bande L sépare la coupe presque parfaitement (AUC 0,995), dans les
+				trois géométries ; la bande C n'y parvient pas (0,74)
+				\item \textbf{Rétrodiffusion} : avantage L en montante seulement ; à géométrie égale, C $\geq$ L
+				\item \textbf{Complémentarité} : C pour \emph{dater}, L pour \emph{confirmer} et suivre
+				\item \textbf{Chaîne réutilisable} : paquet \texttt{nisar\_s1}, nouveau site = un GeoJSON
+			\end{enumerate}
+		\end{block}
+
+		\column{0.46\textwidth}
+		\begin{block}{Perspectives pour le stage}
+			\scriptsize
+			\begin{itemize}
+				\setlength{\itemsep}{1pt}
+				\item \textbf{Répliquer} sur d'autres coupes (C09) et sur des \textbf{dépérissements} (scolytes)
+				\item \textbf{Expliquer} les effets de géométrie (visée, versant, heure)
+				\item \textbf{Détecteur} multi-variables L + C, validé sur référence indépendante
+				\item \textbf{Glissements sous forêt} : InSAR L là où la bande C décorrèle
+				\item \textbf{ROSE-L} (2028) : remplacer le lecteur ; \textbf{ISCE3} ouvert pour produire des L2
+				équivalents \parencite{esa2020rosel,isce3}
+				\item \textbf{Bande P} (BIOMASS) sur sites tropicaux
+			\end{itemize}
+		\end{block}
+	\end{columns}
 \end{frame}
 
-\begin{frame}{Ce que je propose pour le stage}
-\begin{enumerate}
-\item \textbf{Répliquer} sur d'autres coupes (C09 déjà identifié) et sur des \textbf{dépérissements} (scolytes) :
-  la vraie question opérationnelle est de distinguer ces deux phénomènes.
-\item \textbf{Expliquer les effets de géométrie} : angle local, orientation versant / visée, heure d'acquisition
-  (rosée, vent).
-\item \textbf{Détecteur multi-variables} L + C, validé sur une référence indépendante.
-\item \textbf{Glissements sous forêt} : la cohérence L conservée en forêt rend possible l'interférométrie de
-  déplacement là où la bande C décorrèle (comparaison des GUNW déroulés NISAR et de S1).
-\item \textbf{Bande P} (BIOMASS) sur sites tropicaux.
-\end{enumerate}
+% ──────────────────────────────────────────────────────────────
+\begin{frame}
+	\vfill
+	\centering
+	{\Large Merci pour votre attention !}
+
+	\vspace{1em}
+	\small\textcolor{mydgray}{La bande L garde la forêt \emph{cohérente} : une coupe y devient un \emph{événement}
+		visible.}
+	\vfill
 \end{frame}
 
-\begin{frame}[standout]
-La bande L garde la forêt \emph{cohérente} :\\
-une coupe y devient un \emph{événement} visible.\\[1em]
-\normalsize AUC 0,995 en L contre 0,74 en C : un résultat à confirmer sur plusieurs sites,\\
-avec une chaîne déjà prête pour ROSE-L.
-\end{frame}
-
-%---------------------------------------------------------------------
+% ================================================================
 \appendix
+% ================================================================
+
 \begin{frame}[fragile]{Annexe : reproduction}
-\footnotesize
+	\footnotesize
 \begin{verbatim}
 python scripts/02_inventory.py               # inventaire ASF
 python scripts/03_site_candidates.py         # candidats Sentinel-2
@@ -479,12 +689,17 @@ python scripts/05b_compare.py --erode 20 --tag _erode20
 python scripts/06_make_tables.py             # tables LaTeX FR et EN
 python scripts/07_summary_figure.py          # figure de synthèse
 \end{verbatim}
-\normalsize Rapport complet (FR et EN) : \texttt{reports/latex/}.
+	\normalsize Rapport complet (FR et EN) : \texttt{reports/latex/}.
 \end{frame}
 
 \begin{frame}{Annexe : toutes les variables}
-\centering
-\includegraphics[height=0.86\textheight]{comparison_auc.png}
+	\centering
+	\includegraphics[height=0.82\textheight]{comparison_auc.png}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Références}
+	\scriptsize
+	\printbibliography[heading=none]
 \end{frame}
 
 \end{document}

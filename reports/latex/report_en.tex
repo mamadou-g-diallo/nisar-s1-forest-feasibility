@@ -42,12 +42,14 @@ Results:
 \item \textbf{Coherence}: at L band, the pair spanning the cut separates cut and forest almost perfectly
   (AUC 0.995; coherence 0.29 vs 0.69), even over 24~days. At C band the forest is already decorrelated after
   12~days (0.28), and coherence adds almost nothing (AUC 0.71--0.74).
-\item \textbf{Backscatter}: the cross-polarisation drop reaches $-4.3$~dB at L band (AUC 0.97), against
-  $-2.2$~dB at C band (AUC 0.91).
-\item \textbf{Persistence}: the L-band contrast persists until November, whereas the C-band contrast vanishes in
-  October.
+\item \textbf{Backscatter}: in ascending geometry, the cross-polarisation drop reaches $-4.3$~dB at L band
+  (AUC 0.97), against $-2.2$~dB at C band (AUC 0.91). At equal (descending) geometry, however, C band performs as
+  well as L band (AUC 0.91 vs 0.84).
+\item \textbf{Persistence}: in ascending geometry, the L-band contrast persists until November, whereas the C-band
+  contrast weakens in October; in descending geometry, persistence is similar in both bands.
 \end{itemize}
-All four hypotheses of the scoping step are confirmed on this site. The processing chain, written as reusable
+Hypotheses H1, H2 and H4 are confirmed on this site; H3 is only partly confirmed. The robust advantage of L band is
+interferometric: for backscatter, it depends on the acquisition geometry. The processing chain, written as reusable
 Python modules, can be transferred directly to the future Copernicus L-band mission ROSE-L.
 \end{abstract}
 
@@ -272,13 +274,16 @@ Green: NISAR (L band); purple: Sentinel-1 (C band). The \texttt{coh80} variables
   (AUC 0.55--0.77). Coherence therefore captures the cutting \emph{event}, not the final state.
 \end{itemize}
 
-\paragraph{Backscatter.} Both bands detect the cut, L band more strongly.
+\paragraph{Backscatter.} Both bands detect the cut; the L-band advantage depends on the geometry.
 \begin{itemize}
 \item \textbf{Cross-polarisation}: the drop reaches $-4.3$~dB for A144 (AUC 0.97) and $-3.7$~dB for A72
   (AUC 0.94), against $-2.2$~dB for Sentinel-1 VH (AUC 0.91).
 \item \textbf{Co-polarisation}: $-4.2$~dB at HH (AUC 0.96) against $-2.5$~dB at VV (AUC 0.90).
 \item \textbf{Geometry}: the descending NISAR geometry D138 is clearly less discriminating ($-2.3$~dB at HV,
   AUC 0.84).
+\item \textbf{At equal geometry} (NISAR D138 and Sentinel-1 D139, both descending), the drop is similar ($-2.3$ vs
+  $-2.2$~dB) and C band separates slightly better (AUC 0.91 vs 0.84). The L-band backscatter advantage therefore only
+  appears in the ascending geometries.
 \end{itemize}
 
 \subsection{Time evolution and persistence of the contrast}
@@ -292,7 +297,9 @@ separation AUC.
   October (VH AUC 0.52 on 25/10).
 \end{itemize}
 \Cref{tab-persistence} quantifies this behaviour. From August--September to October--November, the NISAR A144 HV AUC
-only goes from 0.95 to 0.91, whereas the Sentinel-1 VV AUC drops from 0.86 to 0.66.
+only goes from 0.95 to 0.91, whereas the Sentinel-1 VV AUC drops from 0.86 to 0.66. In descending geometry,
+however, the NISAR D138 HV AUC in October--November (0.76) is equivalent to the Sentinel-1 VH AUC (0.74): the better
+L-band persistence is only established in ascending geometry.
 
 \begin{figure}[htbp]
 \centering
@@ -313,7 +320,8 @@ control (blue), mean $\pm$ standard deviation; the grey band is the cut window.}
 \centering
 \includegraphics[width=\linewidth]{comparison_persistence.png}
 \caption{Per-date cut / control separation AUC of backscatter, in cross-polarisation (left) and co-polarisation
-(right). The contrast stays high at L band and collapses in October at C band.}
+(right). The contrast stays high at ascending L band and collapses in October at C band; in descending geometry, NISAR D138
+and Sentinel-1 behave similarly.}
 \label{fig-persist}
 \end{figure}
 
@@ -347,6 +355,25 @@ With polygons eroded by 20~m, every separability increases:
 \end{itemize}
 The conclusions therefore do not depend on edge pixels, and the L / C coherence gap remains.
 
+\subsection{Synthesis at equal geometry}
+
+\Cref{fig-summary} gathers the three key indicators for each geometry. The fairest comparison between bands is that
+of the two descending geometries (NISAR D138 and Sentinel-1 D139, black outline).
+\begin{itemize}
+\item \textbf{Coherence}: L band wins in all three geometries (AUC 0.91--0.995 vs 0.74). This is the most robust
+  result of the test.
+\item \textbf{Backscatter and persistence}: L band wins in ascending geometry, but not at equal geometry, where both
+  bands are on par (AUC 0.84 vs 0.91; persistence 0.76 vs 0.74).
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.9\linewidth]{summary_L_vs_C.png}
+\caption{Cut / forest separation AUC for the three key indicators, per geometry (20~m grid). Black outline:
+descending geometries, the like-for-like comparison between L and C band.}
+\label{fig-summary}
+\end{figure}
+
 \subsection{Hypotheses assessment}
 
 \begin{table}[htbp]
@@ -359,7 +386,8 @@ The conclusions therefore do not depend on edge pixels, and the L / C coherence 
 \midrule
 H1 & 12-day forest coherence: 0.64--0.70 at L vs 0.28 at C. Even over 24~days, it is 0.69 at L. & confirmed \\
 H2 & Coherence of the pair over the cut: AUC 0.995 at L vs 0.71--0.74 at C. & confirmed \\
-H3 & Cross-pol $\Delta\gamma^0$: $-4.3$~dB (L) vs $-2.2$~dB (C); persistent contrast at L, transient at C. & confirmed \\
+H3 & Cross-pol $\Delta\gamma^0$: $-4.3$ and $-3.7$~dB (ascending L) vs $-2.2$~dB (C). At equal (descending)
+geometry: $-2.3$~dB and AUC 0.84 at L vs 0.91 at C; similar persistence. & partial \\
 H4 & At L band, HV $\geq$ HH in all three geometries (AUC 0.97 / 0.96, 0.94 / 0.92, 0.84 / 0.72). Coherence (HH)
 does even better. & confirmed, nuanced \\
 \bottomrule
@@ -379,7 +407,8 @@ does even better. & confirmed, nuanced \\
   coherence for this purpose.
 \item \textbf{Persistence}: C band is more sensitive to surface roughness and moisture. In autumn, the wet bare soil
   and logging residues of the cut scatter enough to match the forest. L band, less sensitive to these small
-  structures, keeps the contrast.
+  structures, keeps the contrast. This behaviour is however only observed in ascending geometry, and the moisture
+  explanation remains to be checked against weather data.
 \end{itemize}
 For operational monitoring this persistence is a major asset: a cut remains detectable at L band months after the
 event, even if an acquisition is missed.
@@ -394,7 +423,13 @@ event, even if an acquisition is missed.
 
 \paragraph{Acquisition geometry.} The two ascending geometries (A144, A72) separate better than the descending one
 (D138). In steep terrain, the edge and shadow effect of a cut depends on the look direction~\cite{bouvet2018shadow}.
-Combining several geometries, which NISAR makes possible, is therefore desirable.
+The acquisition time also differs (around 6:20 local time in ascending, 20:40 in descending), which may change the
+moisture and dew on the vegetation. These causes have not been disentangled. Two consequences:
+\begin{itemize}
+\item combining several geometries, which NISAR makes possible, is desirable;
+\item a comparison between bands is only fair at equal geometry. Here it holds only for D138 vs Sentinel-1 D139, and
+  it shows an L-band advantage for coherence only.
+\end{itemize}
 
 \paragraph{Complementarity of the two bands.} The Sentinel-1 revisit dates the cut more finely.
 \begin{itemize}
@@ -408,7 +443,10 @@ Combining several geometries, which NISAR makes possible, is therefore desirable
 \item \textbf{A single site} of 2.4~ha. Confidence intervals reflect pixel variability, not between-site variability.
   Replication on several cuts is needed (candidate C09 is available).
 \item The NISAR pair over the cut is \textbf{24~days} long against 12 for Sentinel-1. This penalises L band, which
-  strengthens the conclusion.
+  strengthens the coherence conclusion. The estimators differ, however (number of looks), and the C-band coherence,
+  close to zero, is limited by the estimator bias.
+\item \textbf{A single Sentinel-1 orbit} (descending) against three NISAR geometries: the strict comparison between
+  bands rests on a single geometry (D138).
 \item The NISAR products are \textbf{provisional} (2026), and few pairs are available before the cut (1 to 3).
 \item At 80~m the cut contains only about 4 independent pixels. The AUC values of 1 for the \texttt{coh80} layer are
   therefore indicative only.
@@ -458,15 +496,18 @@ could also produce equivalent products from the level-1 data of both missions.
 %=====================================================================
 \section{Conclusion}
 
-On a 2.4~ha clear-cut in the Vosges, NISAR L band proves clearly more discriminating than Sentinel-1 C band.
+On a 2.4~ha clear-cut in the Vosges, NISAR L band proves clearly more discriminating than Sentinel-1 C band in
+coherence; for backscatter, its advantage depends on the geometry.
 \begin{itemize}
 \item \textbf{Coherence}: the pair spanning the cut separates cut and forest almost perfectly at L band
   (AUC 0.995), whereas C band adds almost nothing (AUC $\approx$ 0.72), the forest being already decorrelated.
-\item \textbf{Backscatter}: the cross-polarisation drop is twice as strong at L band ($-4.3$ vs $-2.2$~dB).
-\item \textbf{Persistence}: the contrast persists at L band until November, whereas it vanishes at C band in
-  autumn.
+\item \textbf{Backscatter}: in ascending geometry, the cross-polarisation drop is twice as strong at L band
+  ($-4.3$ vs $-2.2$~dB). At equal (descending) geometry, C band performs as well (AUC 0.91 vs 0.84).
+\item \textbf{Persistence}: in ascending geometry, the contrast persists at L band until November, whereas it weakens
+  at C band in autumn; in descending geometry, both bands are on par.
 \end{itemize}
-These results confirm the scoping hypotheses and support the use of L band for forest-cut monitoring, which can be
+These results confirm H1, H2 and H4, and partly H3: the decisive contribution of L band is interferometric. They
+support the use of L band for forest-cut monitoring, which can be
 continued with ROSE-L. They must be consolidated on more sites before designing an operational detector.
 
 \printbibliography[heading=bibintoc,title={References}]
