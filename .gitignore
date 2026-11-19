@@ -65,3 +65,12 @@ __pycache__/
 *~
 reports/latex/*.bcf
 reports/latex/*.run.xml
+reports/presentation/*.aux
+reports/presentation/*.log
+reports/presentation/*.out
+reports/presentation/*.toc
+reports/presentation/*.nav
+reports/presentation/*.snm
+reports/presentation/*.vrb
+reports/presentation/*.fls
+reports/presentation/*.fdb_latexmk
