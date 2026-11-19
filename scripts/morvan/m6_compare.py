@@ -1,8 +1,10 @@
 """Morvan step 6 — NISAR (L band) vs Sentinel-1 (C band) on many clear-cuts, and transposition of the
 IRSTEA guide method to radar change images.
 
-Reference (Sentinel-2, step 2): objects of the guide map with certainty degree >= 2 inside the radar
-window ("cut" class). Intact forest: BD Forêt forest with dNDVI inside m +/- sigma, at more than 40 m
+Reference (Sentinel-2, step 2): qualified reference clear-cuts (guide degree 3, forest -> bare soil,
+>= 1 ha) inside the radar window ("cut" class). By default (``--ref verifie``) only the objects
+confirmed as clear-cuts by photo-interpretation (step 2b, bare soil visible in SWIR false colour)
+are kept; the other reference objects (NDVI drop without bare soil) are excluded from both classes. Intact forest: BD Forêt forest with dNDVI inside m +/- sigma, at more than 40 m
 from any detection (degree >= 1). Pixels of degree-1 objects and of the 40 m buffer are excluded
 from both classes (uncertain).
 
@@ -95,13 +97,13 @@ def nisar_layers(root: Path, grid: Raster) -> dict[str, list[dict]]:
 
 def s1_layers(root: Path, grid: Raster) -> dict[str, list[dict]]:
     out: dict[str, list[dict]] = {}
-    for f in sorted(root.glob("t*/g0_*.dim")):
+    for f in sorted(p for p in root.glob("t*/g0_*.dim") if "_part" not in p.name):
         d = pd.Timestamp(re.search(r"g0_(\d{4}-\d{2}-\d{2})", f.name).group(1))
         for pol in ("VV", "VH"):
             out.setdefault(f"S1 {f.parent.name.upper()}", []).append(
                 dict(kind="g0", pol=pol, d1=d, d2=None,
                      data=to_grid(_snap(f, f"Gamma0*_{pol}"), grid, "bilinear").data))
-    for f in sorted(root.glob("t*/coh_*.dim")):
+    for f in sorted(p for p in root.glob("t*/coh_*.dim") if "_part" not in p.name):
         a, b = re.findall(r"\d{4}-\d{2}-\d{2}", f.name)[:2]
         for pol in ("VV", "VH"):
             out.setdefault(f"S1 {f.parent.name.upper()}", []).append(
@@ -124,6 +126,7 @@ def features(layers: list[dict], per: dict) -> tuple[dict[str, np.ndarray], dict
             mpre, mpost = mean_lin([l["data"] for l in pre]), mean_lin([l["data"] for l in post])
             feats[f"d_g0_{pol}"] = db(mpost) - db(mpre)
             feats[f"g0_post_{pol}"] = db(mpost)
+            feats[f"precheck_level_g0_{pol}"] = db(mpre)   # level before the cut: stand-type effect
         if len(pre) >= 2:                                       # sanity: change between two pre dates
             feats[f"precheck_d_g0_{pol}"] = db(pre[-1]["data"]) - db(pre[0]["data"])
     for pol in sorted({l["pol"] for l in layers if l["kind"] == "coh"}):
@@ -178,6 +181,10 @@ def main() -> None:
     ap.add_argument("--bootstrap", type=int, default=200)
     ap.add_argument("--erode", type=float, default=0.0, help="erosion of reference objects (m)")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--ref", choices=["auto", "verifie", "verifie_probable", "peuplement"],
+                    default="peuplement",
+                    help="reference: automatic S2 guide reference, or photo-interpreted subset "
+                         "(results/morvan/tables/s2_photo_check_window.csv)")
     args = ap.parse_args()
     s = load_site("morvan")
     res, data = Path(s["chemins"]["results"]), Path(s["chemins"]["data_root"])
@@ -193,9 +200,20 @@ def main() -> None:
     dndvi = to_grid(load_raster(data / "s2" / "dndvi_l93.tif"), grid, "nearest").data
     group = np.nan_to_num(to_grid(load_raster(data / "s2" / "forest_group_l93.tif"), grid, "nearest").data).astype(int)
     thr = pd.read_csv(tab / "s2_guide_thresholds.csv").iloc[0]
-    cuts = gpd.read_file(res / "s2_coupes_guide.gpkg")
+    cuts = gpd.read_file(res / "s2_coupes_guide.gpkg", layer="coupes")          # all guide detections
     cuts = cuts[cuts.intersects(win.geometry.iloc[0])]
-    ref_objs = cuts[cuts.degre_max >= s["guide"]["degre_reference_min"]].reset_index(drop=True)
+    ref_objs = gpd.read_file(res / "s2_coupes_guide.gpkg", layer="reference")  # qualified reference
+    ref_objs = ref_objs[ref_objs.intersects(win.geometry.iloc[0])].reset_index(drop=True)
+    ambiguous = ref_objs.iloc[0:0]
+    if args.ref != "auto":
+        verdict = pd.read_csv(tab / "s2_photo_check_window.csv").set_index("id").verdict
+        keep = {"coupe", "probable"} if args.ref == "verifie_probable" else {"coupe"}
+        sel = ref_objs.id.map(verdict).isin(keep)
+        if args.ref == "peuplement":         # standing forest before the cut (Sentinel-2 SWIR, step 2c)
+            fb = pd.read_csv(tab / "s2_forest_before.csv").set_index("id").foret_avant
+            sel &= ref_objs.id.map(fb).fillna(False).astype(bool)
+        ambiguous = ref_objs[~sel]          # NDVI drop without visible bare soil: excluded
+        ref_objs = ref_objs[sel].reset_index(drop=True)
     forest = (group > 0) & np.isfinite(dndvi)
     cut_lab = np.zeros(grid.data.shape, "int32")
     for i, g in enumerate(ref_objs.geometry, 1):
@@ -204,6 +222,8 @@ def main() -> None:
     ref = cut_lab > 0
     any_det = polygon_mask(list(cuts.geometry), grid) if len(cuts) else np.zeros_like(ref)
     buf = ndimage.binary_dilation(any_det | (deg > 0), iterations=2)          # 40 m
+    if len(ambiguous):
+        buf |= ndimage.binary_dilation(polygon_mask(list(ambiguous.geometry), grid), iterations=2)
     uncertain = buf & ~ref
     intact = forest & ~buf & (np.abs(dndvi - thr.m) <= thr.sigma)
     evalmask = forest & ~uncertain
@@ -231,8 +251,18 @@ def main() -> None:
             if not sp or "auc" not in sp:
                 continue
             ci = cluster_bootstrap_auc(x, cut_lab, intact, n=args.bootstrap) if not var.startswith("precheck") else (np.nan, np.nan)
+            # AUC stratified by forest group: cuts against intact forest of the same type
+            num, den = 0.0, 0
+            for gc in GROUPS:
+                a_, b_ = x[ref & (group == gc)], x[intact & (group == gc)]
+                a_, b_ = a_[np.isfinite(a_)], b_[np.isfinite(b_)]
+                if a_.size >= 5 and b_.size >= 50:
+                    num += auc(a_, b_) * a_.size
+                    den += a_.size
+            au_s = num / den if den else np.nan
             sep_rows.append({"sensor": sensor, "geom": gname, "variable": var, **sp,
-                             "auc_lo": ci[0], "auc_hi": ci[1]})
+                             "auc_lo": ci[0], "auc_hi": ci[1],
+                             "auc_sep_strat": max(au_s, 1 - au_s) if den else np.nan})
             if var.startswith("precheck"):
                 continue
             # guide transposition
@@ -274,9 +304,9 @@ def main() -> None:
     best = (sep[~sep.variable.str.startswith("precheck")].sort_values("auc_sep", ascending=False)
             .groupby("geom").head(3))
     print("\nMeilleures variables par géométrie :")
-    print(best[["geom", "variable", "mean_a", "mean_b", "auc_sep", "auc_lo", "auc_hi"]].round(3).to_string(index=False))
+    print(best[["geom", "variable", "mean_a", "mean_b", "auc_sep", "auc_lo", "auc_hi", "auc_sep_strat"]].round(3).to_string(index=False))
     print("\nContrôle avant coupe (AUC attendue ~0,5) :")
-    print(sep[sep.variable.str.startswith("precheck")][["geom", "variable", "auc_sep"]].round(3).to_string(index=False))
+    print(sep[sep.variable.str.startswith("precheck")][["geom", "variable", "auc_sep", "auc_sep_strat"]].round(3).to_string(index=False))
     gbest = gd.sort_values("f1", ascending=False).groupby("geom").head(1)
     print("\nMéthode du guide, meilleure variable par géométrie (F1) :")
     print(gbest[["geom", "variable", "degre_min", "omission_pct", "commission_pct", "kappa", "f1",
