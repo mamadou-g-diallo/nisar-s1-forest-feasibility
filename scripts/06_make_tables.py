@@ -37,7 +37,8 @@ def _num(x, fmt="{:.2f}", lang=0):
     if pd.isna(x):
         return "--"
     s = fmt.format(x)
-    return s.replace(".", "{,}") if lang == 0 else s
+    s = s.replace(".", "{,}") if lang == 0 else s
+    return s.replace("-", "$-$", 1) if s.startswith("-") else s
 
 
 def sensor_label(r) -> str:
@@ -70,6 +71,35 @@ def change_table(df: pd.DataFrame, lang: int, path, caption: tuple[str, str], la
     path.write_text("\n".join(lines) + "\n")
 
 
+CORE = ["d_gamma0_HV", "d_gamma0_VH", "d_gamma0_HH", "d_gamma0_VV", "coh_change_HH", "coh_change_VV",
+        "coh_change_VH", "d_coh_HH", "d_coh_VV", "d_coh_VH"]
+
+
+def persistence_table(ts: pd.DataFrame, lang: int, path) -> None:
+    """Per-date separation AUC of the backscatter after the cut, averaged over two periods: it
+    shows whether the contrast persists (L band) or fades in autumn (C band)."""
+    g = ts[(ts.kind == "g0") & (ts.phase == "post")].copy()
+    g["date"] = pd.to_datetime(g.date)
+    g["per"] = np.where(g.date < "2026-10-01", "a", "b")
+    rows = g.groupby(["sensor", "geom", "pol", "per"]).agg(auc=("auc_sep", "mean"), delta=("delta", "mean"),
+                                                         n=("auc_sep", "size")).unstack("per")
+    hdr = (["Capteur", "Pol.", "AUC août--sept.", "$\\Delta$ (dB)", "AUC oct.--nov.", "$\\Delta$ (dB)"],
+           ["Sensor", "Pol.", "AUC Aug--Sep", "$\\Delta$ (dB)", "AUC Oct--Nov", "$\\Delta$ (dB)"])[lang]
+    cap = ("Persistance du contraste de rétrodiffusion après la coupe : AUC de séparation et écart "
+           "coupe $-$ témoin, moyennés par date sur deux périodes.",
+           "Persistence of the backscatter contrast after the cut: separation AUC and cut $-$ control "
+           "difference, averaged per date over two periods.")[lang]
+    lines = ["\\begin{table}[htbp]", "\\centering", "\\small", f"\\caption{{{cap}}}",
+             "\\label{tab:persistence}", "\\begin{tabular}{llrrrr}", "\\toprule", " & ".join(hdr) + " \\\\",
+             "\\midrule"]
+    for (sensor, geom, pol), r in rows.iterrows():
+        name = ("NISAR " if sensor.startswith("NISAR") else "Sentinel-1 ") + geom
+        lines.append(" & ".join([name, pol, _num(r[("auc", "a")], lang=lang), _num(r[("delta", "a")], "{:.1f}", lang),
+                                 _num(r[("auc", "b")], lang=lang), _num(r[("delta", "b")], "{:.1f}", lang)]) + " \\\\")
+    lines += ["\\bottomrule", "\\end{tabular}", "\\end{table}"]
+    path.write_text("\n".join(lines) + "\n")
+
+
 def main() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     ch = pd.read_csv(TAB / "comparison_change.csv")
@@ -93,6 +123,14 @@ def main() -> None:
         change_table(best, lang, OUT / f"best_{suf}.tex",
                      ("Meilleure variable à 20 m par capteur et géométrie.", "Best 20 m variable per sensor and geometry."),
                      "tab:best")
+        core = ch[ch.variable.isin(CORE)]
+        change_table(core, lang, OUT / f"core_{suf}.tex",
+                     ("Variables comparables entre capteurs (20 m) : variation de $\\gamma^0$, cohérence de la "
+                      "paire qui encadre la coupe et variation de cohérence (après $-$ avant).",
+                      "Variables comparable across sensors (20 m): $\\gamma^0$ change, coherence of the pair "
+                      "spanning the cut and coherence change (after $-$ before)."), "tab:core")
+        ts = pd.read_csv(TAB / "comparison_timeseries.csv")
+        persistence_table(ts, lang, OUT / f"persistence_{suf}.tex")
     print(f"tables written to {OUT}")
 
 

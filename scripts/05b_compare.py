@@ -54,7 +54,14 @@ def collect_layers(p: dict, grid: Raster) -> list[dict]:
     """All NISAR and Sentinel-1 layers resampled on ``grid`` (backscatter kept in linear power)."""
     layers = []
     nroot = Path(p["chemins"]["processed"]) / "nisar"
+    # one file per (geometry, product, dates, layer): when an acquisition was processed twice
+    # (e.g. composite release IDs P05023 and P05036) keep the most recent processing only
+    latest = {}
     for f in sorted(nroot.glob("*/*/*.tif")):
+        gran, layer = f.stem.split("__")
+        i = info_from_name(gran)
+        latest[(f.parent.parent.name, i.product, i.ref_date, i.sec_date, layer)] = f
+    for f in latest.values():
         gran, layer = f.stem.split("__")
         info = info_from_name(gran)
         geom = f.parent.parent.name
@@ -187,7 +194,7 @@ def main() -> None:
             coarse = "coh80" in var
             lo, hi = block_bootstrap_auc(img, cut_m, ctl_m, block=5 if coarse else 3, n=args.bootstrap)
             det = detection_scores(img, truth, valid, direction)
-            feats[f"{name} {var}"] = img
+            feats[f"{sensor} {geom} {var}"] = img  # keyed like the "label" column
             out.append({"sensor": sensor, "geom": geom, "pol": pol, "variable": var, "res_m": 80 if coarse else 20,
                         "label": f"{sensor} {geom} {var}", "n_pre": len(ph["pre"]), "n_post": len(ph["post"]),
                         "n_span": len(ph.get("span", [])), **s, "ci_lo": lo, "ci_hi": hi, **det})
@@ -205,12 +212,24 @@ def main() -> None:
                             "Clear-cut vs intact forest: separability of change features (AUC, 95 % CI)")
     for (sensor, geom), g in ts[ts.kind.isin(["g0", "coh"])].groupby(["sensor", "geom"]):
         g = g.copy()
-        g["variable"] = g.kind.map({"g0": "gamma0 (dB)", "coh": "coherence"}) + " " + g.pol + \
-            np.where(g.baseline_d.fillna(0) > 13, " (24 d)", "")
-        g = g[~g.variable.str.endswith("(24 d)")]
+        # the 24-day NISAR pair over the cut is kept (plotted at its mid-date like the 12-day pairs)
+        g["variable"] = g.kind.map({"g0": "gamma0 (dB)", "coh": "coherence"}) + " " + g.pol
         mid = pd.to_datetime(g.date) + (pd.to_datetime(g.date2) - pd.to_datetime(g.date)) / 2
         g["date"] = np.where(g.kind == "coh", mid, pd.to_datetime(g.date))  # pairs at their mid-date
         plots.sensor_timeseries(g, FIG / f"comparison_ts_{sensor}_{geom}{args.tag}.png", (cut_after, cut_before))
+    # persistence of the post-cut contrast (per-date AUC of the backscatter)
+    plots.contrast_persistence(ts[ts.kind == "g0"], FIG / f"comparison_persistence{args.tag}.png",
+                               (cut_after, cut_before))
+    # change maps of the best 20 m variable per sensor family, with the cut / control outlines
+    fine = res_df[res_df.res_m == 20]
+    picks = [fine[fine.sensor.str.startswith("NISAR") & fine.variable.str.startswith(v)].iloc[0].label
+             for v in ("d_gamma0_HV", "coh_change")] + \
+            [fine[fine.sensor.str.startswith("S1") & fine.variable.str.startswith(v)].iloc[0].label
+             for v in ("d_gamma0_VH", "coh_change")]
+    plots.change_maps({k: Raster(feats[k], grid.transform, grid.crs) for k in picks},
+                      Raster(np.where(valid, truth, np.nan), grid.transform, grid.crs),
+                      site[site.role == "cut"], site[site.role == "control"],
+                      FIG / f"comparison_maps{args.tag}.png")
 
 
 if __name__ == "__main__":

@@ -120,3 +120,60 @@ def separability_bars(df: pd.DataFrame, out: Path, metric: str = "auc_sep", titl
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=150)
     plt.close(fig)
+
+
+def contrast_persistence(ts: pd.DataFrame, out: Path, cut_window=None) -> None:
+    """Per-date separation AUC (cut vs control) of the backscatter, one line per sensor/geometry/pol:
+    shows whether the contrast created by the cut persists or fades with time."""
+    fig, axs = plt.subplots(1, 2, figsize=(13, 4), sharey=True, constrained_layout=True)
+    styles = {"HV": "-", "VH": "-", "HH": "--", "VV": "--"}
+    for (sensor, geom, pol), s in ts.groupby(["sensor", "geom", "pol"]):
+        s = s.sort_values("date")
+        color = {"A144F26": "#2ca02c", "A72F26": "#17becf", "D138F64": "#8c564b"}.get(geom, "#9467bd")
+        ax = axs[0] if pol in ("HV", "VH") else axs[1]
+        ax.plot(pd.to_datetime(s.date), s.auc_sep, "o" + styles[pol], color=color, ms=4,
+                label=f"{'NISAR L' if sensor.startswith('NISAR') else 'S1 C'} {geom} {pol}")
+    for ax, ttl in zip(axs, ("cross-polarisation (HV / VH)", "co-polarisation (HH / VV)")):
+        if cut_window:
+            ax.axvspan(pd.Timestamp(cut_window[0]), pd.Timestamp(cut_window[1]), color="0.85")
+        ax.axhline(0.5, color="0.5", lw=1, ls=":")
+        ax.set_title(ttl)
+        ax.set_ylim(0.45, 1.0)
+        ax.grid(alpha=0.3)
+        ax.legend(fontsize=8, loc="lower left")
+        ax.tick_params(axis="x", labelrotation=30)
+    axs[0].set_ylabel("separation AUC, cut vs control (per date)")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, dpi=150)
+    plt.close(fig)
+
+
+def change_maps(feats: dict, truth: Raster, cut, control, out: Path) -> None:
+    """Maps of change variables (one panel each) next to the Sentinel-2 reference, with the cut
+    (red) and control (blue) outlines."""
+    n = len(feats) + 1
+    fig, axs = plt.subplots(1, n, figsize=(4.2 * n, 4.4), constrained_layout=True)
+    im = axs[0].imshow(truth.data, extent=_extent(truth), cmap="Greys", vmin=0, vmax=1, interpolation="nearest")
+    axs[0].set_title("S2 reference (dNDVI <= -0.3)", fontsize=9)
+    for ax, (name, r) in zip(axs[1:], feats.items()):
+        v = r.data[np.isfinite(r.data)]
+        lo, hi = np.percentile(v, [2, 98])
+        if "coh" in name:
+            lo, hi = 0, 1
+        im = ax.imshow(r.data, extent=_extent(r), cmap="RdBu" if "gamma0" in name else "viridis",
+                       vmin=-max(abs(lo), abs(hi)) if "d_gamma0" in name else lo,
+                       vmax=max(abs(lo), abs(hi)) if "d_gamma0" in name else hi, interpolation="nearest")
+        fig.colorbar(im, ax=ax, shrink=0.7)
+        ax.set_title(name, fontsize=9)
+    for ax in axs:
+        _outline(ax, cut, CUT_COLOR, "clear-cut")
+        _outline(ax, control, CTRL_COLOR, "control")
+        b = control.total_bounds
+        pad = 400
+        ax.set_xlim(b[0] - pad, b[2] + pad)
+        ax.set_ylim(b[1] - pad, b[3] + pad)
+        ax.set_xticks([]); ax.set_yticks([])
+    axs[0].legend(fontsize=7, loc="lower left")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(out, dpi=150)
+    plt.close(fig)
