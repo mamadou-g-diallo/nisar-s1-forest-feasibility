@@ -25,7 +25,7 @@
 \usepackage{array}
 \usepackage{amsmath}
 \usepackage{appendixnumberbeamer}
-\graphicspath{{../../results/figures/}}
+\graphicspath{{../../results/figures/}{./}}
 
 % ================================================================
 % COULEURS
@@ -120,7 +120,15 @@ isbn=false, eprint=false, doi=false, url=false]{biblatex}
 % PAGE DE TITRE PERSONNALISEE
 % ================================================================
 \setbeamertemplate{title page}{%
-	\vspace*{0.4cm}
+	\begin{tikzpicture}[overlay, remember picture]
+		\node[anchor=north west, xshift=0.5cm, yshift=-0.45cm]
+		at (current page.north west)
+		{\includegraphics[height=0.9cm]{logos/logo_icube.png}};
+		\node[anchor=north east, xshift=-0.5cm, yshift=-0.35cm]
+		at (current page.north east)
+		{\includegraphics[height=1.3cm]{logos/logo_sertit.png}};
+	\end{tikzpicture}%
+	\vspace*{1.1cm}
 	\vfill
 	\begin{center}
 		\footnotesize\textcolor{mydgray}{%
@@ -128,7 +136,7 @@ isbn=false, eprint=false, doi=false, url=false]{biblatex}
 
 		\vspace{0.3em}
 		\scriptsize\textcolor{mydgray}{%
-			\og Exploration des bandes L et P pour la détection de la déforestation
+			\og Exploration des bandes L et P (NISAR, BIOMASS) pour la détection de la déforestation
 			et des glissements de terrain \fg}
 
 		\vspace{0.9em}
