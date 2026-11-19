@@ -12,7 +12,7 @@ from typing import Iterable
 
 import requests
 
-_CHUNK = 4 * 2**20
+_CHUNK = 16 * 2**20
 
 
 def earthdata_session() -> requests.Session:

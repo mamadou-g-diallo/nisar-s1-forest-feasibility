@@ -66,11 +66,21 @@ def main() -> None:
                                  "ref_date", "sec_date", "baseline_days", "startTime")}
         todo = [l for l in LAYERS[r["product"]] if not (out_dir / f"{name}__{l}.tif").exists()]
         try:
-            if todo:
-                with open_product(r.url, fs=fs) as h5:
-                    for layer in todo:
-                        ras = read_window(h5, r["product"], layer, bounds)
-                        save_raster(ras, out_dir / f"{name}__{layer}.tif")
+            for attempt in range(3):  # signed CloudFront URLs expire: retry with a fresh session
+                try:
+                    if todo:
+                        with open_product(r.url, fs=fs) as h5:
+                            for layer in todo:
+                                ras = read_window(h5, r["product"], layer, bounds)
+                                save_raster(ras, out_dir / f"{name}__{layer}.tif")
+                    break
+                except Exception as e:
+                    if attempt == 2:
+                        raise
+                    print(f"{tag} retry after {type(e).__name__}", flush=True)
+                    earthaccess.login(strategy="netrc")
+                    fs = earthaccess.get_fsspec_https_session()
+                    todo = [l for l in todo if not (out_dir / f"{name}__{l}.tif").exists()]
             first = LAYERS[r["product"]][0]
             from nisar_s1.optical import load_raster
             a = load_raster(out_dir / f"{name}__{first}.tif").data

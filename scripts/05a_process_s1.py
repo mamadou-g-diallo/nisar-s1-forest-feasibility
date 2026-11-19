@@ -48,14 +48,15 @@ def main() -> None:
         if s.exists():
             safes.append((str(r.day)[:10], s, r.swath))
         else:
-            print(f"missing {s.name} (not downloaded), skipped", flush=True)
+            safes.append(None)  # keeps chain positions: no pair across a missing date
+            print(f"missing {s.name} (not downloaded yet), skipped", flush=True)
     gpt = p["chemins"]["gpt"]
     t0 = time.time()
     jobs = []
     if args.only in (None, "gamma0"):
-        jobs += [("g0", d, s, None, sw) for d, s, sw in safes]
+        jobs += [("g0", d, s, None, sw) for d, s, sw in filter(None, safes)]
     if args.only in (None, "coherence"):
-        jobs += [("coh", a[0], a[1], b, a[2]) for a, b in zip(safes[:-1], safes[1:])]
+        jobs += [("coh", a[0], a[1], b, a[2]) for a, b in zip(safes[:-1], safes[1:]) if a and b]
     for i, (kind, d, s, b, sw) in enumerate(jobs, 1):
         tag = f"[{i}/{len(jobs)}]"
         try:

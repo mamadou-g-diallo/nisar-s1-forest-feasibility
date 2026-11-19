@@ -1,5 +1,7 @@
 <graph id="s1_coherence">
-  <!-- Sentinel-1 IW SLC pair -> 12-day coherence (VV, VH), terrain-corrected to UTM, subset to the site.
+  <!-- No Enhanced-Spectral-Diversity: the site lies in one burst (no burst overlap to estimate it);
+       ESD corrects the azimuth phase ramp, not needed for coherence magnitude.
+       Sentinel-1 IW SLC pair -> 12-day coherence (VV, VH), terrain-corrected to UTM, subset to the site.
        Variables: ${ref} ${sec} ${swath} ${aoi} ${cohWinRg} ${cohWinAz} ${pixel} ${crs} ${region} ${out} -->
   <version>1.0</version>
   <node id="Read"><operator>Read</operator><parameters><file>${ref}</file></parameters></node>
@@ -17,8 +19,7 @@
   <node id="BG"><operator>Back-Geocoding</operator><sources><sourceProduct refid="Orb"/><sourceProduct.1 refid="Orb2"/></sources>
     <parameters><demName>Copernicus 30m Global DEM</demName><demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
       <resamplingType>BISINC_5_POINT_INTERPOLATION</resamplingType><maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation></parameters></node>
-  <node id="ESD"><operator>Enhanced-Spectral-Diversity</operator><sources><sourceProduct refid="BG"/></sources><parameters/></node>
-  <node id="Coh"><operator>Coherence</operator><sources><sourceProduct refid="ESD"/></sources>
+  <node id="Coh"><operator>Coherence</operator><sources><sourceProduct refid="BG"/></sources>
     <parameters><cohWinRg>${cohWinRg}</cohWinRg><cohWinAz>${cohWinAz}</cohWinAz><subtractFlatEarthPhase>true</subtractFlatEarthPhase>
       <subtractTopographicPhase>true</subtractTopographicPhase><demName>Copernicus 30m Global DEM</demName>
       <squarePixel>true</squarePixel><singleMaster>true</singleMaster></parameters></node>

@@ -6,7 +6,7 @@ Every layer is put on the same 20 m UTM 32N grid (site window). Then:
 2. change features per pixel, with the cut dates taken from the Sentinel-2 series:
    - backscatter: d_gamma0 = mean dB after the cut - mean dB before (temporal means in linear power);
    - coherence: d_coh = mean coherence of pairs after the cut - mean of pairs before;
-     and coh_span = coherence of the pair spanning the cut - mean coherence before;
+     and coh_span = coherence of the pairs overlapping the cut window - mean coherence before;
 3. separability of each feature (Cohen's d, AUC with block-bootstrap 95 % interval, Jeffries-Matusita)
    and pixel-wise detection over the window against the Sentinel-2 reference (dNDVI <= -0.3 in forest).
 
@@ -30,7 +30,8 @@ from nisar_s1.grid import make_grid, polygon_mask, read_geotiff, to_grid
 from nisar_s1.io_nisar import info_from_name
 from nisar_s1.optical import Raster, forest_mask_like, load_raster, save_raster
 from nisar_s1.snap import dimap_band
-from nisar_s1.stats import block_bootstrap_auc, detection_scores, separability
+from nisar_s1.detect import detection_scores
+from nisar_s1.stats import block_bootstrap_auc, separability
 
 PRE = ["2026-06-24", "2026-06-25", "2026-07-04", "2026-07-10"]
 POST = ["2026-09-23", "2026-09-25", "2026-10-05", "2026-10-12"]
@@ -40,6 +41,13 @@ TAB, FIG = PROJECT_ROOT / "results" / "tables", PROJECT_ROOT / "results" / "figu
 def db(lin: np.ndarray) -> np.ndarray:
     with np.errstate(divide="ignore", invalid="ignore"):
         return 10 * np.log10(np.where(lin > 0, lin, np.nan))
+
+
+def _snap(path, pattern: str) -> Raster:
+    """SNAP band (ENVI) with 0 treated as no data (SNAP writes 0 outside the valid swath)."""
+    r = read_geotiff(dimap_band(path, pattern))
+    r.data[r.data == 0] = np.nan
+    return r
 
 
 def collect_layers(p: dict, grid: Raster) -> list[dict]:
@@ -63,13 +71,13 @@ def collect_layers(p: dict, grid: Raster) -> list[dict]:
     for f in sorted(sroot.glob("t*/g0_*.dim")):
         d = pd.Timestamp(re.search(r"g0_(\d{4}-\d{2}-\d{2})", f.name).group(1))
         for pol in ("VV", "VH"):
-            r = to_grid(read_geotiff(dimap_band(f, f"Gamma0*_{pol}")), grid, "bilinear")
+            r = to_grid(_snap(f, f"Gamma0*_{pol}"), grid, "bilinear")
             layers.append(dict(sensor="S1-C", geom=f.parent.name.upper(), kind="g0", pol=pol, d1=d, d2=None,
                                data=r.data))
     for f in sorted(sroot.glob("t*/coh_*.dim")):
         a, b = re.findall(r"\d{4}-\d{2}-\d{2}", f.name)[:2]
         for pol in ("VV", "VH"):
-            r = to_grid(read_geotiff(dimap_band(f, f"coh*_{pol}")), grid, "bilinear")
+            r = to_grid(_snap(f, f"coh*_{pol}"), grid, "bilinear")
             layers.append(dict(sensor="S1-C", geom=f.parent.name.upper(), kind="coh", pol=pol,
                                d1=pd.Timestamp(a), d2=pd.Timestamp(b), data=r.data))
     return layers
@@ -91,13 +99,15 @@ def phase(l: dict, cut_after: pd.Timestamp, cut_before: pd.Timestamp) -> str:
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--margin", type=float, default=1500.0)
-    ap.add_argument("--erode", type=float, default=None, help="polygon erosion (m), default params")
+    ap.add_argument("--erode", type=float, default=0.0,
+                    help="polygon erosion (m); 0 = all pixels of the S2-derived polygons (aligned grid)")
+    ap.add_argument("--tag", default="", help="suffix of output tables/figures (sensitivity runs)")
     ap.add_argument("--bootstrap", type=int, default=300)
     args = ap.parse_args()
 
     p = load_params()
     crs, res = p["projet"]["crs_travail"], p["comparaison"]["grille_m"]
-    erode = args.erode if args.erode is not None else p["comparaison"]["buffer_interieur_m"]
+    erode = args.erode
     site = gpd.read_file(PROJECT_ROOT / "config" / "site.geojson").to_crs(crs)
     cut_after, cut_before = pd.Timestamp(site.cut_after.iloc[0]), pd.Timestamp(site.cut_before.iloc[0])
     xmin, ymin, xmax, ymax = site.total_bounds
@@ -137,7 +147,7 @@ def main() -> None:
                      "phase": phase(l, cut_after, cut_before),
                      "valid_cut": float(np.isfinite(v[cut_m]).mean()), **s})
     ts = pd.DataFrame(rows).sort_values(["sensor", "geom", "kind", "pol", "date"])
-    ts.to_csv(TAB / "comparison_timeseries.csv", index=False)
+    ts.to_csv(TAB / f"comparison_timeseries{args.tag}.csv", index=False)
 
     # --- 2-3. change features, separability, detection --------------------------------------
     feats, out = {}, []
@@ -145,9 +155,13 @@ def main() -> None:
     for l in layers:
         groups.setdefault((l["sensor"], l["geom"], l["kind"], l["pol"]), []).append(l)
     for (sensor, geom, kind, pol), ls in groups.items():
-        ph = {k: [l for l in ls if phase(l, cut_after, cut_before) == k] for k in ("pre", "post", "span")}
+        ph = {k: [l for l in ls if phase(l, cut_after, cut_before) == k] for k in ("pre", "post", "span", "during")}
+        ph["span"] = ph["span"] + ph["during"]  # pairs overlapping the cut window (12-day pairs < 15-day window)
         if kind in ("coh", "coh80"):
-            ph = {k: [l for l in v if (l["d2"] - l["d1"]).days <= 13] for k, v in ph.items()}  # 12-day pairs
+            # before / after: 12-day pairs only; change pairs: <= 25 days (for NISAR the pair over the
+            # cut is a 24-day pair, an acquisition is missing at the end of July)
+            ph = {k: [l for l in v if (l["d2"] - l["d1"]).days <= (25 if k == "span" else 13)]
+                  for k, v in ph.items()}
         if not ph["pre"] or not ph["post"]:
             print(f"skip {sensor} {geom} {kind} {pol}: pre {len(ph['pre'])}, post {len(ph['post'])}")
             continue
@@ -161,36 +175,42 @@ def main() -> None:
             f = {f"d_{k}_{pol}": (mean(ph["post"]) - mean(ph["pre"]), +1),
                  f"{k}_post_{pol}": (mean(ph["post"]), +1)}
             if ph["span"]:
-                f[f"{k}_span_{pol}"] = (mean(ph["span"]) - mean(ph["pre"]), -1)
+                f[f"{k}_change_{pol}"] = (mean(ph["span"]), -1)  # coherence of the pair(s) over the cut
+                f[f"{k}_drop_{pol}"] = (mean(ph["span"]) - mean(ph["pre"]), -1)
         for var, (img, _) in f.items():
             s = separability(img[cut_m], img[ctl_m])
             if "auc" not in s:
                 continue
             direction = 1 if s["auc"] >= 0.5 else -1  # direction learned on the site polygons
-            lo, hi = block_bootstrap_auc(img, cut_m, ctl_m, block=3, n=args.bootstrap)
+            # blocks larger than the effective resolution: 60 m for 20 m layers, 100 m for 80 m layers
+            # (at 80 m the 2.4 ha cut holds only ~4 independent pixels: indicative only)
+            coarse = "coh80" in var
+            lo, hi = block_bootstrap_auc(img, cut_m, ctl_m, block=5 if coarse else 3, n=args.bootstrap)
             det = detection_scores(img, truth, valid, direction)
             feats[f"{name} {var}"] = img
-            out.append({"sensor": sensor, "geom": geom, "pol": pol, "variable": var,
+            out.append({"sensor": sensor, "geom": geom, "pol": pol, "variable": var, "res_m": 80 if coarse else 20,
                         "label": f"{sensor} {geom} {var}", "n_pre": len(ph["pre"]), "n_post": len(ph["post"]),
                         "n_span": len(ph.get("span", [])), **s, "ci_lo": lo, "ci_hi": hi, **det})
             save_raster(Raster(img.astype("float32"), grid.transform, grid.crs),
                         proc / f"{sensor}_{geom}_{var}.tif".replace(" ", "_"))
     res_df = pd.DataFrame(out).sort_values("auc_sep", ascending=False)
-    res_df.to_csv(TAB / "comparison_change.csv", index=False)
+    res_df.to_csv(TAB / f"comparison_change{args.tag}.csv", index=False)
     pd.set_option("display.width", 220)
     cols = ["label", "n_pre", "n_post", "delta", "cohen_d", "auc_sep", "ci_lo", "ci_hi", "jm",
-            "f1_otsu", "f1_best"]
+            "auc_window", "f1_otsu", "f1_best"]
     print(res_df[[c for c in cols if c in res_df]].round(3).to_string(index=False))
 
     # --- figures ------------------------------------------------------------------------------
-    plots.separability_bars(res_df, FIG / "comparison_auc.png", "auc_sep",
+    plots.separability_bars(res_df, FIG / f"comparison_auc{args.tag}.png", "auc_sep",
                             "Clear-cut vs intact forest: separability of change features (AUC, 95 % CI)")
     for (sensor, geom), g in ts[ts.kind.isin(["g0", "coh"])].groupby(["sensor", "geom"]):
         g = g.copy()
         g["variable"] = g.kind.map({"g0": "gamma0 (dB)", "coh": "coherence"}) + " " + g.pol + \
             np.where(g.baseline_d.fillna(0) > 13, " (24 d)", "")
         g = g[~g.variable.str.endswith("(24 d)")]
-        plots.sensor_timeseries(g, FIG / f"comparison_ts_{sensor}_{geom}.png", (cut_after, cut_before))
+        mid = pd.to_datetime(g.date) + (pd.to_datetime(g.date2) - pd.to_datetime(g.date)) / 2
+        g["date"] = np.where(g.kind == "coh", mid, pd.to_datetime(g.date))  # pairs at their mid-date
+        plots.sensor_timeseries(g, FIG / f"comparison_ts_{sensor}_{geom}{args.tag}.png", (cut_after, cut_before))
 
 
 if __name__ == "__main__":

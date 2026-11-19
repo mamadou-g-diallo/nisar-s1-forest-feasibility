@@ -48,6 +48,7 @@ def main() -> None:
     ap.add_argument("--start", default=None)
     ap.add_argument("--end", default=None)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--shard", default="0/1", help="i/n: process dates i, i+n, ... (parallel streams)")
     args = ap.parse_args()
 
     p = load_params()
@@ -75,11 +76,13 @@ def main() -> None:
     if args.dry_run:
         return
 
+    si, sn = map(int, args.shard.split("/"))
+    chain = chain.iloc[si::sn]
     sess = earthdata_session()
     out = Path(p["chemins"]["raw"]) / "sentinel1" / f"t{track:03d}"
     t0 = time.time()
-    for i, r in chain.iterrows():
-        tag = f"[{i + 1}/{len(chain)}]"
+    for k, (_, r) in enumerate(chain.iterrows(), 1):
+        tag = f"[shard {si}: {k}/{len(chain)}]"
         try:
             extract_safe_subset(r.url, out, swath, session=sess, label=tag)
         except Exception as e:
