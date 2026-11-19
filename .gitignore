@@ -63,3 +63,5 @@ __pycache__/
 .vscode/
 .idea/
 *~
+reports/latex/*.bcf
+reports/latex/*.run.xml

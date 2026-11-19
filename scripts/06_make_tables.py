@@ -90,7 +90,7 @@ def persistence_table(ts: pd.DataFrame, lang: int, path) -> None:
            "Persistence of the backscatter contrast after the cut: separation AUC and cut $-$ control "
            "difference, averaged per date over two periods.")[lang]
     lines = ["\\begin{table}[htbp]", "\\centering", "\\small", f"\\caption{{{cap}}}",
-             "\\label{tab:persistence}", "\\begin{tabular}{llrrrr}", "\\toprule", " & ".join(hdr) + " \\\\",
+             "\\label{tab-persistence}", "\\begin{tabular}{llrrrr}", "\\toprule", " & ".join(hdr) + " \\\\",
              "\\midrule"]
     for (sensor, geom, pol), r in rows.iterrows():
         name = ("NISAR " if sensor.startswith("NISAR") else "Sentinel-1 ") + geom
@@ -115,20 +115,20 @@ def main() -> None:
                       "$-$ control mean; $d$: Cohen's d; AUC: max(AUC, 1$-$AUC) with block-bootstrap CI; "
                       "JM: Jeffries-Matusita; win.\\ AUC and F1$_{max}$: pixel-wise detection over the whole "
                       "window, S2 dNDVI reference)."),
-                     "tab:separability")
+                     "tab-separability")
         # best variable per sensor family (summary)
         fine = ch[ch.res_m == 20] if "res_m" in ch else ch[~ch.variable.str.contains("coh80")]
         best = fine.loc[fine.groupby(["band", "geom"]).auc_sep.idxmax()].sort_values(["band", "auc_sep"],
                                                                                   ascending=[True, False])
         change_table(best, lang, OUT / f"best_{suf}.tex",
                      ("Meilleure variable à 20 m par capteur et géométrie.", "Best 20 m variable per sensor and geometry."),
-                     "tab:best")
+                     "tab-best")
         core = ch[ch.variable.isin(CORE)]
         change_table(core, lang, OUT / f"core_{suf}.tex",
                      ("Variables comparables entre capteurs (20 m) : variation de $\\gamma^0$, cohérence de la "
                       "paire qui encadre la coupe et variation de cohérence (après $-$ avant).",
                       "Variables comparable across sensors (20 m): $\\gamma^0$ change, coherence of the pair "
-                      "spanning the cut and coherence change (after $-$ before)."), "tab:core")
+                      "spanning the cut and coherence change (after $-$ before)."), "tab-core")
         ts = pd.read_csv(TAB / "comparison_timeseries.csv")
         persistence_table(ts, lang, OUT / f"persistence_{suf}.tex")
     print(f"tables written to {OUT}")
