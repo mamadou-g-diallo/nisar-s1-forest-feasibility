@@ -205,3 +205,18 @@ def ndvi_timeseries(items: pd.DataFrame, polygon, polygon_crs, res: float = 10.0
         rows.append({"date": r["date"], "cloud": r["cloud"], "valid": round(valid, 2),
                      "ndvi": float(np.nanmedian(v)) if valid > 0.5 else np.nan})
     return pd.DataFrame(rows)
+
+
+def rgb_chip(item, centre_xy: tuple[float, float], half_m: float = 600, res: float = 10.0,
+             swir: bool = False) -> np.ndarray:
+    """True-colour (or SWIR/NIR/red false-colour if ``swir``) chip around ``centre_xy`` given in the
+    item CRS (UTM of the tile), scaled to [0, 1] for display. Used for visual checks of candidates."""
+    keys = ("swir16", "nir", "red") if swir else ("red", "green", "blue")
+    x, y = centre_xy
+    bounds = (x - half_m, y - half_m, x + half_m, y + half_m)
+    n = int(round(2 * half_m / res))
+    off = 0 if item.properties.get("earthsearch:boa_offset_applied", True) else 1000
+    bands = [(_read(item.assets[k].href, bounds, (n, n), Resampling.bilinear).data.astype("float32")
+              - off) / 1e4 for k in keys]
+    rgb = np.dstack(bands)
+    return np.clip(rgb / (0.35 if swir else 0.15), 0, 1)
