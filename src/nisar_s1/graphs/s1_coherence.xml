@@ -1,0 +1,36 @@
+<graph id="s1_coherence">
+  <!-- Sentinel-1 IW SLC pair -> 12-day coherence (VV, VH), terrain-corrected to UTM, subset to the site.
+       Variables: ${ref} ${sec} ${swath} ${aoi} ${cohWinRg} ${cohWinAz} ${pixel} ${crs} ${region} ${out} -->
+  <version>1.0</version>
+  <node id="Read"><operator>Read</operator><parameters><file>${ref}</file></parameters></node>
+  <node id="Read2"><operator>Read</operator><parameters><file>${sec}</file></parameters></node>
+  <node id="Split"><operator>TOPSAR-Split</operator><sources><sourceProduct refid="Read"/></sources>
+    <parameters><subswath>${swath}</subswath><selectedPolarisations>VV,VH</selectedPolarisations>
+      <wktAoi>${aoi}</wktAoi><enableSingleSwathMode>true</enableSingleSwathMode></parameters></node>
+  <node id="Split2"><operator>TOPSAR-Split</operator><sources><sourceProduct refid="Read2"/></sources>
+    <parameters><subswath>${swath}</subswath><selectedPolarisations>VV,VH</selectedPolarisations>
+      <wktAoi>${aoi}</wktAoi><enableSingleSwathMode>true</enableSingleSwathMode></parameters></node>
+  <node id="Orb"><operator>Apply-Orbit-File</operator><sources><sourceProduct refid="Split"/></sources>
+    <parameters><orbitType>Sentinel Precise (Auto Download)</orbitType><continueOnFail>true</continueOnFail></parameters></node>
+  <node id="Orb2"><operator>Apply-Orbit-File</operator><sources><sourceProduct refid="Split2"/></sources>
+    <parameters><orbitType>Sentinel Precise (Auto Download)</orbitType><continueOnFail>true</continueOnFail></parameters></node>
+  <node id="BG"><operator>Back-Geocoding</operator><sources><sourceProduct refid="Orb"/><sourceProduct.1 refid="Orb2"/></sources>
+    <parameters><demName>Copernicus 30m Global DEM</demName><demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
+      <resamplingType>BISINC_5_POINT_INTERPOLATION</resamplingType><maskOutAreaWithoutElevation>true</maskOutAreaWithoutElevation></parameters></node>
+  <node id="ESD"><operator>Enhanced-Spectral-Diversity</operator><sources><sourceProduct refid="BG"/></sources><parameters/></node>
+  <node id="Coh"><operator>Coherence</operator><sources><sourceProduct refid="ESD"/></sources>
+    <parameters><cohWinRg>${cohWinRg}</cohWinRg><cohWinAz>${cohWinAz}</cohWinAz><subtractFlatEarthPhase>true</subtractFlatEarthPhase>
+      <subtractTopographicPhase>true</subtractTopographicPhase><demName>Copernicus 30m Global DEM</demName>
+      <squarePixel>true</squarePixel><singleMaster>true</singleMaster></parameters></node>
+  <node id="Deb"><operator>TOPSAR-Deburst</operator><sources><sourceProduct refid="Coh"/></sources>
+    <parameters><selectedPolarisations>VV,VH</selectedPolarisations></parameters></node>
+  <node id="TC"><operator>Terrain-Correction</operator><sources><sourceProduct refid="Deb"/></sources>
+    <parameters><sourceBands/><demName>Copernicus 30m Global DEM</demName><pixelSpacingInMeter>${pixel}</pixelSpacingInMeter>
+      <mapProjection>${crs}</mapProjection><imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <nodataValueAtSea>false</nodataValueAtSea><saveSelectedSourceBand>true</saveSelectedSourceBand>
+      <saveLocalIncidenceAngle>true</saveLocalIncidenceAngle></parameters></node>
+  <node id="Sub"><operator>Subset</operator><sources><sourceProduct refid="TC"/></sources>
+    <parameters><geoRegion>${region}</geoRegion><copyMetadata>false</copyMetadata></parameters></node>
+  <node id="Write"><operator>Write</operator><sources><sourceProduct refid="Sub"/></sources>
+    <parameters><file>${out}</file><formatName>BEAM-DIMAP</formatName></parameters></node>
+</graph>

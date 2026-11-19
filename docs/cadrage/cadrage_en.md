@@ -49,7 +49,7 @@ interferometric coherence and backscatter separate the clear-cut from intact for
 
 ## 4. Method
 
-1. **Site** (step 3): a clear-cut of **≥ 5 ha if possible**. The GUNW coherence layer may have a coarse
+1. **Site** (step 3): a clear-cut of **≥ 2 ha** (≥ 50 pixels at 20 m; no clean summer cut ≥ 5 ha was found in the area in 2026). The GUNW coherence layer may have a coarse
    resolution (to be confirmed), and a small clear-cut would contain only a few pixels.
    The cutting date must also be bracketed by clear S2 images, with a nearby intact control forest of the same
    stand type, slope and aspect.

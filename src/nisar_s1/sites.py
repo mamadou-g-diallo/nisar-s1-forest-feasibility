@@ -86,3 +86,36 @@ def control_forest(cut: gpd.GeoSeries | gpd.GeoDataFrame, pre: Raster, post: Ras
                              "ndvi_pre": [float(np.nanmean(pre.data[m]))],
                              "dndvi": [float(np.nanmean(d[m]))]},
                             geometry=[poly], crs=pre.crs)
+
+
+def classify_timeseries(ts, cut_window: tuple[str, str], forest_min: float = 0.7,
+                        drop_min: float = 0.25, min_post: int = 2) -> dict:
+    """Label a candidate from its NDVI time series (output of ``optical.ndvi_timeseries``).
+
+    - ``clearcut``: forest before ``cut_window[0]`` (median NDVI >= ``forest_min``) and a
+      persistent drop of at least ``drop_min`` on >= ``min_post`` clear dates after ``cut_window[1]``;
+    - ``transient``: the drop is not persistent (unmasked cloud, haze, shadow);
+    - ``not_forest`` or ``no_data`` otherwise.
+    The cut date is estimated between the last high-NDVI date and the first low-NDVI date.
+    """
+    import pandas as pd
+    ts = ts.dropna(subset=["ndvi"]).copy()
+    ts["date"] = pd.to_datetime(ts["date"])
+    pre = ts[ts.date < cut_window[0]]
+    post = ts[ts.date > cut_window[1]]
+    if len(pre) < 2 or len(post) < min_post:
+        return {"label": "no_data"}
+    ref = pre.ndvi.median()
+    if ref < forest_min:
+        return {"label": "not_forest", "ndvi_pre": ref}
+    low = post.ndvi <= ref - drop_min
+    out = {"ndvi_pre": round(ref, 3), "ndvi_post": round(post.ndvi.median(), 3),
+           "n_post": int(len(post)), "n_post_low": int(low.sum())}
+    if low.sum() >= min_post and low.mean() >= 0.75:
+        thr = ref - drop_min
+        first_low = ts[(ts.ndvi <= thr)].date.min()
+        last_high = ts[(ts.date < first_low) & (ts.ndvi > thr)].date.max()
+        out.update(label="clearcut", cut_after=str(last_high.date()), cut_before=str(first_low.date()))
+    else:
+        out["label"] = "transient"
+    return out

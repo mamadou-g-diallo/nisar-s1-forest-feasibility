@@ -13,7 +13,7 @@ Validation with the **Sentinel-2** NDVI difference.
 | 0 | Environment, structure, repository, SNAP 14, Earthdata access | ✅ |
 | 1 | Scoping — [EN](docs/cadrage/cadrage_en.md) · [FR](docs/cadrage/cadrage_fr.md) | ✅ |
 | 2 | S1 / NISAR / BIOMASS inventory — [EN](docs/inventaire/inventaire_en.md) · [FR](docs/inventaire/inventaire_fr.md) | ✅ |
-| 3 | Site selection (clear-cut ≥ 5 ha + control forest) and S2 NDVI reference | ⏳ |
+| 3 | Site selection (clear-cut ≥ 2 ha + control forest) and S2 NDVI reference | ⏳ |
 | 4 | Download (`asf_search`) | ⏳ |
 | 5 | Processing and comparison (coherence, HH/HV γ⁰, AUC, JM, detection prototype) | ⏳ |
 | 6 | LaTeX report in two complete versions, French and English (ROSE-L and ISCE3 cited) | ⏳ |

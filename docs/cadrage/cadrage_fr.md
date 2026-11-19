@@ -49,7 +49,7 @@ de la forêt intacte que **Sentinel-1 (bande C, λ ≈ 5,6 cm)** ?
 
 ## 4. Méthode
 
-1. **Site** (étape 3) : coupe rase de **≥ 5 ha si possible**. La couche de cohérence GUNW peut être à
+1. **Site** (étape 3) : coupe rase de **≥ 2 ha** (≥ 50 pixels à 20 m ; aucune coupe estivale nette ≥ 5 ha trouvée dans la zone en 2026). La couche de cohérence GUNW peut être à
    résolution grossière (à confirmer), et une petite coupe ne contiendrait que quelques pixels.
    Il faut aussi une date de coupe encadrée par des images S2 claires, et une forêt intacte témoin voisine,
    de même type de peuplement, pente et exposition.

@@ -181,3 +181,27 @@ def cached_composite(path, items: list, res: float, bounds_wgs84: list[float] | 
     r = ndvi_composite(items, res, bounds_wgs84)
     save_raster(r, path)
     return r
+
+
+def ndvi_timeseries(items: pd.DataFrame, polygon, polygon_crs, res: float = 10.0,
+                    margin_m: float = 60.0) -> pd.DataFrame:
+    """Median NDVI inside ``polygon`` for every item of ``items`` (one row per date).
+
+    ``items`` is a frame from :func:`search_s2` (one tile). Only a small window around the
+    polygon is read, so a full season takes a few seconds per date.
+    Returns date, cloud (scene %), ndvi (median), valid (fraction of clear pixels).
+    """
+    import geopandas as gpd
+    from rasterio.features import geometry_mask
+    g = gpd.GeoSeries([polygon], crs=polygon_crs)
+    bounds_wgs84 = list(g.buffer(margin_m).to_crs("EPSG:4326").total_bounds)
+    rows = []
+    for _, r in items.iterrows():
+        nd = ndvi(r["item"], res, bounds_wgs84)
+        inside = ~geometry_mask(list(g.to_crs(nd.crs)), out_shape=nd.data.shape,
+                                transform=nd.transform)
+        v = nd.data[inside]
+        valid = float(np.isfinite(v).mean()) if v.size else 0.0
+        rows.append({"date": r["date"], "cloud": r["cloud"], "valid": round(valid, 2),
+                     "ndvi": float(np.nanmedian(v)) if valid > 0.5 else np.nan})
+    return pd.DataFrame(rows)

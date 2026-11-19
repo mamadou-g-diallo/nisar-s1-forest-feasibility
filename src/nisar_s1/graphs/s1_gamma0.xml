@@ -1,0 +1,29 @@
+<graph id="s1_gamma0">
+  <!-- Sentinel-1 IW SLC -> terrain-flattened gamma0 (VV, VH, linear), UTM, subset to the site.
+       Variables: ${ref} ${swath} ${aoi} ${rgLooks} ${azLooks} ${pixel} ${crs} ${region} ${out} -->
+  <version>1.0</version>
+  <node id="Read"><operator>Read</operator><parameters><file>${ref}</file></parameters></node>
+  <node id="Split"><operator>TOPSAR-Split</operator><sources><sourceProduct refid="Read"/></sources>
+    <parameters><subswath>${swath}</subswath><selectedPolarisations>VV,VH</selectedPolarisations>
+      <wktAoi>${aoi}</wktAoi><enableSingleSwathMode>true</enableSingleSwathMode></parameters></node>
+  <node id="Orb"><operator>Apply-Orbit-File</operator><sources><sourceProduct refid="Split"/></sources>
+    <parameters><orbitType>Sentinel Precise (Auto Download)</orbitType><continueOnFail>true</continueOnFail></parameters></node>
+  <node id="Noise"><operator>ThermalNoiseRemoval</operator><sources><sourceProduct refid="Orb"/></sources>
+    <parameters><removeThermalNoise>true</removeThermalNoise></parameters></node>
+  <node id="Cal"><operator>Calibration</operator><sources><sourceProduct refid="Noise"/></sources>
+    <parameters><outputBetaBand>true</outputBetaBand><outputSigmaBand>false</outputSigmaBand></parameters></node>
+  <node id="Deb"><operator>TOPSAR-Deburst</operator><sources><sourceProduct refid="Cal"/></sources><parameters/></node>
+  <node id="ML"><operator>Multilook</operator><sources><sourceProduct refid="Deb"/></sources>
+    <parameters><nRgLooks>${rgLooks}</nRgLooks><nAzLooks>${azLooks}</nAzLooks><outputIntensity>true</outputIntensity></parameters></node>
+  <node id="TF"><operator>Terrain-Flattening</operator><sources><sourceProduct refid="ML"/></sources>
+    <parameters><demName>Copernicus 30m Global DEM</demName><demResamplingMethod>BILINEAR_INTERPOLATION</demResamplingMethod>
+      <outputSimulatedImage>false</outputSimulatedImage><additionalOverlap>0.1</additionalOverlap><oversamplingMultiple>1.5</oversamplingMultiple></parameters></node>
+  <node id="TC"><operator>Terrain-Correction</operator><sources><sourceProduct refid="TF"/></sources>
+    <parameters><demName>Copernicus 30m Global DEM</demName><pixelSpacingInMeter>${pixel}</pixelSpacingInMeter>
+      <mapProjection>${crs}</mapProjection><imgResamplingMethod>BILINEAR_INTERPOLATION</imgResamplingMethod>
+      <nodataValueAtSea>false</nodataValueAtSea><saveLocalIncidenceAngle>true</saveLocalIncidenceAngle></parameters></node>
+  <node id="Sub"><operator>Subset</operator><sources><sourceProduct refid="TC"/></sources>
+    <parameters><geoRegion>${region}</geoRegion><copyMetadata>false</copyMetadata></parameters></node>
+  <node id="Write"><operator>Write</operator><sources><sourceProduct refid="Sub"/></sources>
+    <parameters><file>${out}</file><formatName>BEAM-DIMAP</formatName></parameters></node>
+</graph>

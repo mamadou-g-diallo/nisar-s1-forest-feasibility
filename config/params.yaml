@@ -47,7 +47,7 @@ capteurs:
 comparaison:
   grille_m: 20
   intervalle_coherence_jours: 12   # même intervalle temporel pour S1 et NISAR
-  surface_coupe_min_ha: 5
+  surface_coupe_min_ha: 2   # 20 m grid: >= 50 pixels; no clean >= 5 ha summer cut found in the AOI
   buffer_interieur_m: 20           # érosion des polygones (un pixel radar) — a_affiner
   seuil_dndvi: -0.2                # à calibrer à l'étape 3
   metriques: [delta_moyen, cohen_d, auc, jeffries_matusita, f1_detection]
