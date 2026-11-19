@@ -30,3 +30,22 @@ def search_aoi_wkt(params: dict[str, Any] | None = None) -> str:
     """WKT of the search footprint defined in ``aoi_recherche.bbox_wgs84``."""
     params = params or load_params()
     return bbox_to_wkt(params["aoi_recherche"]["bbox_wgs84"])
+
+
+SITES_DIR = PROJECT_ROOT / "config" / "sites"
+
+
+def load_site(name: str) -> dict[str, Any]:
+    """Read ``config/sites/<name>.yaml`` (site-specific study: AOI, CRS, periods, sensors).
+
+    ``chemins.results`` is made absolute (relative to the repository root) and ``~`` is expanded,
+    so every script of the site writes to its own ``results/<site>/`` and data folder.
+    The Vosges study (tag ``v1.0-vosges``) keeps using :func:`load_params`.
+    """
+    with open(SITES_DIR / f"{name}.yaml", encoding="utf-8") as f:
+        site = yaml.safe_load(f)
+    paths = site.setdefault("chemins", {})
+    for key, value in paths.items():
+        p = Path(str(value)).expanduser()
+        paths[key] = str(p if p.is_absolute() else PROJECT_ROOT / p)
+    return site

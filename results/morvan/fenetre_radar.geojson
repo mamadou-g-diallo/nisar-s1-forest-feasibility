@@ -1,0 +1,8 @@
+{
+"type": "FeatureCollection",
+"name": "fenetre_radar",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::2154" } },
+"features": [
+{ "type": "Feature", "properties": { "nom": "fenetre_radar", "s1_montante": 59, "s1_descendante": 37, "nisar": "A173+D66", "n_coupes_ref": 60, "surface_coupes_ha": 112.5 }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 801036.961900003254414, 6675632.648800000548363 ], [ 801036.961900003254414, 6695632.648800000548363 ], [ 781036.961900003254414, 6695632.648800000548363 ], [ 781036.961900003254414, 6675632.648800000548363 ], [ 801036.961900003254414, 6675632.648800000548363 ] ] ] } }
+]
+}

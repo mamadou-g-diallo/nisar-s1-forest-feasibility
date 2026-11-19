@@ -1,0 +1,57 @@
+# Réplication sur la sylvo-écorégion IFN G23 « Morvan et Autunois », zone d'étude du guide
+# méthodologique IRSTEA/TETIS (Ose & Deshayes, 2015) « Détection et cartographie des coupes rases
+# par télédétection satellitaire ». Pas de secrets ici.
+
+site:
+  nom: morvan
+  libelle: "Morvan et Autunois (SER G23)"
+  ser_code: G23
+  ser_archive: /media/dell/Transcend1/nisar_data/morvan/ign/ser_l93.zip   # IGN, inventaire forestier
+  crs: EPSG:2154                 # Lambert 93, comme le guide
+  grille_m: 20
+
+chemins:
+  data_root: /media/dell/Transcend1/nisar_data/morvan
+  results: results/morvan          # relatif à la racine du dépôt
+  gpt: ~/esa-snap/bin/gpt
+
+# Fenêtres temporelles (2026). Une coupe de référence est un changement forêt -> sol nu entre
+# le composite Sentinel-2 « avant » et le composite « après » (méthode du guide, ΔNDVI).
+# Les variables radar comparent les acquisitions « avant » et « après » de mêmes fenêtres.
+periode:
+  recherche: [2026-06-01, 2026-11-19]
+  s2_avant: [2026-06-10, 2026-07-15]
+  s2_apres: [2026-09-10, 2026-10-20]
+  radar_avant: [2026-06-01, 2026-07-12]
+  radar_apres: [2026-09-10, 2026-10-20]
+  persistance: [2026-10-21, 2026-11-19]
+
+guide:                             # paramètres du guide (section 2.2.3 et 3.6)
+  k_sigma: [1, 2, 3]               # degrés de certitude faible / moyen / fort : m - k.sigma
+  surface_min_ha: 1.0              # unité minimale de cartographie (spécification MAAF)
+  objectif_erreur_pct: 10          # omission et commission visées, en surface
+  degre_reference_min: 3           # degré « fort » du guide...
+  # ... qualifié « forêt -> sol nu » (guide section 2.2 : ne retenir que les parcelles passées d'un
+  # état boisé à un état sol nu). Sans ce critère, en intra-saison (juillet -> septembre), les
+  # seuils m - k.sigma retiennent 8,7 % de la forêt (sénescence, stress hydrique des feuillus).
+  ndvi_avant_min: 0.70
+  ndvi_apres_max: 0.65
+
+bdforet:                           # BD Forêt V2 (IGN), service WFS de la Géoplateforme
+  wfs: https://data.geopf.fr/wfs/ows
+  couche: LANDCOVER.FORESTINVENTORY.V2:formation_vegetale
+  # formations retenues comme « forêt » : forêts fermées et ouvertes avec couvert arboré,
+  # peupleraies ; exclues : FF0 (forêt fermée sans couvert arboré = coupes anciennes), landes.
+  prefixes_foret: [FF1, FF2, FF3, FO1, FO2, FO3, FP]
+
+capteurs:
+  sentinel2:
+    nuages_max_pct: 40
+  nisar:
+    geometries:                    # inventaire ASF du 19/11/2026
+      - {direction: A, track: 101, frame: 25}
+      - {direction: A, track: 173, frame: 25}
+      - {direction: D, track: 66, frame: 64}
+      - {direction: D, track: 167, frame: 64}
+  sentinel1:
+    orbites: [59, 161, 37, 110]    # A59, A161, D37, D110

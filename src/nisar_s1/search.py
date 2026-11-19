@@ -128,3 +128,20 @@ def revisit_summary(df: pd.DataFrame, group_cols: Sequence[str],
             "min_revisit_d": gaps.min() if len(gaps) else None,
         })
     return df.groupby(list(group_cols)).apply(_agg, include_groups=False).reset_index()
+
+
+def select_chain(df: pd.DataFrame, start: str, step: int = 12, tol_days: int = 3) -> pd.DataFrame:
+    """Greedy chain of acquisitions as close as possible to ``start + k * step`` days (one per day),
+    e.g. a 12-day Sentinel-1 series matching the NISAR revisit."""
+    df = df.copy()
+    df["day"] = df.startTime.dt.tz_convert(None).dt.normalize()
+    days = sorted(df.day.unique())
+    t, chain = pd.Timestamp(start), []
+    while days and t <= days[-1]:
+        near = min(days, key=lambda d: abs((d - t).days))
+        if abs((near - t).days) <= tol_days and near not in chain:
+            chain.append(near)
+            t = near + pd.Timedelta(days=step)
+        else:
+            t += pd.Timedelta(days=1)
+    return df[df.day.isin(chain)].sort_values("day").drop_duplicates("day").reset_index(drop=True)
