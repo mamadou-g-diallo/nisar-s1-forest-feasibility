@@ -22,6 +22,8 @@ from __future__ import annotations
 from pathlib import Path
 
 import matplotlib.pyplot as plt
+import warnings
+
 import numpy as np
 import pandas as pd
 import rasterio
@@ -81,6 +83,7 @@ def nisar_pairs(data: Path, geom: str) -> pd.DataFrame:
 
 
 def main() -> None:
+    warnings.filterwarnings("ignore", category=RuntimeWarning)
     s = load_site("sechilienne")
     res, data = Path(s["chemins"]["results"]), Path(s["chemins"]["data_root"])
     grid = load_raster(res / "grid" / "zones.tif")
@@ -163,6 +166,18 @@ def main() -> None:
             cum.append({"geom": geom, "date": r.sec, **{k: round(v, 2) for k, v in acc.items()}})
             t = pd.Timestamp(r.sec)
     cdf = pd.DataFrame(cum)
+    # cumulative maps (same contiguous chains)
+    cmaps = {}
+    for geom in PAIRING:
+        acc, t, n = None, None, 0
+        for k in sorted([k for k in maps if k[0] == "L" and k[1] == geom], key=lambda k: k[2]):
+            if t is not None and k[2] != t:
+                continue
+            u = maps[k][2]
+            acc = u.copy() if acc is None else acc + u
+            t, n = k[3], n + 1
+        if acc is not None:
+            cmaps[geom] = (1e3 * lam["L"] / (4 * np.pi) * acc, n)
     cdf.to_csv(res / "tables" / "g4_cumul.csv", index=False)
     print(cdf.to_string(index=False))
 
@@ -212,6 +227,18 @@ def main() -> None:
             ax[i].legend()
             ax[i].tick_params(axis="x", rotation=30)
         fig.savefig(figs / "g4_cumul_L.png", dpi=130)
+        plt.close(fig)
+    if cmaps:
+        fig, ax = plt.subplots(1, len(cmaps), figsize=(6.5 * len(cmaps), 5), constrained_layout=True)
+        for a_, (geom, (cm, n)) in zip(np.atleast_1d(ax), cmaps.items()):
+            hnd = a_.imshow(cm, extent=ext, vmin=-30, vmax=30, cmap="RdBu_r")
+            a_.contour(np.flipud(Z == 1), [0.5], colors="k", linewidths=0.9, extent=ext, origin="lower")
+            a_.contour(np.flipud(Z == 2), [0.5], colors="0.3", linewidths=0.5, extent=ext, origin="lower")
+            a_.contour(np.flipud(Z == 3), [0.5], colors="g", linewidths=0.5, extent=ext, origin="lower")
+            a_.set_title(f"NISAR {geom} : variation de distance cumulée ({n} paires), mm", fontsize=10)
+            a_.tick_params(labelsize=6)
+            fig.colorbar(hnd, ax=a_, shrink=0.8, label="mm (positif = éloignement)")
+        fig.savefig(figs / "g4_cumul_maps_L.png", dpi=130)
         plt.close(fig)
 
 
