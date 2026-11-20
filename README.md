@@ -1,4 +1,4 @@
-# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges / Alsace)
+# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges, then Morvan)
 
 Feasibility test prepared for the SERTIT/ICube internship (L and P bands: NISAR, BIOMASS).
 
@@ -25,9 +25,45 @@ backscatter, the L-band advantage **depends on the acquisition geometry**.
 
 The robust L-band advantage is interferometric (hypotheses H1, H2, H4 confirmed; H3 on backscatter only partly).
 
-Single site: to be replicated before designing an operational detector (see the report).
+Single site: replicated on the Morvan below (tag `v1.0-vosges` marks the Vosges-only state).
 
-## Steps
+## Replication on the Morvan (sylvo-ecoregion G23, Irstea guide)
+The Vosges test is replicated on the area of the Irstea clear-cut detection guide (Ose & Deshayes, 2015), whose
+method is used twice: as the **optical reference** (on Sentinel-2) and as the **evaluation standard**
+(thresholds transposed to radar, area confusion matrix). A 20 × 20 km window gives an **equal-geometry**
+comparison in both look directions: L A173 vs C A59 (ascending), L D66 vs C D37 (descending).
+The main reference is 7 photo-interpreted clear-cuts of closed stands (15.4 ha).
+
+| | L band (NISAR) | C band (Sentinel-1) |
+|---|---|---|
+| 12-day coherence of intact forest | 0.35–0.71 | 0.25–0.36 (estimator floor) |
+| Minimum coherence AUC, ascending / descending | 0.60 / **0.81** | 0.51 / 0.52 |
+| Cross-pol Δγ⁰ AUC, ascending / descending | 0.80 / 0.83 | 0.73 / 0.83 |
+| Cohen's d of cross-pol Δγ⁰, ascending / descending | 1.89 / 2.13 | 1.03 / 1.63 |
+| Guide method on radar: kappa / cuts found | **0.41 / 5 of 7** | 0.08–0.16 / 2–3 of 7 |
+| False alarm audit (15 largest) | 2 probable late cuts | 0 cuts; 8 on plots already open in June |
+
+![Morvan L vs C summary](results/morvan/figures/m8_summary_L_vs_C.png)
+
+Findings:
+- Same message as in the Vosges: the clear L-band advantage is **interferometric**.
+- In backscatter the AUCs are close, but L band gives a stronger contrast. This contrast is what a threshold
+  method like the guide's needs.
+- The guide's statistical thresholds do not transfer to intra-season Sentinel-2 as is: 8.7 % of the forest is
+  flagged, mostly broadleaf senescence.
+- Reference quality dominates everything: with the automatic reference, the AUC is 0.51–0.56 in both bands.
+
+| # | Morvan step | Status |
+|---|------|--------|
+| m1–m3 | IGN data, guide on Sentinel-2, photo-interpretation, radar window | ✅ |
+| m4–m5 | NISAR remote reads, Sentinel-1 download and SNAP processing (15 dates per orbit) | ✅ |
+| m6–m8 | L vs C comparison (4 references), guide on radar, false alarm audits, dating, tables | ✅ |
+| Docs | [EN](docs/replication_morvan/replication_morvan_en.md) · [FR](docs/replication_morvan/replication_morvan_fr.md) | ✅ |
+| Reports | [EN PDF](reports/morvan/latex/report_morvan_en.pdf) · [FR PDF](reports/morvan/latex/rapport_morvan_fr.pdf) · [presentation (FR)](reports/morvan/presentation/presentation_morvan_fr.pdf) | ✅ |
+
+Site configuration: [config/sites/morvan.yaml](config/sites/morvan.yaml); scripts: `scripts/morvan/m1_*.py` to `m8_*.py`.
+
+## Steps (Vosges)
 | # | Step | Status |
 |---|------|--------|
 | 0 | Environment, structure, repository, SNAP 14, Earthdata access | ✅ |
