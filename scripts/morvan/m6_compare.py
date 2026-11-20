@@ -2,9 +2,10 @@
 IRSTEA guide method to radar change images.
 
 Reference (Sentinel-2, step 2): qualified reference clear-cuts (guide degree 3, forest -> bare soil,
->= 1 ha) inside the radar window ("cut" class). By default (``--ref verifie``) only the objects
+>= 1 ha) inside the radar window ("cut" class). By default (``--ref peuplement``) only the objects
 confirmed as clear-cuts by photo-interpretation (step 2b, bare soil visible in SWIR false colour)
-are kept; the other reference objects (NDVI drop without bare soil) are excluded from both classes. Intact forest: BD Forêt forest with dNDVI inside m +/- sigma, at more than 40 m
+and that were a closed stand in July (step 2c, SWIR test) are kept; the other reference objects are
+excluded from both classes. Intact forest: BD Forêt forest with dNDVI inside m +/- sigma, at more than 40 m
 from any detection (degree >= 1). Pixels of degree-1 objects and of the 40 m buffer are excluded
 from both classes (uncertain).
 
@@ -321,32 +322,42 @@ def main() -> None:
         return
     ext = (grid.transform.c, grid.transform.c + grid.data.shape[1] * 20,
            grid.transform.f - grid.data.shape[0] * 20, grid.transform.f)
-    picks = []
-    for gname in sorted(geoms):
-        sub = gd[(gd.geom == gname) & (gd.degre_min == 2)].sort_values("f1", ascending=False)
-        if len(sub):
-            picks.append((gname, sub.iloc[0].variable))
+    # cross-polarised change, L and C side by side at equal geometry
+    order = ["NISAR A173F25", "S1 T059", "NISAR D66F65", "S1 T037"]
+    picks = [(g, "d_g0_HV" if g.startswith("NISAR") else "d_g0_VH") for g in order
+             if (g, "d_g0_HV" if g.startswith("NISAR") else "d_g0_VH") in keep_maps]
+    names = {"NISAR A173F25": "L band A173 (asc)", "S1 T059": "C band A59 (asc)",
+             "NISAR D66F65": "L band D66 (desc)", "S1 T037": "C band D37 (desc)"}
     n = len(picks) + 1
-    ncol = min(n, 4)
-    nrow = int(np.ceil(n / ncol))
-    f, axs = plt.subplots(nrow, ncol, figsize=(4.2 * ncol, 4.2 * nrow), constrained_layout=True)
-    axs = np.atleast_1d(axs).ravel()
+    # zoom: 4 km box centred on the reference cut with most reference cuts within 2 km
+    cents = np.array([[g.centroid.x, g.centroid.y] for g in ref_objs.geometry])
+    nb = [(np.hypot(*(cents - c).T) < 2000).sum() for c in cents]
+    cx, cy = cents[int(np.argmax(nb))]
+    f, axs = plt.subplots(2, n, figsize=(3.3 * n, 6.9), constrained_layout=True)
     cmap = matplotlib.colors.ListedColormap(["#e8f0e3", "#f2c14e", "#f08a3c", "#c0392b"])
-    s2show = np.where(forest, np.clip(deg, 0, 3), np.nan)
-    axs[0].imshow(s2show, cmap=cmap, vmin=-0.5, vmax=3.5, extent=ext, interpolation="nearest")
-    axs[0].set_title("Sentinel-2 reference (guide)", fontsize=9)
-    for ax, (gname, var) in zip(axs[1:], picks):
-        x, degs = keep_maps[(gname, var)]
-        ax.imshow(np.where(forest, degs, np.nan), cmap=cmap, vmin=-0.5, vmax=3.5, extent=ext,
-                  interpolation="nearest")
-        ax.set_title(f"{gname} — {var}", fontsize=9)
-    for ax in axs:
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ref_objs.boundary.plot(ax=ax, color="k", lw=0.3) if ax.has_data() else None
-    for ax in axs[n:]:
-        ax.set_visible(False)
-    f.suptitle("Guide certainty degrees (yellow 1, orange 2, red 3); black: reference cuts", fontsize=10)
+    panels = [("Sentinel-2 reference (guide)", np.where(forest, np.clip(deg, 0, 3), np.nan))]
+    panels += [(f"{names[g]}: Δγ⁰ {v.split('_')[-1]}", np.where(forest, keep_maps[(g, v)][1], np.nan))
+               for g, v in picks]
+    for k, (title, img) in enumerate(panels):
+        for row in (0, 1):
+            ax = axs[row, k]
+            ax.imshow(img, cmap=cmap, vmin=-0.5, vmax=3.5, extent=ext, interpolation="nearest")
+            ref_objs.boundary.plot(ax=ax, color="k", lw=0.4 if row == 0 else 1.0)
+            if row == 1:
+                ax.set_xlim(cx - 2000, cx + 2000)
+                ax.set_ylim(cy - 2000, cy + 2000)
+            else:
+                ax.add_patch(matplotlib.patches.Rectangle((cx - 2000, cy - 2000), 4000, 4000, fill=False,
+                                                          ec="blue", lw=1))
+                ax.set_title(title, fontsize=9)
+            ax.set_xticks([])
+            ax.set_yticks([])
+            ax.set_xlabel("")
+            ax.set_ylabel("")
+    axs[0, 0].set_ylabel("radar window 20 x 20 km", fontsize=8)
+    axs[1, 0].set_ylabel("zoom 4 x 4 km (blue box)", fontsize=8)
+    f.suptitle("Guide certainty degrees (yellow 1, orange 2, red 3; pale green: forest) — black: verified "
+               "reference clear-cuts", fontsize=10)
     f.savefig(fig / "m6_guide_maps.png", dpi=120)
 
 

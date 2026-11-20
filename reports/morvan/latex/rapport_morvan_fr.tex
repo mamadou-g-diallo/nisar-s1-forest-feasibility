@@ -1,0 +1,80 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{csquotes}
+\usepackage[style=numeric-comp,sorting=none,backend=biber,maxbibnames=4]{biblatex}
+\usepackage[hidelinks]{hyperref}
+\usepackage[french]{cleveref}
+\addbibresource{../../latex/references.bib}
+\graphicspath{{../../../results/morvan/figures/}{../../../results/figures/}}
+\captionsetup{font=small,labelfont=bf}
+
+\title{Bande L (NISAR) contre bande C (Sentinel-1) pour la détection des coupes rases\\
+dans le Morvan, selon la méthode du guide de l'Irstea\\[0.4em]
+\large Réplication du test de faisabilité des Vosges -- stage SERTIT / ICube}
+\author{Mamadou Galy Diallo}
+\date{Novembre 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+%%ABSTRACT%%
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%=====================================================================
+\section{Contexte et objectif}
+
+Le stage SERTIT / ICube porte sur l'exploration des bandes L et P (NISAR, BIOMASS) pour la détection de la
+déforestation et des glissements de terrain. Un premier test, dans les Vosges, a comparé NISAR (bande L, produits
+de niveau~2 générés par ISCE3~\cite{isce3}) et Sentinel-1 (bande C~\cite{torres2012sentinel1}) sur une coupe rase
+de 2,4~ha. La bande L y séparait presque parfaitement la coupe de la forêt en cohérence interférométrique
+(AUC 0,995 contre 0,72 en bande C), mais son avantage en rétrodiffusion dépendait de la géométrie d'acquisition.
+Ce test avait deux limites : \textbf{une seule coupe} et \textbf{une seule orbite Sentinel-1}.
+
+La présente réplication lève ces deux limites et s'appuie sur une méthode opérationnelle française : le guide
+méthodologique de détection des coupes rases de l'Irstea (UMR TETIS)~\cite{ose2015guide}, établi pour le ministère
+de l'Agriculture sur la sylvo-écorégion G23 \enquote{Morvan et Autunois}. Ce guide sert à la fois :
+\begin{enumerate}
+\item de \textbf{référence optique} : sa méthode est appliquée à Sentinel-2 sur toute la G23, puis contrôlée par
+  photo-interprétation ;
+\item de \textbf{norme d'évaluation} : sa méthode de seuillage est transposée aux images de changement radar et
+  évaluée avec sa matrice de confusion en surface et ses objectifs ($\leq 10$~\% d'omission et de commission).
+\end{enumerate}
+La bande L sera assurée en Europe par la mission Copernicus ROSE-L~\cite{esa2020rosel} ; la chaîne développée ici
+lui est directement transposable.
+
+\paragraph{Question.} \emph{Sur plusieurs coupes rases du Morvan (juin--novembre 2026), et à géométrie égale dans
+les deux directions de visée, la bande L de NISAR distingue-t-elle mieux les coupes de la forêt intacte que la
+bande C de Sentinel-1 ? Et une méthode opérationnelle comme celle du guide est-elle transposable au radar ?}
+
+\paragraph{Hypothèses}, reprises des Vosges :
+\begin{description}
+\item[H1] La cohérence de la forêt intacte est plus élevée en bande L qu'en bande C.
+\item[H2] La perte de cohérence due à la coupe est donc mieux détectée en bande L.
+\item[H3] La baisse de rétrodiffusion après la coupe est plus forte en bande L.
+\item[H4] La polarisation croisée est l'indicateur de rétrodiffusion le plus sensible.
+\end{description}
+
+\input{methodes_fr}
+
+%%RESULTS%%
+
+\printbibliography[heading=bibintoc,title={Références}]
+
+\appendix
+%%APPENDIX%%
+
+\end{document}

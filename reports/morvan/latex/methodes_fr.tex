@@ -1,0 +1,144 @@
+%=====================================================================
+\section{Zone d'étude et données}
+
+\subsection{La sylvo-écorégion G23 « Morvan et Autunois »}
+
+La zone d'étude est celle du guide méthodologique de l'Irstea~\cite{ose2015guide} : la sylvo-écorégion
+G23~\cite{ign2011ser}, massif de moyenne montagne (environ 200 à 900~m) de 3\,011~km² à cheval sur la Nièvre, l'Yonne, la
+Côte-d'Or et la Saône-et-Loire. La forêt y couvre environ la moitié du territoire (52~\% d'après la BD Forêt). Le massif est connu pour ses
+plantations de résineux, surtout de douglas, qui sont exploitées par coupes rases et remplacent progressivement la
+forêt feuillue (chênaie, hêtraie). La BD Forêt V2~\cite{ign2024bdforet}, lue par le service WFS de la
+Géoplateforme, donne 13\,494 polygones de forêt. En ne gardant que les forêts à couvert arboré et les peupleraies
+(la classe FF0, \enquote{forêt fermée sans couvert}, correspond à des coupes anciennes), on obtient environ
+157\,800~ha : 89\,750~ha de feuillus, 49\,400~ha de résineux et 18\,600~ha de forêts mixtes.
+
+\subsection{Données}
+
+\begin{table}[htbp]
+\centering\small
+\caption{Données utilisées sur le Morvan (juin--novembre 2026).}
+\label{tab-data}
+\begin{tabular}{p{2.7cm}p{5.4cm}p{6.7cm}}
+\toprule
+Capteur & Produits & Détails \\
+\midrule
+NISAR (L, 1,26~GHz) & L2 GCOV ($\gamma^0$ HH, HV, RTC) et GUNW (cohérence HH à 20~m), produits par
+ISCE3~\cite{isce3} & 2 géométries couvrant la fenêtre radar : A173~F25 (montante) et D66~F65 (descendante). Paires
+de 12 à 24~jours. \\
+Sentinel-1 (C, 5,4~GHz) & IW SLC, VV+VH, traités avec SNAP~\cite{snap} & Orbites A59 (IW3) et D37 (IW2), 3 bursts
+chacune. 15 dates à 12~jours par orbite, du 01/06 au 18/11/2026, presque toutes de S1D. \\
+Sentinel-2~\cite{drusch2012sentinel2} & L2A, NDVI et SWIR & Référence : méthode du guide sur toute la G23 (tuiles
+31TEM, 31TEN, 31TFM, 31TFN) et photo-interprétation. \\
+IGN & Contour G23, BD Forêt V2 & Masque forêt et groupes (feuillus, résineux, mixtes). \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Comme dans les Vosges, les volumes téléchargés sont réduits : les produits NISAR sont lus à distance par blocs
+HDF5, et seuls les fichiers de la sous-fauchée utile sont extraits des archives Sentinel-1.
+
+%=====================================================================
+\section{Méthode}
+
+\subsection{La méthode du guide}
+
+Le guide~\cite{ose2015guide} détecte les coupes rases en six étapes : NDVI de deux images d'été, différence
+$\Delta$NDVI, masques zone d'étude et forêt, seuillage statistique dans la forêt, tamisage à 1~ha et évaluation par
+matrice de confusion en surface. Le seuillage utilise la moyenne $m$ et l'écart-type $\sigma$ de $\Delta$NDVI
+dans la forêt, avec trois degrés de certitude :
+\begin{center}\small
+\begin{tabular}{ll}
+\toprule
+Degré & Intervalle \\
+\midrule
+1 (faible) & $[m-2\sigma, m-\sigma[$ \\
+2 (moyen) & $[m-3\sigma, m-2\sigma[$ \\
+3 (fort) & $< m-3\sigma$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+Ses spécifications sont une unité minimale de 1~ha et des erreurs d'omission et de commission $\leq 10$~\% en
+surface. Le module \texttt{nisar\_s1.guide\_cr} implémente ces étapes pour n'importe quelle image de changement
+($\Delta$NDVI, $\Delta\gamma^0$, baisse de cohérence), avec le sens du changement en paramètre.
+
+\subsection{Référence optique}
+
+\paragraph{Guide appliqué à Sentinel-2.} Pour chaque tuile, le NDVI est la médiane des 3 dates les plus claires de
+deux fenêtres : \enquote{avant} (15/06--08/07/2026) et \enquote{après} (15/09--16/10/2026). Les seuils du guide
+sont calculés dans la forêt de G23.
+
+\paragraph{Référence qualifiée.} Le guide ne retient que les parcelles \enquote{passées d'un état boisé à un état
+sol nu}. La référence est donc : degré~3, NDVI avant $\geq 0{,}70$, NDVI après $\leq 0{,}65$, puis tamisage à
+1~ha.
+
+\paragraph{Photo-interprétation.} Comme le recommande le guide (section 3.9.1), la référence est contrôlée
+visuellement : couleurs vraies avant et après, et fausses couleurs SWIR / PIR / rouge après, où le sol nu et les
+rémanents apparaissent rose-magenta. Chaque objet reçoit un verdict : coupe certaine, probable ou sans sol nu.
+
+\paragraph{Test \enquote{forêt avant}.} Une coupe rase est la perte d'un peuplement fermé. La réflectance SWIR
+(B11) de juillet dans l'objet est comparée à celle d'un anneau de forêt de 100 à 400~m : l'objet était un
+peuplement fermé si sa B11 ne dépasse pas le 90\textsuperscript{e} centile de l'anneau.
+
+\subsection{Fenêtre radar}
+
+Le traitement Sentinel-1 se limite à 3 bursts d'une seule sous-fauchée (mémoire vive). Les fenêtres de
+$20\times20$~km ont été classées selon la surface de coupes de référence, puis contrôlées dans les catalogues ASF :
+une orbite Sentinel-1 montante et une descendante, chacune dans une seule sous-fauchée, et au moins une géométrie
+NISAR montante et une descendante. La fenêtre retenue (nord-est de G23) permet, contrairement aux Vosges, la
+comparaison \textbf{à géométrie égale dans les deux directions} : A173 (L) contre A59 (C) en montante, D66 (L)
+contre D37 (C) en descendante.
+
+\subsection{Traitements radar}
+
+\begin{itemize}
+\item \textbf{NISAR} : $\gamma^0$ HH et HV des GCOV (RTC~\cite{small2011flattening}) et cohérence HH des GUNW,
+  utilisés tels que livrés par ISCE3 et rééchantillonnés sur la grille Lambert 93 de 20~m.
+\item \textbf{Sentinel-1} : mêmes graphes SNAP que pour les Vosges. Pour $\gamma^0$ : calibration,
+  Terrain-Flattening et géocodage. Pour la cohérence : fenêtre $10\times3$, phases plate et topographique
+  retirées. Les 3 bursts sont raccordés par TOPSAR-Deburst, sans ESD.
+\end{itemize}
+
+\subsection{Variables de changement}
+
+Les acquisitions sont classées en \enquote{avant} (01/06--12/07), \enquote{après} (10/09--20/10) et
+\enquote{entre} ces deux fenêtres, qui encadrent les fenêtres optiques. Les dates de coupe ne sont pas connues
+une à une : les variables sont donc définies pour être indépendantes de la date exacte.
+\begin{itemize}
+\item $\Delta\gamma^0$ : $\gamma^0$ moyen après $-$ $\gamma^0$ moyen avant (dB, moyennes en puissance linéaire) ;
+\item $\gamma^0$ après (dB) ;
+\item cohérence minimale sur les paires \enquote{entre} : la paire qui encadre la coupe en fait partie, quelle que
+  soit la date de la coupe ;
+\item chute de cohérence (cohérence avant $-$ cohérence minimale) et cohérence après.
+\end{itemize}
+
+\subsection{Évaluation}
+
+\paragraph{Classes.} La classe \enquote{coupe} est formée des pixels forestiers des coupes de référence. La classe
+\enquote{forêt intacte} est la forêt BD Forêt dont $\Delta$NDVI reste dans $m \pm \sigma$ et située à plus de 40~m
+de toute détection optique. Les objets écartés par la photo-interprétation et une zone tampon de 40~m sont exclus
+des deux classes.
+
+\paragraph{Séparabilité.} Pour chaque variable : AUC (statistique de Mann-Whitney~\cite{hanley1982auc}, exprimée
+comme $\max(\mathrm{AUC}, 1-\mathrm{AUC})$), d de Cohen~\cite{cohen1988power} et distance de
+Jeffries-Matusita~\cite{swain1978remote}. Les intervalles de confiance à 95~\% sont obtenus par un bootstrap en
+grappes~\cite{kunsch1989bootstrap} : on rééchantillonne les coupes entières (et non les pixels, qui sont
+corrélés) et des blocs de $5\times5$ pixels de forêt. Avec 7 coupes, ces intervalles sont larges.
+
+\paragraph{Contrôles.} Avant la coupe, coupes et forêt doivent être indiscernables. On le vérifie par le
+changement entre deux dates \enquote{avant} et par le niveau de $\gamma^0$ avant la coupe, qui révèle un éventuel
+effet du type de peuplement.
+
+\paragraph{Transposition du guide au radar.} Les degrés de certitude $m-k\sigma$ sont calculés sur chaque variable
+radar dans la forêt de la fenêtre, puis tamisés à 1~ha. On calcule ensuite la matrice de confusion en surface du
+guide contre la référence (omission, commission, kappa) et la part des coupes trouvées (au moins 25~\% de leurs
+pixels détectés). On calcule aussi le taux de fausses alertes rapporté à la surface forestière : avec une
+référence de quelques hectares, la commission relative du guide est très sensible à quelques hectares de fausses
+alertes.
+
+\paragraph{Audit des fausses alertes.} Les plus grandes détections radar hors de toute détection optique sont
+photo-interprétées sur une image Sentinel-2 tardive (novembre) : une partie peut être des coupes réalisées après
+la fenêtre optique de septembre.
+
+\paragraph{Datation.} Pour chaque coupe de référence et chaque géométrie, la série de $\gamma^0$ en polarisation
+croisée est comparée à son niveau d'avant juillet. La coupe est datée entre la dernière acquisition normale et la
+première acquisition d'une baisse durable de plus de 2~dB (deux acquisitions consécutives).
