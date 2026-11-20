@@ -92,3 +92,15 @@ reports/morvan/**/*.toc
 reports/morvan/**/*.nav
 reports/morvan/**/*.snm
 reports/morvan/**/*.vrb
+# Sechilienne LaTeX build files
+reports/sechilienne/**/*.aux
+reports/sechilienne/**/*.bbl
+reports/sechilienne/**/*.bcf*
+reports/sechilienne/**/*.blg
+reports/sechilienne/**/*.fdb_latexmk
+reports/sechilienne/**/*.fls
+reports/sechilienne/**/*.nav
+reports/sechilienne/**/*.out
+reports/sechilienne/**/*.run.xml
+reports/sechilienne/**/*.snm
+reports/sechilienne/**/*.toc
