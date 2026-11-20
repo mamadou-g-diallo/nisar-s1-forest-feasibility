@@ -1,4 +1,4 @@
-# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges, then Morvan)
+# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges, then Morvan) and forested landslide (Séchilienne)
 
 Feasibility test prepared for the SERTIT/ICube internship (L and P bands: NISAR, BIOMASS).
 
@@ -62,6 +62,30 @@ Findings:
 | Reports | [EN PDF](reports/morvan/latex/report_morvan_en.pdf) · [FR PDF](reports/morvan/latex/rapport_morvan_fr.pdf) · [presentation (FR)](reports/morvan/presentation/presentation_morvan_fr.pdf) | ✅ |
 
 Site configuration: [config/sites/morvan.yaml](config/sites/morvan.yaml); scripts: `scripts/morvan/m1_*.py` to `m8_*.py`.
+
+## Landslide (reduced version): Séchilienne, phase under forest
+On the forested, unstable slope of Séchilienne (Isère), 17 paired 12/24-day interferograms
+(26 Jun – 24 Oct 2026) compare **NISAR GUNW (ISCE3)** with **Sentinel-1** (SNAP, same pairs).
+
+| Median over pairs | L A173 | C A161 | L D138 | C D139 |
+|---|---|---|---|---|
+| Coherence, forested slope | **0.58** | 0.28 | 0.32 | 0.29 |
+| Phase consistency, forested slope | **0.92** | 0.11 | **0.88** | 0.09 |
+
+- **C band is decorrelated under forest at 12 days**: its 0.27–0.30 forest coherence is the estimator
+  bias floor. The chain itself is fine, with 0.97–0.99 on built-up areas.
+- **L band keeps a consistent phase** through the canopy. This is the necessary condition for
+  displacement InSAR under forest, and an argument for NISAR, then ROSE-L.
+- **No displacement is detected above noise** in 4 months. The cumulative change ranges from −4 to
+  +5 mm, against a per-pair control spread of 3–10 mm. The expected velocity of 1–5 cm/yr is too slow
+  for single pairs, so a ≥ 1-year SBAS series is the next step.
+
+| Item | Link |
+|---|---|
+| Note | [EN](docs/glissement/glissement_sechilienne_en.md) · [FR](docs/glissement/glissement_sechilienne_fr.md) |
+| Slides (FR) | [presentation_glissement_fr.pdf](reports/sechilienne/presentation/presentation_glissement_fr.pdf) |
+| Config / scripts | [config/sites/sechilienne.yaml](config/sites/sechilienne.yaml) · `scripts/glissement/g0_*.py` to `g4_*.py` |
+| Resumable run | `bash scripts/glissement/run_pipeline.sh --install` (systemd user service, capped memory, auto-restart) |
 
 ## Steps (Vosges)
 | # | Step | Status |

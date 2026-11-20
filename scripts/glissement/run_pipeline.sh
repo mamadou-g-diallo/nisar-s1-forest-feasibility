@@ -22,7 +22,7 @@ if [[ "${1:-}" == "--install" ]]; then
   systemctl --user reset-failed "$UNIT" 2>/dev/null || true
   systemd-run --user --unit="$UNIT" --working-directory="$REPO" \
     --setenv=PATH="$(dirname "$PY"):/usr/bin:/bin" --setenv=HOME="$HOME" \
-    --setenv=_JAVA_OPTIONS=-Xmx2800m --setenv=SNAP_CACHE_GB=1 \
+    --setenv=_JAVA_OPTIONS=-Xmx${GL_XMX:-2800m} --setenv=SNAP_CACHE_GB=1 \
     -p MemoryHigh=3G -p MemoryMax=3500M -p MemorySwapMax=1G -p OOMScoreAdjust=900 \
     -p Restart=on-failure -p RestartSec=120 -p StartLimitIntervalSec=0 \
     bash "$REPO/scripts/glissement/run_pipeline.sh"
