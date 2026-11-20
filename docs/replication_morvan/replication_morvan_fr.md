@@ -210,4 +210,130 @@ tampon), pour ne pas compter comme « forêt intacte » une coupe que la référ
   - cohérence : fenêtre 10 × 3, phases de terre plate et topographique retirées ;
   - les 3 bursts sont raccordés par TOPSAR-Deburst, sans ESD.
 
-*(Les résultats radar sont ajoutés à la section 8 à la fin du traitement.)*
+## 8. Résultats radar (étapes m6 et m7)
+
+Référence principale : 7 coupes de peuplement (15,4 ha, 385 pixels de 20 m), contre 10 149 ha de
+forêt intacte. Comparaison **à géométrie égale** : L A173 avec C A59 (montantes), L D66 avec C D37
+(descendantes). Intervalles de confiance (IC) à 95 % par bootstrap par grappes (coupes et blocs de
+forêt de 5 × 5 pixels).
+
+### 8.1 Séparabilité coupe / forêt intacte (AUC)
+
+[Figure de synthèse](../../results/morvan/figures/m8_summary_L_vs_C.png).
+
+| Indicateur | L A173 | C A59 | L D66 | C D37 |
+|---|---|---|---|---|
+| Δγ⁰ pol. croisée | 0,80 [0,61–0,93] | 0,73 [0,65–0,86] | 0,83 [0,66–0,93] | 0,83 [0,78–0,91] |
+| Δγ⁰ co-polarisée | 0,70 | 0,63 | 0,71 | 0,74 |
+| γ⁰ après, pol. croisée | 0,89 | 0,76 | 0,85 | 0,82 |
+| cohérence minimale (co-pol.) | 0,60 [0,53–0,66] | 0,51 | **0,81** [0,75–0,86] | 0,52 |
+| cohérence après (co-pol.) | 0,66 | 0,68 | 0,54 | 0,74 |
+
+- **Baisse de rétrodiffusion croisée** (coupe / forêt) : −2,5 / −0,2 dB (L A173), −1,8 / −0,4 dB
+  (C A59), −2,7 / −0,3 dB (L D66), −2,6 / −0,6 dB (C D37). La bande L baisse plus, et son d de Cohen
+  est plus grand dans les deux directions (1,89 et 2,13 contre 1,03 et 1,63).
+- **À géométrie égale**, L ≥ C en montante (0,80 contre 0,73), L = C en descendante (0,83). Les IC se
+  recouvrent : avec 7 coupes, aucune différence d'AUC en rétrodiffusion n'est significative.
+- **Contrôle avant coupe** : les variables de *changement* restent près du hasard (AUC 0,50 à 0,57).
+  Les variables de *niveau* avant la coupe montent à 0,54–0,64 (0,70–0,75 avec la référence
+  « vérifiée ») : les parcelles coupées sont des peuplements particuliers (résineux mûrs). Le γ⁰ après
+  coupe (0,85–0,89) est donc en partie gonflé par le type de peuplement. **L'indicateur principal reste
+  la variation Δγ⁰**, indépendante du niveau de départ.
+- **Érosion de 20 m** (pixels de bord retirés) : toutes les AUC augmentent de 0,03 à 0,07, l'ordre L / C
+  ne change pas.
+
+### 8.2 Cohérence : la forêt reste cohérente en bande L, pas en bande C
+
+Médiane de la cohérence de la forêt intacte, paire par paire (`m6_coherence_pairs.csv`) :
+
+| Géométrie | Forêt intacte, paires à 12 j | Coupes après la coupe |
+|---|---|---|
+| L A173 | 0,35 à 0,70 | 0,41 à 0,74 |
+| L D66 | 0,48 à 0,71 | 0,59 à 0,71 |
+| C D37 | 0,25 à 0,27 | 0,27 à 0,38 |
+| C A59 | 0,30 à 0,36 | 0,34 à 0,53 |
+
+- **H1 est confirmée** : la forêt garde une cohérence de 0,5 à 0,7 en bande L, contre 0,25 à 0,36 en
+  bande C, c'est-à-dire le plancher de l'estimateur (fenêtre 10 × 3) : en C, la forêt est complètement
+  décorrélée en 12 jours, comme dans les Vosges.
+- **H2 est confirmée en descendante** : en D66, la cohérence minimale de la coupe tombe à 0,34 contre
+  0,48 pour la forêt (AUC 0,81, contre 0,52 en C D37). La paire du 29/08 au 10/09, qui encadre trois
+  coupes, donne 0,45 sur les coupes contre 0,63 en forêt.
+- **En montante (A173), l'avantage est faible** (AUC 0,60). Deux paires de la fenêtre de coupe (13/08 →
+  25/08 et 25/08 → 06/09) décorrèlent **toute** la forêt (0,35) : la cohérence minimale ne distingue
+  plus la coupe. Cause probable : épisode de pluie ou de vent en fin d'été (non vérifié).
+- **En bande C, la coupe ne se voit en cohérence qu'*après*** : le sol nu redevient un peu cohérent en
+  octobre–novembre (0,33 à 0,53), alors que la forêt reste au plancher. D'où l'AUC de la cohérence après
+  coupe, plus élevée en C (0,68–0,74) qu'en L (0,54–0,66). C'est un signal tardif (4 à 8 semaines),
+  inutile pour l'alerte.
+
+### 8.3 Le guide transposé au radar
+
+[Cartes des degrés](../../results/morvan/figures/m6_guide_maps.png), audits : [NISAR D66](../../results/morvan/figures/m6b_commission_NISAR_D66F65_d_g0_HV.png), [Sentinel-1 D37](../../results/morvan/figures/m6b_commission_S1_T037_d_g0_VH.png).
+
+Seuillage m − kσ sur Δγ⁰ croisée dans la forêt, puis tamisage à 1 ha (meilleure combinaison par
+géométrie) :
+
+| Géométrie | Degré | Omission | Commission | Kappa | Coupes trouvées | Fausses alertes (% forêt) |
+|---|---|---|---|---|---|---|
+| L A173 | ≥ 2 | 55 % | 62 % | **0,41** | **5/7** | 0,09 |
+| C A59 | ≥ 2 | 83 % | 94 % | 0,08 | 3/7 | 0,32 |
+| L D66 | ≥ 2 | 51 % | 64 % | **0,41** | **5/7** | 0,10 |
+| C D37 | ≥ 3 | 84 % | 83 % | 0,16 | 2/7 | 0,10 |
+
+- **La bande L transpose bien mieux la méthode du guide** (kappa 0,41 contre 0,08 à 0,16), alors que
+  l'AUC est égale en descendante. Raison : le guide coupe la **queue** de la distribution (m − 2σ,
+  m − 3σ), où compte l'écart en unités d'écart-type (d de Cohen 2,13 en L contre 1,63 en C), pas le
+  classement moyen mesuré par l'AUC.
+- Ce résultat **tient pour toutes les références** : kappa L / C = 0,34 / 0,08–0,19 (vérifiées),
+  0,27 / 0,07–0,15 (vérifiées + probables), 0,13 / 0,04–0,09 (automatique).
+- **On reste loin de l'objectif du guide** (≤ 10 % d'omission et de commission). La commission est
+  gonflée par la petite référence : 11 à 13 ha de fausses alertes en L face à 15 ha de coupes, sur
+  12 800 ha évalués, soit 0,1 % de la forêt. Au même degré (≥ 2), la bande C en produit 41 à 52 ha,
+  quatre fois plus.
+- **Audit des fausses alertes NISAR D66** (15 plus grands objets, photo-interprétation) : 2 coupes
+  tardives probables (F01, 2,5 ha ; F04, 1,6 ha), les 13 autres sont des sénescences, lisières,
+  jaunissements de mélèze ou bocage. Le même audit sur Sentinel-1 D37 (Δγ⁰ VH, degré 3, 15 plus grands objets) ne trouve **aucune coupe tardive** : 8 objets sur 15 (22 ha sur 36) sont des parcelles **déjà ouvertes en juin** (anciennes coupes, landes, prairies encore classées en forêt fermée par la BD Forêt), où la strate basse change (sénescence, travail du sol) ; les 7 autres sont des forêts intactes, des lisières ou des sénescences. La bande C réagit à la végétation basse, comme sur les coupes R019, R139 et R225 ouvertes avant juillet ; la bande L, non.
+
+### 8.4 Datation radar
+
+[Séries temporelles](../../results/morvan/figures/m7_cut_timeseries.png).
+
+Première baisse durable de la polarisation croisée de plus de 2 dB (`m7_cut_dates.csv`) :
+
+- En **bande L**, les séries sont lisses (bruit de quelques dixièmes de dB d'une date à l'autre), et les
+  deux géométries concordent : R013 et R060 fin août–début septembre, R161 début septembre, R198 et
+  R246 fin juillet–mi-août.
+- En **bande C**, l'orbite descendante D37 subit des sauts synchrones de ±3 dB sur toute la forêt
+  (humidité probable) : elle date 5 coupes sur 7 dans la même paire (25/08–06/09), ce qui n'est pas
+  crédible. L'orbite montante A59 est plus stable et resserre la date de R198 (21/07–02/08).
+- **R100** n’est détectée qu’en bande C (septembre, dans les deux orbites), comme R225 (hors référence principale) ; en L, la baisse
+  reste sous 2 dB (−1,3 à −2,0 dB). Hypothèse : éclaircie ou débardage tardif, auxquels la bande C, sensible
+  aux petits éléments, réagit plus que la bande L.
+
+### 8.5 Bilan des hypothèses
+
+| H | Constat Morvan | Verdict |
+|---|---|---|
+| H1 | Forêt : 0,5–0,7 en L contre 0,25–0,36 en C (plancher) | **confirmée** |
+| H2 | D66 : AUC 0,81 contre 0,52 ; A173 : 0,60 (décorrélation générale fin août) | **confirmée en descendante, partielle** |
+| H3 | Baisse L plus forte (d de Cohen 1,9–2,1 contre 1,0–1,6) ; AUC L ≥ C, différence non significative | **partielle** |
+| H4 | Pol. croisée > co-pol. dans les deux bandes et les quatre géométries | **confirmée** |
+
+> **Constat 4.** Comme dans les Vosges, l'avantage clair de la bande L est **interférométrique** : la
+> forêt reste cohérente, la coupe devient un événement. En rétrodiffusion, les AUC sont proches, mais la
+> bande L donne un contraste plus fort, et c'est ce qui compte pour une méthode à seuils comme celle du
+> guide : 5 coupes sur 7 trouvées en L, 2 à 3 en C.
+
+> **Constat 5.** La qualité de la référence domine tout le reste : l'AUC passe de 0,51–0,56 (référence
+> automatique, 60 objets) à 0,73–0,83 (7 coupes de peuplement vérifiées). Sans photo-interprétation,
+> on aurait conclu à tort que ni la bande L ni la bande C ne voient les coupes.
+
+### 8.6 Limites
+
+- **7 coupes, 15 ha** : IC larges, aucune différence d'AUC en rétrodiffusion n'est significative.
+- Une seule saison (juin–novembre 2026), un seul paysage (Morvan, dominé par les résineux coupés).
+- Référence optique imparfaite : coupes sans sol nu, coupes partielles et coupes tardives
+  (après le 20/10) mal classées.
+- Estimateurs de cohérence différents (NISAR GUNW contre SNAP 10 × 3), produits NISAR provisoires.
+- Météo non vérifiée (pluie, gel) pour expliquer les décorrélations générales.

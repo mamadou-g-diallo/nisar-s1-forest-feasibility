@@ -28,7 +28,18 @@ in the Morvan, following the Irstea guide method\\[0.4em]
 
 \begin{abstract}
 \noindent
-%%ABSTRACT%%
+We replicate in the Morvan (sylvo-ecoregion G23) the Vosges feasibility test comparing NISAR L band and
+Sentinel-1 C band for clear-cut detection, following the method of the Irstea guide. Applied as is to Sentinel-2
+within a season, this method flags 8.7~\% of the forest, mostly broadleaf senescence; a qualified and then
+photo-interpreted reference keeps 7 closed-stand cuts (15.4~ha) in a $20\times20$~km window covered, at equal
+geometry, by two NISAR geometries and two Sentinel-1 orbits. The forest stays coherent in L band (0.5--0.7 at 12
+days) and not in C band (0.25--0.36, the estimator floor). In descending, L-band coherence separates the cuts from
+the forest (AUC 0.81 vs 0.52 in C). In cross-pol backscatter the AUCs are close (0.80--0.83 in L, 0.73--0.83 in C),
+but the contrast is stronger in L band (Cohen's d 1.9--2.1 vs 1.0--1.6). Transposed to radar, the guide's method
+works clearly better in L band (kappa 0.41, 5 of 7 cuts) than in C band (kappa 0.08--0.16, 2 to 3 cuts), without
+reaching the 10~\% error target. C-band false alarms fall mostly on plots that were already open, where the low
+vegetation changes. Reference quality dominates the results: with the automatic reference, neither band separates
+the cuts (AUC 0.51--0.56).
 \end{abstract}
 
 \tableofcontents
@@ -70,11 +81,46 @@ an operational method such as the guide's be transposed to radar?}
 
 \input{methods_en}
 
-%%RESULTS%%
+\input{results_en}
 
 \printbibliography[heading=bibintoc,title={References}]
 
 \appendix
-%%APPENDIX%%
+\section{Reproduction}
+\begin{verbatim}
+python scripts/morvan/m1_ign.py                 # G23 outline, BD Foret V2
+python scripts/morvan/m2_s2_guide.py            # guide on Sentinel-2, qualified reference
+python scripts/morvan/m2b_photo_check.py        # photo-interpretation
+python scripts/morvan/m2c_forest_before.py      # "forest before" test (SWIR)
+python scripts/morvan/m3_radar_window.py        # radar window selection
+python scripts/morvan/m4_fetch_nisar.py         # NISAR GCOV / GUNW (remote reads)
+python scripts/morvan/m4_fetch_s1.py            # subset Sentinel-1 SLC
+python scripts/morvan/m5_process_s1.py --orbit 59   # SNAP (same with --orbit 37)
+python scripts/morvan/m6_compare.py             # main reference (closed stands)
+python scripts/morvan/m6_compare.py --ref verifie --tag _verifie
+python scripts/morvan/m6_compare.py --ref verifie_probable --tag _verifprob
+python scripts/morvan/m6_compare.py --ref auto --tag _auto
+python scripts/morvan/m6_compare.py --erode 20 --tag _erode20
+python scripts/morvan/m6b_commission_audit.py --geom NISAR_D66F65 --var d_g0_HV
+python scripts/morvan/m6b_commission_audit.py --geom S1_T037 --var d_g0_VH --degree 3
+python scripts/morvan/m6c_coherence_pairs.py    # pair-by-pair coherence
+python scripts/morvan/m7_dating.py              # radar dating
+python scripts/morvan/m8_make_tables.py         # LaTeX tables and summary figure
+\end{verbatim}
+
+\section{Full separability table}
+\begin{table}[H]
+\centering\scriptsize
+\caption{All variables, main reference (cut / forest means, Cohen's d, AUC and 95~\% CI, Jeffries-Matusita distance).}
+\input{tables/separability_en}
+\end{table}
+
+\section{Separability by forest group}
+\begin{table}[H]
+\centering\small
+\caption{Cross-pol $\Delta\gamma^0$ AUC by forest group, automatic reference (60 objects). Values close to 0.5 in
+broadleaves mostly reflect reference errors (senescence).}
+\input{tables/groups_en}
+\end{table}
 
 \end{document}

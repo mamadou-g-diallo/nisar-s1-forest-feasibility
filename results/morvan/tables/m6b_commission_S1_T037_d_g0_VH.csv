@@ -1,0 +1,16 @@
+area_ha,degre_max,degre_maj,id,verdict,commentaire
+4.72,3,3,F01,ouvert_avant,déjà ouvert en juin (ancienne coupe) ; sol nu brun en novembre : travail du sol probable
+4.4,3,3,F02,ouvert_avant,"milieu ouvert en juin (herbacé), sol brun en novembre : travail du sol probable"
+3.68,3,1,F03,ouvert_avant,"bande ouverte en juin, pas de nouveau sol nu"
+2.64,3,1,F04,non,"forêt fermée intacte, versant ombragé"
+2.16,3,1,F05,ouvert_avant,"partie ouverte en juin, sénescence de la strate basse"
+2.16,3,1,F06,non,"jeune plantation résineuse en lignes, sans changement"
+2.04,3,1,F07,non,"forêt fermée, sans changement visible"
+2.0,3,1,F08,ouvert_avant,"forêt ouverte (BD Forêt FO1), milieu clair dès juin"
+1.96,3,1,F09,ouvert_avant,"trouée déjà ouverte en juin, végétation en novembre"
+1.84,3,1,F10,non,"bocage et lisière, sénescence"
+1.72,3,1,F11,non,feuillus en sénescence
+1.72,3,1,F12,non,lisière linéaire le long d'une parcelle agricole
+1.68,3,2,F13,ouvert_avant,"sol nu dès juin, repousse en novembre"
+1.56,3,1,F14,ouvert_avant,bande ouverte (prairie ou lande) dès juin
+1.48,3,1,F15,non,"forêt fermée, sans changement visible"

@@ -78,3 +78,17 @@ reports/presentation/*.bbl
 reports/presentation/*.bcf
 reports/presentation/*.blg
 reports/presentation/*.run.xml
+
+# Morvan LaTeX build files
+reports/morvan/**/*.aux
+reports/morvan/**/*.bbl
+reports/morvan/**/*.bcf
+reports/morvan/**/*.blg
+reports/morvan/**/*.fdb_latexmk
+reports/morvan/**/*.fls
+reports/morvan/**/*.out
+reports/morvan/**/*.run.xml
+reports/morvan/**/*.toc
+reports/morvan/**/*.nav
+reports/morvan/**/*.snm
+reports/morvan/**/*.vrb

@@ -201,4 +201,126 @@ zone), so that a cut missed by the reference is not counted as "intact forest".
   - coherence: 10 × 3 window, flat-earth and topographic phases removed;
   - the 3 bursts are joined by TOPSAR-Deburst, without ESD.
 
-*(Radar results are added in section 8 once processing is complete.)*
+## 8. Radar results (steps m6 and m7)
+
+Main reference: 7 closed-stand clear-cuts (15.4 ha, 385 pixels of 20 m), against 10,149 ha of intact
+forest. Comparison **at equal geometry**: L A173 with C A59 (ascending), L D66 with C D37 (descending).
+95 % confidence intervals (CI) from a cluster bootstrap (cuts and 5 × 5-pixel forest blocks).
+
+### 8.1 Cut / intact forest separability (AUC)
+
+[Summary figure](../../results/morvan/figures/m8_summary_L_vs_C.png).
+
+| Indicator | L A173 | C A59 | L D66 | C D37 |
+|---|---|---|---|---|
+| Δγ⁰ cross-pol | 0.80 [0.61–0.93] | 0.73 [0.65–0.86] | 0.83 [0.66–0.93] | 0.83 [0.78–0.91] |
+| Δγ⁰ co-pol | 0.70 | 0.63 | 0.71 | 0.74 |
+| γ⁰ after, cross-pol | 0.89 | 0.76 | 0.85 | 0.82 |
+| minimum coherence (co-pol) | 0.60 [0.53–0.66] | 0.51 | **0.81** [0.75–0.86] | 0.52 |
+| coherence after (co-pol) | 0.66 | 0.68 | 0.54 | 0.74 |
+
+- **Cross-pol backscatter drop** (cut / forest): −2.5 / −0.2 dB (L A173), −1.8 / −0.4 dB (C A59),
+  −2.7 / −0.3 dB (L D66), −2.6 / −0.6 dB (C D37). The L-band drop is larger, and its Cohen's d is larger
+  in both directions (1.89 and 2.13 against 1.03 and 1.63).
+- **At equal geometry**, L ≥ C in ascending (0.80 vs 0.73) and L = C in descending (0.83). The CIs
+  overlap: with 7 cuts, no backscatter AUC difference is significant.
+- **Pre-cut check**: *change* variables stay close to chance (AUC 0.50 to 0.57). Pre-cut *level*
+  variables reach 0.54–0.64 (0.70–0.75 with the "verified" reference): the cut stands are special
+  (mature conifers). The post-cut γ⁰ (0.85–0.89) is therefore partly inflated by stand type. **The main
+  indicator remains the change Δγ⁰**, which does not depend on the starting level.
+- **20 m erosion** (edge pixels removed): every AUC rises by 0.03 to 0.07; the L / C order is unchanged.
+
+### 8.2 Coherence: the forest stays coherent in L band, not in C band
+
+Median coherence of intact forest, pair by pair (`m6_coherence_pairs.csv`):
+
+| Geometry | Intact forest, 12-day pairs | Cuts after the cut |
+|---|---|---|
+| L A173 | 0.35 to 0.70 | 0.41 to 0.74 |
+| L D66 | 0.48 to 0.71 | 0.59 to 0.71 |
+| C D37 | 0.25 to 0.27 | 0.27 to 0.38 |
+| C A59 | 0.30 to 0.36 | 0.34 to 0.53 |
+
+- **H1 is confirmed**: the forest keeps a coherence of 0.5 to 0.7 in L band, against 0.25 to 0.36 in
+  C band, i.e. the floor of the estimator (10 × 3 window): in C band the forest is fully decorrelated
+  after 12 days, as in the Vosges.
+- **H2 is confirmed in descending**: in D66, the minimum coherence of the cuts drops to 0.34 against
+  0.48 for the forest (AUC 0.81, against 0.52 in C D37). The 29/08 → 10/09 pair, which brackets three
+  cuts, gives 0.45 on the cuts against 0.63 in the forest.
+- **In ascending (A173), the advantage is small** (AUC 0.60). Two pairs of the cut window (13/08 →
+  25/08 and 25/08 → 06/09) decorrelate the **whole** forest (0.35): the minimum coherence no longer
+  singles out the cut. Probable cause: a late-summer rain or wind episode (not verified).
+- **In C band, the cut only shows in coherence *afterwards***: bare soil becomes slightly coherent in
+  October–November (0.33 to 0.53) while the forest stays at the floor. Hence the post-cut coherence AUC
+  is higher in C (0.68–0.74) than in L (0.54–0.66). This is a late signal (4 to 8 weeks), useless for
+  alerts.
+
+### 8.3 The guide transposed to radar
+
+[Degree maps](../../results/morvan/figures/m6_guide_maps.png), audits: [NISAR D66](../../results/morvan/figures/m6b_commission_NISAR_D66F65_d_g0_HV.png), [Sentinel-1 D37](../../results/morvan/figures/m6b_commission_S1_T037_d_g0_VH.png).
+
+m − kσ thresholds on cross-pol Δγ⁰ in the forest, then 1 ha sieve (best combination per geometry):
+
+| Geometry | Degree | Omission | Commission | Kappa | Cuts found | False alarms (% forest) |
+|---|---|---|---|---|---|---|
+| L A173 | ≥ 2 | 55 % | 62 % | **0.41** | **5/7** | 0.09 |
+| C A59 | ≥ 2 | 83 % | 94 % | 0.08 | 3/7 | 0.32 |
+| L D66 | ≥ 2 | 51 % | 64 % | **0.41** | **5/7** | 0.10 |
+| C D37 | ≥ 3 | 84 % | 83 % | 0.16 | 2/7 | 0.10 |
+
+- **L band transposes the guide's method much better** (kappa 0.41 against 0.08 to 0.16), although the
+  AUC is equal in descending. Reason: the guide cuts the **tail** of the distribution (m − 2σ, m − 3σ),
+  where the gap in standard-deviation units matters (Cohen's d 2.13 in L against 1.63 in C), not the
+  average ranking measured by the AUC.
+- This **holds for every reference**: L / C kappa = 0.34 / 0.08–0.19 (verified), 0.27 / 0.07–0.15
+  (verified + probable), 0.13 / 0.04–0.09 (automatic).
+- **We remain far from the guide's target** (≤ 10 % omission and commission). Commission is inflated
+  by the small reference: 11 to 13 ha of false alarms in L against 15 ha of cuts, over 12,800 ha
+  evaluated, i.e. 0.1 % of the forest. At the same degree (≥ 2), C band produces 41 to 52 ha, four
+  times more.
+- **Audit of the NISAR D66 false alarms** (15 largest objects, photo-interpretation): 2 probable late
+  cuts (F01, 2.5 ha; F04, 1.6 ha); the other 13 are senescence, edges, larch yellowing or hedgerows.
+  The same audit on Sentinel-1 D37 (VH Δγ⁰, degree 3, 15 largest objects) finds **no late cut**: 8 of 15 objects (22 of 36 ha) are plots **already open in June** (old cuts, heathland, meadows still mapped as closed forest by BD Forêt), where the low vegetation changes (senescence, soil work); the other 7 are intact forest, edges or senescence. C band reacts to low vegetation, as on cuts R019, R139 and R225, which were open before July; L band does not.
+
+### 8.4 Radar dating
+
+[Time series](../../results/morvan/figures/m7_cut_timeseries.png).
+
+First lasting cross-pol drop of more than 2 dB (`m7_cut_dates.csv`):
+
+- In **L band**, the series are smooth (a few tenths of a dB of noise from one date to the next), and
+  both geometries agree: R013 and R060 late August–early September, R161 early September, R198 and
+  R246 late July–mid-August.
+- In **C band**, the descending orbit D37 shows synchronous ±3 dB jumps over the whole forest
+  (probably moisture): it dates 5 of the 7 cuts to the same pair (25/08–06/09), which is not credible.
+  The ascending orbit A59 is more stable and narrows the date of R198 (21/07–02/08).
+- **R100** is only detected in C band (September, in both orbits), like R225 (outside the main
+  reference); in L band the drop stays below 2 dB (−1.3 to −2.0 dB). Hypothesis: thinning or late
+  skidding, to which C band, sensitive to small elements, reacts more than L band.
+
+### 8.5 Hypotheses
+
+| H | Morvan finding | Verdict |
+|---|---|---|
+| H1 | Forest: 0.5–0.7 in L against 0.25–0.36 in C (floor) | **confirmed** |
+| H2 | D66: AUC 0.81 against 0.52; A173: 0.60 (forest-wide decorrelation in late August) | **confirmed in descending, partial** |
+| H3 | Larger L drop (Cohen's d 1.9–2.1 against 1.0–1.6); AUC L ≥ C, difference not significant | **partial** |
+| H4 | Cross-pol > co-pol in both bands and all four geometries | **confirmed** |
+
+> **Finding 4.** As in the Vosges, the clear L-band advantage is **interferometric**: the forest stays
+> coherent and a cut becomes an event. In backscatter the AUCs are close, but L band gives a stronger
+> contrast, and that is what matters for a threshold method like the guide's: 5 of 7 cuts found in L,
+> 2 to 3 in C.
+
+> **Finding 5.** Reference quality dominates everything else: the AUC rises from 0.51–0.56 (automatic
+> reference, 60 objects) to 0.73–0.83 (7 verified closed-stand cuts). Without photo-interpretation, we
+> would have wrongly concluded that neither L nor C band sees the cuts.
+
+### 8.6 Limits
+
+- **7 cuts, 15 ha**: wide CIs, no backscatter AUC difference is significant.
+- A single season (June–November 2026), a single landscape (Morvan, dominated by conifer cuts).
+- Imperfect optical reference: cuts without bare soil, partial cuts and late cuts (after 20/10) are
+  misclassified.
+- Different coherence estimators (NISAR GUNW vs SNAP 10 × 3); NISAR products are provisional.
+- Weather not checked (rain, frost) to explain forest-wide decorrelation.
