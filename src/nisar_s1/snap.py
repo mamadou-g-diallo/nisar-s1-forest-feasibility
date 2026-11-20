@@ -18,7 +18,7 @@ GRAPHS = Path(__file__).parent / "graphs"
 
 
 def render_graph(name: str, out_xml: Path, **variables) -> Path:
-    """Write graph ``name`` (``s1_coherence`` or ``s1_gamma0``) with variables substituted."""
+    """Write graph ``name`` (``s1_coherence``, ``s1_gamma0`` or ``s1_interferogram``) with variables substituted."""
     tpl = string.Template((GRAPHS / f"{name}.xml").read_text())
     xml = tpl.substitute({k: str(v) for k, v in variables.items()})
     out_xml.parent.mkdir(parents=True, exist_ok=True)
@@ -77,6 +77,25 @@ def s1_gamma0(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: s
     tmp = out_dim.with_name(out_dim.stem + "_part.dim")
     xml = render_graph("s1_gamma0", out_dim.with_suffix(".xml"), ref=_manifest(safe), swath=swath.upper(),
                        aoi=aoi_wkt, rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
+                       region=region_wkt, out=tmp)
+    run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)
+    _rename_dimap(tmp, out_dim)
+    return out_dim
+
+
+def s1_interferogram(ref_safe: Path, sec_safe: Path, out_dim: Path, swath: str, aoi_wkt: str,
+                     region_wkt: str, gpt: str, pixel_m: float = 20.0, crs: str = "EPSG:2154",
+                     coh_win: tuple[int, int] = (10, 3), looks: tuple[int, int] = (4, 1),
+                     label: str = "") -> Path:
+    """Flattened, topography-free VV interferogram (i/q bands) and coherence of a Sentinel-1 SLC
+    pair, multilooked and terrain-corrected (graph ``s1_interferogram``)."""
+    if out_dim.exists():
+        print(f"{label} {out_dim.name}: already present", flush=True)
+        return out_dim
+    tmp = out_dim.with_name(out_dim.stem + "_part.dim")
+    xml = render_graph("s1_interferogram", out_dim.with_suffix(".xml"), ref=_manifest(ref_safe),
+                       sec=_manifest(sec_safe), swath=swath.upper(), aoi=aoi_wkt, cohWinRg=coh_win[0],
+                       cohWinAz=coh_win[1], rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
                        region=region_wkt, out=tmp)
     run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)
     _rename_dimap(tmp, out_dim)

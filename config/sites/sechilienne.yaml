@@ -1,0 +1,31 @@
+# Perspective « glissements de terrain » (version réduite) : versant instable des Ruines de
+# Séchilienne (Isère, vallée de la Romanche), mouvement lent et continu suivi depuis 1985.
+# Question : la bande L (NISAR) garde-t-elle une cohérence et une phase exploitables sur un versant
+# boisé en mouvement, là où la bande C (Sentinel-1) décorrèle ? Pas de secrets ici.
+
+site:
+  nom: sechilienne
+  libelle: "Ruines de Séchilienne (Isère)"
+  crs: EPSG:2154
+  grille_m: 20
+  # fenêtre d'étude (WGS84) : versant sud du Mont Sec et versants stables voisins
+  bbox_wgs84: [5.78, 5.89, 45.03, 45.085]   # lon_min, lon_max, lat_min, lat_max
+
+chemins:
+  data_root: /media/dell/Transcend1/nisar_data/sechilienne
+  results: results/sechilienne
+  gpt: ~/esa-snap/bin/gpt
+
+periode:
+  recherche: [2026-06-01, 2026-11-20]
+
+capteurs:
+  nisar:
+    lambda_m: 0.2384               # bande L, 1257,5 MHz
+    bw_code: "2000"
+    geometries:                    # inventaire ASF du 20/11/2026
+      - {direction: A, track: 173}
+      - {direction: D, track: 138}
+  sentinel1:
+    lambda_m: 0.05547
+    orbites: [161, 139]            # A161 (avec NISAR A173), D139 (avec NISAR D138)
