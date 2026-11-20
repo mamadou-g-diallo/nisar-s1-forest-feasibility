@@ -278,6 +278,10 @@ def main() -> None:
                                    **c, "objets_trouves_pct": 100 * float((hits >= 0.25).mean()) if len(hits) else np.nan,
                                    "objets_n": len(hits)})
             keep_maps[(gname, var)] = (x, degs)
+            if not args.tag:
+                from nisar_s1.optical import save_raster
+                save_raster(Raster(degs.astype("float32"), grid.transform, grid.crs),
+                            data / "analysis" / f"degres_{gname.replace(' ', '_')}_{var}.tif")
             for gc, gl in GROUPS.items():
                 mref, mint = ref & (group == gc), intact & (group == gc)
                 if mref.sum() >= 25 and mint.sum() >= 25:

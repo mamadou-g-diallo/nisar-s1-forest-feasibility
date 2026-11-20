@@ -150,11 +150,52 @@ référence (112 ha)**, soit 34 en feuillus, 20 en résineux et 6 en forêts mix
 
 | | Montante | Descendante |
 |---|---|---|
-| NISAR (bande L) | A173 F25 | D66 F64 |
+| NISAR (bande L) | A173 F25 | D66 F65 |
 | Sentinel-1 (bande C) | A59 (IW3, 3 bursts) | D37 (IW2, 3 bursts) |
 
 Cette fenêtre permet, contrairement aux Vosges, de comparer **à géométrie égale dans les deux
 directions**.
+
+**Photo-interprétation des 60 coupes de la fenêtre** (étape m2b,
+[figures](../../results/morvan/figures/s2_photo_check_window_1.png),
+[verdicts](../../results/morvan/tables/s2_photo_check_window.csv)). Toutes les coupes de référence
+de la fenêtre ont été examinées en couleurs vraies (juillet, septembre) et en fausses couleurs
+SWIR / PIR / rouge de septembre, où le sol nu et les rémanents apparaissent rose-magenta :
+
+| Verdict | Feuillus | Résineux | Mixtes | Total |
+|---|---|---|---|---|
+| Coupe certaine (sol nu visible) | 1 | 6 | 3 | **10** (22,8 ha) |
+| Coupe probable | 6 | 2 | 1 | 9 |
+| Pas de sol nu (sénescence, ombre, éclaircie) | 27 | 12 | 2 | 41 |
+
+Seules 10 des 60 coupes « qualifiées » sont donc des coupes rases certaines, et presque toutes en
+résineux ou en forêt mixte : en feuillus, la baisse de NDVI de septembre est surtout de la
+sénescence. Cela confirme et aggrave le constat 2.
+
+**Test « forêt avant »** (étape m2c, [table](../../results/morvan/tables/s2_forest_before.csv)).
+Une coupe rase au sens du guide est le passage d'un peuplement fermé au sol nu. Pour chaque coupe
+certaine, la réflectance SWIR (B11) de juillet dans l'objet est comparée à celle d'un anneau de
+forêt BD Forêt de 100 à 400 m autour : l'objet était un peuplement fermé si sa B11 ne dépasse pas
+le 90ᵉ centile de l'anneau. Trois coupes certaines (R019, R139, R225) étaient déjà ouvertes en
+juillet (coupe antérieure, régénération, dépôt de bois) : elles ont été mises à nu entre juillet et
+septembre, mais ce n'est pas la perte d'un peuplement.
+
+**Références utilisées pour le radar.** Quatre références emboîtées sont évaluées
+(option `--ref` de `m6_compare.py`) :
+
+| Référence | Contenu | Objets | Rôle |
+|---|---|---|---|
+| `auto` | 60 coupes qualifiées par les seuils | 60 | sensibilité (bruitée) |
+| `verifie_probable` | coupes certaines + probables | 19 | sensibilité |
+| `verifie` | coupes certaines | 10 | sensibilité |
+| **`peuplement`** | coupes certaines **et** forêt fermée avant | **7** (15,4 ha) | **référence principale** |
+
+Les objets écartés (ambigus) sont exclus de l'apprentissage comme de la forêt intacte (zone
+tampon), pour ne pas compter comme « forêt intacte » une coupe que la référence a ratée.
+
+> **Constat 3.** La référence principale est petite (7 coupes, 15,4 ha) mais fiable : chaque coupe
+> est vérifiée visuellement et était un peuplement fermé en juillet. Les intervalles de confiance
+> sont larges et calculés par rééchantillonnage des coupes (bootstrap en grappes).
 
 ## 7. Acquisition et traitement radar (étapes m4 et m5)
 

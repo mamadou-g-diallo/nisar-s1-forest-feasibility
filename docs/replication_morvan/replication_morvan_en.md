@@ -144,10 +144,49 @@ cuts (112 ha)**, i.e. 34 in broadleaves, 20 in conifers and 6 in mixed forest.
 
 | | Ascending | Descending |
 |---|---|---|
-| NISAR (L band) | A173 F25 | D66 F64 |
+| NISAR (L band) | A173 F25 | D66 F65 |
 | Sentinel-1 (C band) | A59 (IW3, 3 bursts) | D37 (IW2, 3 bursts) |
 
 Unlike the Vosges, this window allows a comparison **at equal geometry in both directions**.
+
+**Photo-interpretation of the 60 cuts of the window** (step m2b,
+[figures](../../results/morvan/figures/s2_photo_check_window_1.png),
+[verdicts](../../results/morvan/tables/s2_photo_check_window.csv)). Every reference cut of the window
+was examined in true colour (July, September) and in September SWIR / NIR / red false colour, where
+bare soil and logging residues appear pink-magenta:
+
+| Verdict | Broadleaves | Conifers | Mixed | Total |
+|---|---|---|---|---|
+| Certain cut (visible bare soil) | 1 | 6 | 3 | **10** (22.8 ha) |
+| Probable cut | 6 | 2 | 1 | 9 |
+| No bare soil (senescence, shadow, thinning) | 27 | 12 | 2 | 41 |
+
+Only 10 of the 60 "qualified" cuts are certain clear-cuts, almost all in conifers or mixed forest:
+in broadleaves the September NDVI drop is mostly senescence. This confirms and strengthens finding 2.
+
+**"Forest before" test** (step m2c, [table](../../results/morvan/tables/s2_forest_before.csv)). A
+clear-cut in the guide's sense is a change from a closed stand to bare soil. For every certain cut,
+the July SWIR reflectance (B11) inside the object is compared with a 100–400 m ring of BD Forêt
+forest: the object was a closed stand if its B11 does not exceed the ring's 90th percentile. Three
+certain cuts (R019, R139, R225) were already open in July (earlier cut, regeneration, timber
+storage): they became bare between July and September, but this is not the loss of a stand.
+
+**References used for the radar.** Four nested references are evaluated (option `--ref` of
+`m6_compare.py`):
+
+| Reference | Content | Objects | Role |
+|---|---|---|---|
+| `auto` | 60 cuts qualified by thresholds | 60 | sensitivity (noisy) |
+| `verifie_probable` | certain + probable cuts | 19 | sensitivity |
+| `verifie` | certain cuts | 10 | sensitivity |
+| **`peuplement`** | certain cuts **and** closed forest before | **7** (15.4 ha) | **main reference** |
+
+Discarded (ambiguous) objects are excluded both from the cut class and from intact forest (buffer
+zone), so that a cut missed by the reference is not counted as "intact forest".
+
+> **Finding 3.** The main reference is small (7 cuts, 15.4 ha) but reliable: every cut is visually
+> checked and was a closed stand in July. Confidence intervals are wide and computed by resampling
+> the cuts (cluster bootstrap).
 
 ## 7. Radar acquisition and processing (steps m4 and m5)
 

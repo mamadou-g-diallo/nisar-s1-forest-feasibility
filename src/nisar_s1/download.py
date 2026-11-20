@@ -92,15 +92,21 @@ class HttpRangeFile:
     """Read-only, seekable file over HTTPS using byte-range requests (authenticated session).
 
     The Earthdata redirect is resolved once; every ``read`` is then a single range request.
+    The resolved URL is pre-signed and expires (about one hour): after a failed request it is
+    resolved again from the original URL before retrying.
     Used to pull selected members out of large remote zip archives (e.g. one Sentinel-1 sub-swath).
     """
 
     def __init__(self, url: str, session: requests.Session):
-        r = session.get(url, headers={"Range": "bytes=0-0"}, timeout=120)
-        r.raise_for_status()
-        self.url, self.session = r.url, session
-        self.size = int(r.headers["Content-Range"].split("/")[1])
+        self.source, self.session = url, session
+        self._resolve()
         self.pos = 0
+
+    def _resolve(self) -> None:
+        r = self.session.get(self.source, headers={"Range": "bytes=0-0"}, timeout=120)
+        r.raise_for_status()
+        self.url = r.url
+        self.size = int(r.headers["Content-Range"].split("/")[1])
 
     def seekable(self) -> bool:
         return True
@@ -129,6 +135,10 @@ class HttpRangeFile:
                 break
             except requests.RequestException:
                 time.sleep(10 * (attempt + 1))
+                try:
+                    self._resolve()  # pre-signed URL may have expired
+                except requests.RequestException:
+                    pass
         else:
             raise RuntimeError("range request failed")
         self.pos += len(r.content)
@@ -172,6 +182,9 @@ def extract_safe_subset(url: str, out_dir: Path, swath: str, pols=("vv", "vh"),
     for n in keep:
         target = tmp.parent / n.replace(safe, safe + ".part", 1)
         target.parent.mkdir(parents=True, exist_ok=True)
+        if target.exists() and target.stat().st_size == z.getinfo(n).file_size:
+            done += z.getinfo(n).compress_size  # complete from an interrupted run
+            continue
         with z.open(n) as src, open(target, "wb") as dst:
             while True:
                 b = src.read(_CHUNK)

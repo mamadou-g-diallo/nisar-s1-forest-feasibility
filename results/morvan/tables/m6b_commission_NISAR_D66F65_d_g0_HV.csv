@@ -1,0 +1,16 @@
+area_ha,degre_max,degre_maj,id,verdict,commentaire
+2.52,3,1,F01,coupe_tardive_probable,plage brun-orangé et SWIR pâle en novembre dans une parcelle verte en juillet : coupe ou éclaircie d'octobre
+1.64,3,1,F02,non,"lisière forêt / prairie, teinte orangée de sénescence"
+1.64,2,1,F03,non,"feuillus en sénescence, pas de sol nu"
+1.6,2,1,F04,coupe_tardive_probable,plage pâle sans végétation verte en SWIR de novembre
+1.44,3,1,F05,non,résineux en lignes intact
+1.4,3,1,F06,non,sénescence de feuillus
+1.28,3,1,F07,non,"peuplement intact, forme ramifiée de chatoiement"
+1.28,3,1,F08,non,"bocage / prairie, pas de forêt fermée"
+1.28,2,1,F09,non,peuplement intact
+1.24,2,1,F10,non,"jaunissement automnal (mélèze), pas de sol nu"
+1.24,3,1,F11,non,lisière et plan d'eau
+1.2,3,1,F12,non,peuplement intact
+1.2,2,1,F13,non,"limite de parcelles, pas de sol nu"
+1.16,3,1,F14,non,sénescence de feuillus
+1.12,2,1,F15,non,peuplement intact
