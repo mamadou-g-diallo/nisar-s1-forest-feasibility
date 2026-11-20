@@ -26,7 +26,8 @@ def render_graph(name: str, out_xml: Path, **variables) -> Path:
     return out_xml
 
 
-def run_gpt(graph_xml: Path, gpt: str | Path, log: Path, label: str = "", cache_gb: int = 2,
+def run_gpt(graph_xml: Path, gpt: str | Path, log: Path, label: str = "",
+            cache_gb: int = int(os.environ.get("SNAP_CACHE_GB", 2)),
             threads: int = 2, timeout_s: int = 4 * 3600) -> None:
     """Run ``gpt graph.xml``; print gpt progress lines with ``label``; raise on failure."""
     cmd = [str(Path(gpt).expanduser()), str(graph_xml), "-c", f"{cache_gb}G", "-q", str(threads)]
@@ -93,6 +94,7 @@ def s1_interferogram(ref_safe: Path, sec_safe: Path, out_dim: Path, swath: str, 
         print(f"{label} {out_dim.name}: already present", flush=True)
         return out_dim
     tmp = out_dim.with_name(out_dim.stem + "_part.dim")
+    _remove_partial(tmp)   # left over by an interrupted run (crash, OOM, reboot)
     xml = render_graph("s1_interferogram", out_dim.with_suffix(".xml"), ref=_manifest(ref_safe),
                        sec=_manifest(sec_safe), swath=swath.upper(), aoi=aoi_wkt, cohWinRg=coh_win[0],
                        cohWinAz=coh_win[1], rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
@@ -100,6 +102,14 @@ def s1_interferogram(ref_safe: Path, sec_safe: Path, out_dim: Path, swath: str, 
     run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)
     _rename_dimap(tmp, out_dim)
     return out_dim
+
+
+def _remove_partial(tmp: Path) -> None:
+    """Delete an incomplete BEAM-DIMAP output (``*_part.dim`` + ``.data``) so a rerun starts clean."""
+    import shutil
+    if tmp.with_suffix(".data").exists():
+        shutil.rmtree(tmp.with_suffix(".data"))
+    tmp.unlink(missing_ok=True)
 
 
 def _manifest(safe: Path) -> Path:
