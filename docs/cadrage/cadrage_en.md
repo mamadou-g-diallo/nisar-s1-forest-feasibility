@@ -2,7 +2,7 @@
 
 *🇫🇷 Version française : [cadrage_fr.md](cadrage_fr.md)*
 
-*Feasibility test prepared for the SERTIT/ICube internship "Exploring L and P bands (NISAR, BIOMASS) for the detection of deforestation and landslides".*
+*Independent feasibility study on the contribution of L and P bands (NISAR, BIOMASS) to the detection of deforestation and landslides.*
 
 ## 1. Question and hypotheses
 
@@ -16,7 +16,7 @@ interferometric coherence and backscatter separate the clear-cut from intact for
 |---|------------|--------------------|
 | H1 | Over intact forest, coherence is higher in L-band than in C-band at the same temporal baseline (12 days). | L-band penetrates the canopy and scatters mainly from trunks and large branches, which are stable. C-band is dominated by moving foliage (temporal decorrelation). |
 | H2 | The "clear-cut − forest" coherence contrast is therefore larger in L-band. | In C-band the forest is already poorly coherent, so the contrast with the clear-cut (bare soil, often more coherent) is small. |
-| H3 | The backscatter drop after cutting is stronger in L-band, especially in HV. | Removing trunks suppresses volume scattering and trunk-ground double bounce. C-band saturates over dense forest. |
+| H3 | The backscatter drop after cutting is stronger in L-band, especially in HV. | Removing trunks suppresses volume scattering and trunk-ground double bounce. C-band saturates over dense forest (Imhoff, 1995). |
 | H4 | Cross-polarisation (HV, and the HV/HH ratio) is the radar indicator most sensitive to clear-cutting. | HV is linked to volume scattering, hence to biomass. |
 
 ## 2. Scope
@@ -135,3 +135,7 @@ The files in `scripts/` and the notebooks only call these modules with the param
 
 The report will position this chain relative to **ISCE3** (NISAR's official processing software, which produces
 GUNW and GCOV) and to **ROSE-L** (Copernicus L-band mission, launch planned for 2028), to which it must remain transferable.
+
+## Reference cited
+
+- Imhoff, M. L. (1995). Radar backscatter and biomass saturation: ramifications for global biomass inventory. *IEEE Transactions on Geoscience and Remote Sensing*, 33(2), 511–518. https://doi.org/10.1109/36.377953

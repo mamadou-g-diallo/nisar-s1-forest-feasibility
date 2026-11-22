@@ -2,9 +2,9 @@
 
 *Version française : [glissement_sechilienne_fr.md](glissement_sechilienne_fr.md)*
 
-This is a **reduced version**, prepared in one day. It covers one site and one question: on an
-unstable **forested** slope, does L band keep a usable interferometric phase where C band loses it?
-Precise displacement measurement is not the goal of this test; it remains a perspective (§ 7).
+This note presents a **focused study**, limited to one site and one question: on an unstable
+**forested** slope, does L band retain a usable interferometric phase where C band loses it? Precise
+displacement measurement is beyond the scope of this study; it is a perspective (§ 7).
 
 ## 1. Site
 

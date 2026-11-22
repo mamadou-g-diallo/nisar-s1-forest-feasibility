@@ -1,6 +1,6 @@
 # NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges, then Morvan) and forested landslide (Séchilienne)
 
-Feasibility test prepared for the SERTIT/ICube internship (L and P bands: NISAR, BIOMASS).
+Independent feasibility study on L and P bands (NISAR, BIOMASS) for monitoring forest clear-cuts and forested landslides.
 
 ## Question
 On a recent clear-cut (Vosges/Alsace, June–Nov. 2026), do **NISAR (L-band, GUNW / GCOV products)**

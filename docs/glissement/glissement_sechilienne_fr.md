@@ -2,10 +2,10 @@
 
 *English version: [glissement_sechilienne_en.md](glissement_sechilienne_en.md)*
 
-**Version réduite**, préparée en un jour. Elle porte sur un seul site et une seule question :
-sur un versant **boisé** et instable, la bande L garde-t-elle une phase interférométrique exploitable
-là où la bande C la perd ? La mesure fine des déplacements n'est pas l'objet de ce test ; elle reste
-une perspective (§ 7).
+Cette note présente une **étude ciblée**, limitée à un site et à une question : sur un versant
+**boisé** et instable, la bande L conserve-t-elle une phase interférométrique exploitable là où la
+bande C la perd ? La mesure fine des déplacements sort du cadre de cette étude ; elle constitue une
+perspective (§ 7).
 
 ## 1. Site
 

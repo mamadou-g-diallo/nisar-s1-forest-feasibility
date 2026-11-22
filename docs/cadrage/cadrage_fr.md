@@ -2,7 +2,7 @@
 
 *🇬🇧 English version: [cadrage_en.md](cadrage_en.md)*
 
-*Test de faisabilité préparatoire au stage SERTIT/ICube « Exploration des bandes L et P (NISAR, BIOMASS) pour la détection de la déforestation et des glissements de terrain ».*
+*Étude de faisabilité indépendante sur l'apport des bandes L et P (NISAR, BIOMASS) pour la détection de la déforestation et des glissements de terrain.*
 
 ## 1. Question et hypothèses
 
@@ -16,7 +16,7 @@ de la forêt intacte que **Sentinel-1 (bande C, λ ≈ 5,6 cm)** ?
 |---|-----------|------------------------|
 | H1 | La cohérence en forêt intacte est plus élevée en bande L qu'en bande C, à même intervalle temporel (12 j). | La bande L pénètre le couvert et rétrodiffuse surtout sur les troncs et les grosses branches, qui sont stables. La bande C est dominée par le feuillage, qui bouge (décorrélation temporelle). |
 | H2 | L'écart de cohérence « coupe − forêt » est donc plus marqué en bande L. | En bande C, la forêt est déjà peu cohérente : le contraste avec la coupe (sol nu, souvent plus cohérent) est faible. |
-| H3 | La baisse de rétrodiffusion après la coupe est plus forte en bande L, surtout en HV. | La disparition des troncs supprime la diffusion de volume et la double réflexion tronc-sol. La bande C sature sur forêt dense. |
+| H3 | La baisse de rétrodiffusion après la coupe est plus forte en bande L, surtout en HV. | La disparition des troncs supprime la diffusion de volume et la double réflexion tronc-sol. La bande C sature sur forêt dense (Imhoff, 1995). |
 | H4 | La polarisation croisée (HV, et le rapport HV/HH) est l'indicateur radar le plus sensible à la coupe. | HV est lié à la diffusion de volume, c'est-à-dire à la biomasse. |
 
 ## 2. Périmètre
@@ -136,3 +136,7 @@ paramètres de `config/params.yaml`.
 
 Le rapport situera cette chaîne par rapport à **ISCE3** (logiciel de traitement officiel de NISAR, qui produit
 GUNW et GCOV) et à **ROSE-L** (mission Copernicus en bande L, lancement prévu en 2028), pour laquelle elle doit rester transposable.
+
+## Référence citée
+
+- Imhoff, M. L. (1995). Radar backscatter and biomass saturation: ramifications for global biomass inventory. *IEEE Transactions on Geoscience and Remote Sensing*, 33(2), 511–518. https://doi.org/10.1109/36.377953

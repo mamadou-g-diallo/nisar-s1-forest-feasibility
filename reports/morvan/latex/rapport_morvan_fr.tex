@@ -19,7 +19,7 @@
 
 \title{Bande L (NISAR) contre bande C (Sentinel-1) pour la détection des coupes rases\\
 dans le Morvan, selon la méthode du guide de l'Irstea\\[0.4em]
-\large Réplication du test de faisabilité des Vosges -- stage SERTIT / ICube}
+\large Réplication de l'étude de faisabilité des Vosges}
 \author{Mamadou Galy Diallo}
 \date{Novembre 2026}
 
@@ -28,19 +28,23 @@ dans le Morvan, selon la méthode du guide de l'Irstea\\[0.4em]
 
 \begin{abstract}
 \noindent
-Nous répliquons dans le Morvan (sylvo-écorégion G23) le test de faisabilité des Vosges comparant la bande L
-de NISAR et la bande C de Sentinel-1 pour détecter les coupes rases, en suivant la méthode du guide de
-l'Irstea. Appliquée telle quelle à Sentinel-2 en intra-saison, cette méthode détecte 8,7~\% de la forêt,
-surtout de la sénescence de feuillus ; une référence qualifiée puis photo-interprétée retient 7 coupes de
-peuplement fermé (15,4~ha) dans une fenêtre de $20\times20$~km couverte, à géométrie égale, par deux
-géométries NISAR et deux orbites Sentinel-1. La forêt reste cohérente en bande L (0,5--0,7 à 12~jours) et non
-en bande C (0,25--0,36, plancher de l'estimateur). En descendante, la cohérence L sépare les coupes de la
-forêt (AUC 0,81 contre 0,52 en C). En rétrodiffusion croisée, les AUC sont proches (0,80--0,83 en L,
-0,73--0,83 en C), mais le contraste est plus fort en bande L (d de Cohen 1,9--2,1 contre 1,0--1,6). Transposée
-au radar, la méthode du guide fonctionne nettement mieux en bande L (kappa 0,41, 5 coupes sur 7) qu'en bande C
-(kappa 0,08--0,16, 2 à 3 coupes), sans atteindre l'objectif de 10~\% d'erreur. Les fausses alertes de la bande
-C tombent surtout sur des parcelles déjà ouvertes, où change la végétation basse. La qualité de la référence
-domine les résultats : avec la référence automatique, aucune bande ne sépare les coupes (AUC 0,51--0,56).
+Cette étude réplique dans le Morvan (sylvo-écorégion G23) l'étude de faisabilité menée dans les Vosges, qui
+comparait la bande L de NISAR et la bande C de Sentinel-1 pour détecter les coupes rases. Elle suit la méthode du
+guide de l'Irstea. Appliquée telle quelle à Sentinel-2 en intra-saison, cette méthode détecte 8,7~\% de la forêt,
+essentiellement de la sénescence de feuillus. Une référence qualifiée, puis contrôlée par photo-interprétation,
+retient 7 coupes de peuplement fermé (15,4~ha) dans une fenêtre de $20\times20$~km couverte, à géométrie égale,
+par deux géométries NISAR et deux orbites Sentinel-1.
+
+La forêt reste cohérente en bande L (0,5--0,7 à 12~jours) mais pas en bande C (0,25--0,36, plancher de
+l'estimateur). En géométrie descendante, la cohérence L sépare les coupes de la forêt (AUC 0,81 contre 0,52 en C).
+En rétrodiffusion croisée, les AUC sont proches (0,80--0,83 en L, 0,73--0,83 en C), mais le contraste est plus
+marqué en bande L (d de Cohen 1,9--2,1 contre 1,0--1,6). Transposée au radar, la méthode du guide fonctionne
+nettement mieux en bande L (kappa 0,41, 5 coupes sur 7) qu'en bande C (kappa 0,08--0,16, 2 à 3 coupes), sans
+atteindre l'objectif de 10~\% d'erreur. Les fausses alertes de la bande C se concentrent sur des parcelles déjà
+ouvertes, où évolue la végétation basse.
+
+La qualité de la référence optique conditionne les résultats : avec la référence automatique, aucune bande ne
+sépare les coupes (AUC 0,51--0,56).
 \end{abstract}
 
 \tableofcontents
@@ -49,12 +53,12 @@ domine les résultats : avec la référence automatique, aucune bande ne sépare
 %=====================================================================
 \section{Contexte et objectif}
 
-Le stage SERTIT / ICube porte sur l'exploration des bandes L et P (NISAR, BIOMASS) pour la détection de la
-déforestation et des glissements de terrain. Un premier test, dans les Vosges, a comparé NISAR (bande L, produits
+Les bandes radar de grande longueur d'onde (L et P) sont réputées mieux adaptées que la bande C au suivi des
+forêts. Une première étude, dans les Vosges, a comparé NISAR (bande L, produits
 de niveau~2 générés par ISCE3~\cite{isce3}) et Sentinel-1 (bande C~\cite{torres2012sentinel1}) sur une coupe rase
 de 2,4~ha. La bande L y séparait presque parfaitement la coupe de la forêt en cohérence interférométrique
 (AUC 0,995 contre 0,72 en bande C), mais son avantage en rétrodiffusion dépendait de la géométrie d'acquisition.
-Ce test avait deux limites : \textbf{une seule coupe} et \textbf{une seule orbite Sentinel-1}.
+Cette étude avait deux limites : \textbf{une seule coupe} et \textbf{une seule orbite Sentinel-1}.
 
 La présente réplication lève ces deux limites et s'appuie sur une méthode opérationnelle française : le guide
 méthodologique de détection des coupes rases de l'Irstea (UMR TETIS)~\cite{ose2015guide}, établi pour le ministère
@@ -76,7 +80,8 @@ bande C de Sentinel-1 ? Et une méthode opérationnelle comme celle du guide est
 \begin{description}
 \item[H1] La cohérence de la forêt intacte est plus élevée en bande L qu'en bande C.
 \item[H2] La perte de cohérence due à la coupe est donc mieux détectée en bande L.
-\item[H3] La baisse de rétrodiffusion après la coupe est plus forte en bande L.
+\item[H3] La baisse de rétrodiffusion après la coupe est plus forte en bande L, la bande C saturant sur forêt
+  dense~\cite{imhoff1995saturation,joshi2015mapping}.
 \item[H4] La polarisation croisée est l'indicateur de rétrodiffusion le plus sensible.
 \end{description}
 
