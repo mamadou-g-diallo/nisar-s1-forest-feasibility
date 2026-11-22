@@ -1,20 +1,57 @@
-"""Project configuration: load ``config/params.yaml`` and expose paths and the search footprint."""
+"""Configuration: locate and load the parameter file and the per-site study files.
+
+The package does not depend on the layout of this repository. Configuration files are looked up,
+in this order:
+
+1. an explicit path passed to :func:`load_params` / :func:`load_site`;
+2. the environment variable ``NISAR_S1_ROOT`` (a folder containing ``config/params.yaml`` and
+   ``config/sites/*.yaml``);
+3. the repository the package was installed from in editable mode (``pip install -e .``);
+4. the current working directory.
+
+Relative paths in a site file (``chemins``) are resolved against that same root folder.
+"""
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any
 
 import yaml
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+def project_root() -> Path:
+    """Root folder holding ``config/`` (see the module docstring for the lookup order)."""
+    env = os.environ.get("NISAR_S1_ROOT")
+    if env:
+        return Path(env).expanduser().resolve()
+    if (_REPO_ROOT / "config").is_dir():
+        return _REPO_ROOT
+    return Path.cwd()
+
+
+# Kept for the project scripts, which run from a clone of the repository.
+PROJECT_ROOT = project_root()
 DEFAULT_PARAMS = PROJECT_ROOT / "config" / "params.yaml"
+SITES_DIR = PROJECT_ROOT / "config" / "sites"
 
 
-def load_params(path: str | Path = DEFAULT_PARAMS) -> dict[str, Any]:
-    """Read the YAML parameter file and expand ``~`` in the ``chemins`` section."""
+def _read_yaml(path: Path) -> dict[str, Any]:
+    if not path.is_file():
+        raise FileNotFoundError(
+            f"{path} not found. Pass an explicit path, or set NISAR_S1_ROOT to a folder "
+            "containing config/params.yaml and config/sites/.")
     with open(path, encoding="utf-8") as f:
-        params = yaml.safe_load(f)
+        return yaml.safe_load(f) or {}
+
+
+def load_params(path: str | Path | None = None) -> dict[str, Any]:
+    """Read the YAML parameter file (default ``<root>/config/params.yaml``) and expand ``~`` in
+    the ``chemins`` section."""
+    params = _read_yaml(Path(path) if path else project_root() / "config" / "params.yaml")
     for key, value in params.get("chemins", {}).items():
         params["chemins"][key] = str(Path(value).expanduser())
     return params
@@ -32,20 +69,23 @@ def search_aoi_wkt(params: dict[str, Any] | None = None) -> str:
     return bbox_to_wkt(params["aoi_recherche"]["bbox_wgs84"])
 
 
-SITES_DIR = PROJECT_ROOT / "config" / "sites"
+def load_site(name: str | Path, root: str | Path | None = None) -> dict[str, Any]:
+    """Read a site study file (AOI, CRS, periods, sensors).
 
-
-def load_site(name: str) -> dict[str, Any]:
-    """Read ``config/sites/<name>.yaml`` (site-specific study: AOI, CRS, periods, sensors).
-
-    ``chemins.results`` is made absolute (relative to the repository root) and ``~`` is expanded,
-    so every script of the site writes to its own ``results/<site>/`` and data folder.
-    The Vosges study (tag ``v1.0-vosges``) keeps using :func:`load_params`.
+    ``name`` is either a site name, read from ``<root>/config/sites/<name>.yaml``, or a path to a
+    YAML file. Relative paths in ``chemins`` are made absolute against ``root`` (default:
+    :func:`project_root`) and ``~`` is expanded, so every script of the site writes to its own
+    results and data folders.
     """
-    with open(SITES_DIR / f"{name}.yaml", encoding="utf-8") as f:
-        site = yaml.safe_load(f)
+    base = Path(root).expanduser().resolve() if root else project_root()
+    candidate = Path(name)
+    if candidate.suffix in (".yaml", ".yml"):
+        path = candidate.expanduser()
+    else:
+        path = base / "config" / "sites" / f"{name}.yaml"
+    site = _read_yaml(path)
     paths = site.setdefault("chemins", {})
     for key, value in paths.items():
         p = Path(str(value)).expanduser()
-        paths[key] = str(p if p.is_absolute() else PROJECT_ROOT / p)
+        paths[key] = str(p if p.is_absolute() else base / p)
     return site

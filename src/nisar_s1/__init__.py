@@ -1,8 +1,8 @@
-"""nisar_s1 — reusable tools to compare L-band (NISAR, later ROSE-L) and C-band (Sentinel-1)
-SAR products for forest clear-cut detection.
+"""nisar_s1 — tools to compare L-band (NISAR, later ROSE-L) and C-band (Sentinel-1) SAR products
+over forests: clear-cut detection and phase consistency on forested slopes.
 
-Modules (see docs/cadrage/cadrage_en.md, section 9):
-config, search, download, io_nisar, io_s1, snap, grid, stats, detect, plots.
+Modules: config, search, download, io_nisar, optical, sites, ign, snap, grid, stats, detect,
+guide_cr, plots.
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

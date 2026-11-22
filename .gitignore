@@ -104,3 +104,8 @@ reports/*/presentation/*.out
 reports/*/presentation/*.run.xml
 reports/*/presentation/*.snm
 reports/*/presentation/*.toc
+
+# Construction du paquet
+build/
+dist/
+*.egg-info/
