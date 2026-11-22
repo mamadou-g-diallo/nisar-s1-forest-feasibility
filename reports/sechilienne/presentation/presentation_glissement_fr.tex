@@ -202,7 +202,7 @@ isbn=false, eprint=false, doi=false, url=false]{biblatex}
 		\end{block}
 		\begin{block}{Zones construites sans radar}
 			\scriptsize
-			MNT, WorldCover, Sentinel-2, littérature\\
+			MNT, WorldCover \parencite{zanaga2022worldcover}, Sentinel-2, littérature\\
 			\textcolor{cut}{frontale} 4,6~ha -- versant 168~ha (40°) -- \textcolor{ctrl}{témoin} 160~ha (36°, > 2,5~km)
 		\end{block}
 		\column{0.58\textwidth}
@@ -220,9 +220,9 @@ isbn=false, eprint=false, doi=false, url=false]{biblatex}
 			\scriptsize
 			\begin{itemize}
 				\setlength{\itemsep}{0pt}
-				\item \Lb{NISAR} GUNW (\textbf{ISCE3}) \parencite{isce3} : A173 (9) et D138 (8)
-				\item \Cb{Sentinel-1} IW SLC, VV : A161 et D139, mêmes paires (écart $\leq$ 2~j)
-				\item Interférogrammes \Cb{C} sous SNAP (graphe réutilisable, sans ESD)
+				\item \Lb{NISAR} \parencite{kellogg2020nisar} GUNW (\textbf{ISCE3}) \parencite{isce3} : A173 (9) et D138 (8)
+				\item \Cb{Sentinel-1} \parencite{torres2012sentinel1} IW SLC, VV : A161 et D139, mêmes paires (écart $\leq$ 2~j)
+				\item Interférogrammes \Cb{C} sous SNAP \parencite{snap} (graphe réutilisable, sans ESD)
 				\item 1 cycle = 11,9~cm (\Lb{L}) contre 2,8~cm (\Cb{C}) en distance
 			\end{itemize}
 		\end{block}
@@ -338,7 +338,6 @@ isbn=false, eprint=false, doi=false, url=false]{biblatex}
 
 \begin{frame}[allowframebreaks]{Références}
 	\scriptsize
-	\nocite{kellogg2020nisar,torres2012sentinel1,snap,zanaga2022worldcover}
 	\printbibliography[heading=none]
 \end{frame}
 
