@@ -14,7 +14,10 @@
   <node id="Cal"><operator>Calibration</operator><sources><sourceProduct refid="Orb"/></sources>
     <parameters><outputImageInComplex>true</outputImageInComplex><outputSigmaBand>true</outputSigmaBand></parameters></node>
   <node id="Deb"><operator>TOPSAR-Deburst</operator><sources><sourceProduct refid="Cal"/></sources><parameters/></node>
-  <node id="Mat"><operator>Polarimetric-Matrices</operator><sources><sourceProduct refid="Deb"/></sources>
+  <!-- crop to the site in radar geometry right after deburst: keeps memory low on small machines -->
+  <node id="Crop"><operator>Subset</operator><sources><sourceProduct refid="Deb"/></sources>
+    <parameters><geoRegion>${region}</geoRegion><copyMetadata>true</copyMetadata></parameters></node>
+  <node id="Mat"><operator>Polarimetric-Matrices</operator><sources><sourceProduct refid="Crop"/></sources>
     <parameters><matrix>C2</matrix></parameters></node>
   <node id="ML"><operator>Multilook</operator><sources><sourceProduct refid="Mat"/></sources>
     <parameters><nRgLooks>${rgLooks}</nRgLooks><nAzLooks>${azLooks}</nAzLooks><outputIntensity>false</outputIntensity></parameters></node>

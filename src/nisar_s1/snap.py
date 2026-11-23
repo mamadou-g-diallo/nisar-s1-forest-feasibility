@@ -86,7 +86,7 @@ def s1_gamma0(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: s
 
 def s1_c2(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: str, gpt: str,
           pixel_m: float = 40.0, crs: str = "EPSG:32632", looks: tuple[int, int] = (12, 3),
-          label: str = "") -> Path:
+          label: str = "", threads: int = 1) -> Path:
     """Dual-pol covariance matrix C2 (VV/VH, complex cross term kept) of one Sentinel-1 SLC date,
     multilooked (``looks`` = range, azimuth) and terrain-corrected on a UTM grid (graph ``s1_c2``).
     Read the bands with :func:`dimap_band` (``C11``, ``C12_real``, ``C12_imag``, ``C22``)."""
@@ -98,7 +98,7 @@ def s1_c2(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: str, 
     xml = render_graph("s1_c2", out_dim.with_suffix(".xml"), ref=_manifest(safe), swath=swath.upper(),
                        aoi=aoi_wkt, rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
                        region=region_wkt, out=tmp)
-    run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)
+    run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label, threads=threads)
     _rename_dimap(tmp, out_dim)
     return out_dim
 

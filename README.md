@@ -160,11 +160,20 @@ hv = to_grid(gamma0["HV"], grid).data           # numpy array on a 20 m grid
 the `NISAR_S1_ROOT` environment variable, the repository (editable install), then the current
 directory. `load_site("path/to/site.yaml")` also accepts a file path.
 
+## Training notebooks
+[`notebooks/`](notebooks/README.md) holds 19 executed notebooks that go from a NISAR L2 product to
+dual-pol polarimetry on the Vosges clear-cut: product discovery, metadata, windowed access, AOI,
+QC, visualization, GeoTIFF export (01–12), then the 2x2 covariance matrix rebuilt from the complex
+GSLC, dual-pol H/A/α, DpRVI and Stokes parameters, the Sentinel-1 C-band counterpart and an L- vs
+C-band capstone (13–19). Their structure follows D. K. Pandey's NISAR GCOV training toolkit,
+adapted to the dual-pol HH/HV mode acquired over Europe; the code is in `nisar_s1.product`,
+`nisar_s1.polarimetry` and `nisar_s1.maps`.
+
 ## Layout
 ```
 config/        parameters (footprint, dates, thresholds) — no secrets
 docs/          step documents, in FR and EN
-notebooks/     exploration
+notebooks/     19 training notebooks, NISAR GCOV to dual-pol polarimetry (see notebooks/README.md)
 scripts/       step orchestration (calls nisar_s1)
 snap_graphs/   SNAP graphs (.xml)
 src/nisar_s1/  installable package (processing logic)
