@@ -18,7 +18,7 @@ GRAPHS = Path(__file__).parent / "graphs"
 
 
 def render_graph(name: str, out_xml: Path, **variables) -> Path:
-    """Write graph ``name`` (``s1_coherence``, ``s1_gamma0`` or ``s1_interferogram``) with variables substituted."""
+    """Write graph ``name`` (``s1_coherence``, ``s1_gamma0``, ``s1_interferogram`` or ``s1_c2``) with variables substituted."""
     tpl = string.Template((GRAPHS / f"{name}.xml").read_text())
     xml = tpl.substitute({k: str(v) for k, v in variables.items()})
     out_xml.parent.mkdir(parents=True, exist_ok=True)
@@ -77,6 +77,25 @@ def s1_gamma0(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: s
         return out_dim
     tmp = out_dim.with_name(out_dim.stem + "_part.dim")
     xml = render_graph("s1_gamma0", out_dim.with_suffix(".xml"), ref=_manifest(safe), swath=swath.upper(),
+                       aoi=aoi_wkt, rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
+                       region=region_wkt, out=tmp)
+    run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)
+    _rename_dimap(tmp, out_dim)
+    return out_dim
+
+
+def s1_c2(safe: Path, out_dim: Path, swath: str, aoi_wkt: str, region_wkt: str, gpt: str,
+          pixel_m: float = 40.0, crs: str = "EPSG:32632", looks: tuple[int, int] = (12, 3),
+          label: str = "") -> Path:
+    """Dual-pol covariance matrix C2 (VV/VH, complex cross term kept) of one Sentinel-1 SLC date,
+    multilooked (``looks`` = range, azimuth) and terrain-corrected on a UTM grid (graph ``s1_c2``).
+    Read the bands with :func:`dimap_band` (``C11``, ``C12_real``, ``C12_imag``, ``C22``)."""
+    if out_dim.exists():
+        print(f"{label} {out_dim.name}: already present", flush=True)
+        return out_dim
+    tmp = out_dim.with_name(out_dim.stem + "_part.dim")
+    _remove_partial(tmp)
+    xml = render_graph("s1_c2", out_dim.with_suffix(".xml"), ref=_manifest(safe), swath=swath.upper(),
                        aoi=aoi_wkt, rgLooks=looks[0], azLooks=looks[1], pixel=pixel_m, crs=crs,
                        region=region_wkt, out=tmp)
     run_gpt(xml, gpt, out_dim.with_suffix(".gpt.log"), label)

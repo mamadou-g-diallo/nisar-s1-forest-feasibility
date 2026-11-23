@@ -89,3 +89,24 @@ def load_site(name: str | Path, root: str | Path | None = None) -> dict[str, Any
         p = Path(str(value)).expanduser()
         paths[key] = str(p if p.is_absolute() else base / p)
     return site
+
+
+def load_kit(path: str | Path | None = None, root: str | Path | None = None) -> dict[str, Any]:
+    """Read the training-notebook configuration (default ``<root>/notebooks/kit_config.yaml``).
+
+    Adds resolved paths: ``data_dir`` (default ``<chemins.data_root>/kit``, created if needed),
+    ``session_file``, ``gcov.local`` and ``gcov.url`` (granule substituted), and
+    ``aoi.site_polygons`` made absolute. Data never go into the repository."""
+    base = Path(root).expanduser().resolve() if root else project_root()
+    kit = _read_yaml(Path(path) if path else base / "notebooks" / "kit_config.yaml")
+    data = kit.get("data_dir") or Path(load_params(base / "config" / "params.yaml")["chemins"]["data_root"]) / "kit"
+    data = Path(data).expanduser()
+    data.mkdir(parents=True, exist_ok=True)
+    kit["data_dir"] = str(data)
+    kit["session_file"] = str(data / "session.json")
+    g = kit["gcov"]
+    g["local"] = str(data / "gcov" / f"{g['granule']}.h5")
+    g["url"] = g["url"].format(granule=g["granule"])
+    poly = Path(kit["aoi"]["site_polygons"]).expanduser()
+    kit["aoi"]["site_polygons"] = str(poly if poly.is_absolute() else base / poly)
+    return kit

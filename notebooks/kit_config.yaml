@@ -1,0 +1,36 @@
+# Configuration of the NISAR / Sentinel-1 training notebooks (no secrets here).
+# Data are never versioned: they live in ``data_dir`` (default: <data_root of config/params.yaml>/kit).
+# Earthdata credentials are read from ~/.netrc by earthaccess, never from this file.
+
+data_dir: null            # null -> <chemins.data_root>/kit ; or an absolute path
+
+# Product used by notebooks 01-12 (NISAR L2 GCOV, dual-pol HH/HV, 20 MHz + 5 MHz).
+# The notebooks open the local copy if present, otherwise stream the file from ASF (Earthdata login).
+gcov:
+  granule: NISAR_L2_PR_GCOV_034_144_A_026_2005_DHDH_M_20261103T041937_20261103T042013_P05036_N_F_J_001
+  url: https://nisar.asf.earthdatacloud.nasa.gov/NISAR/NISAR_L2_GCOV_V1/{granule}/{granule}.h5
+
+# Area of interest: Vosges test site (clear-cut C11 of the feasibility study, cut between
+# 2026-07-27 and 2026-08-11, and its control forest). lon_min, lat_min, lon_max, lat_max (WGS84).
+aoi:
+  name: vosges_c11
+  bbox_wgs84: [6.716, 47.885, 6.797, 47.935]
+  site_polygons: config/site.geojson     # relative to the repository root
+
+# Dual-pol polarimetry (notebooks 13-19): complex GSLC before / after the clear-cut, same track.
+gslc:
+  # ASF moved early products to a PROVISIONAL collection: the collection is part of the URL.
+  url: https://nisar.asf.earthdatacloud.nasa.gov/NISAR/{collection}/{granule}/{granule}.h5
+  collection: NISAR_L2_GSLC_PROVISIONAL_V1
+  pre: NISAR_L2_PR_GSLC_025_144_A_026_2005_DHDH_M_20260718T041939_20260718T042014_P05023_N_F_J_001
+  post: NISAR_L2_PR_GSLC_028_144_A_026_2005_DHDH_M_20260823T041937_20260823T042012_P05023_N_F_J_001
+  target_pixel_m: 40        # multilook to ~40 m so that NISAR and Sentinel-1 have similar looks
+
+# Sentinel-1 C-band counterpart (notebook 18): IW SLC, relative orbit 139 descending, C2 from SNAP.
+sentinel1:
+  track: 139
+  swath: IW2
+  pre: S1C_IW_SLC__1SDV_20260721T054207_20260721T054234_008637_0111CD_7018
+  post: S1C_IW_SLC__1SDV_20260814T054208_20260814T054235_008987_011D54_F95C
+  looks: [12, 3]            # range x azimuth -> ~40 m, ~36 looks
+  pixel_m: 40
