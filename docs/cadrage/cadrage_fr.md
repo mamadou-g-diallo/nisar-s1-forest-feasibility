@@ -95,7 +95,7 @@ indisponibles, coupe trop petite) est **un résultat de faisabilité valable** e
 | Comparer la détection de la déforestation S1 / NISAR / BIOMASS | Étape 5 (BIOMASS : constat de non-couverture) |
 | Tester l'apport de la polarimétrie | HH / HV / HV÷HH (GCOV) |
 | Comparer les interférogrammes sur versants boisés touchés par des glissements | Perspective (aperçu qualitatif de la cohérence sur versant si le temps le permet) |
-| Adapter la chaîne de traitement à la bande L | Modules réutilisables dans `src/nisar_s1/` (voir § 9) |
+| Adapter la chaîne de traitement à la bande L | Modules réutilisables dans `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)) (voir § 9) |
 | Méthode de détection automatique | Prototype par seuillage + évaluation F1 |
 | Préparer ROSE-L | Chaîne indépendante du capteur (§ 9) ; ROSE-L (2028) et ISCE3 cités dans le rapport |
 
@@ -108,13 +108,13 @@ Le **rapport final** existe en **deux versions complètes, française et anglais
 | 2. Inventaire | `docs/inventaire/inventaire_fr.md` + `inventaire_en.md` + `results/tables/inventory_*.csv` |
 | 3. Site | `config/site.geojson` (coupe + témoin) + figure NDVI |
 | 4. Téléchargement | `scripts/04_download.py` (appelle `nisar_s1.download`), journal des fichiers |
-| 5. Traitement | graphes SNAP, modules `src/nisar_s1/`, tables de statistiques, figures |
+| 5. Traitement | graphes SNAP, modules `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)), tables de statistiques, figures |
 | 6. Rapport | `reports/latex/rapport_fr.tex` **et** `reports/latex/report_en.tex` (deux rapports complets) |
 
 ## 9. Chaîne réutilisable (préparation de ROSE-L)
 
 Le code n'est **pas** un ensemble de scripts jetables. Toute la logique se trouve dans le paquet importable
-`src/nisar_s1/`. Les fichiers de `scripts/` et les notebooks ne font qu'appeler ces modules avec les
+`nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)). Les fichiers de `scripts/` et les notebooks ne font qu'appeler ces modules avec les
 paramètres de `config/params.yaml`.
 
 | Module | Rôle | Réutilisation visée |

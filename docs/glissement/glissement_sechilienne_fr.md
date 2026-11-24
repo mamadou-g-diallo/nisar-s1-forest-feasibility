@@ -44,7 +44,7 @@ Les produits GUNW sont générés par **ISCE3**, le processeur officiel de NISAR
 cohérence, la phase déroulée, les composantes connexes et l'écran ionosphérique.
 
 Les interférogrammes Sentinel-1 sont calculés avec **SNAP** (graphe réutilisable
-[`src/nisar_s1/graphs/s1_interferogram.xml`](../../src/nisar_s1/graphs/s1_interferogram.xml)) :
+[`nisar_s1/graphs/s1_interferogram.xml`](https://github.com/mamadou-g-diallo/nisar-s1/blob/v0.4.0/src/nisar_s1/graphs/s1_interferogram.xml)) :
 
 1. Split, Orbit, Back-Geocoding ;
 2. interférogramme et cohérence (fenêtre 10 × 3) ;
@@ -146,7 +146,7 @@ est trop faible devant le bruit d'une paire isolée.
 - Une **série temporelle** NISAR plus longue (au moins un an, tous les 12 jours), inversée en SBAS
   avec les outils de l'écosystème ISCE3 (MintPy par exemple), pour atteindre le mm/an.
 - Une comparaison aux mesures géodésiques et extensométriques du site.
-- La transposition à ROSE-L : la chaîne est indépendante du capteur (module `src/nisar_s1`).
+- La transposition à ROSE-L : la chaîne est indépendante du capteur (module `nisar_s1`).
 
 ## 8. Reproduction
 

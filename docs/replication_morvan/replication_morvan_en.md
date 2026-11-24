@@ -49,7 +49,7 @@ The guide proceeds in six steps:
    - overall accuracy;
    - kappa.
 
-The reusable module [`src/nisar_s1/guide_cr.py`](../../src/nisar_s1/guide_cr.py) implements these
+The reusable module [`nisar_s1/guide_cr.py`](https://github.com/mamadou-g-diallo/nisar-s1/blob/v0.4.0/src/nisar_s1/guide_cr.py) implements these
 steps for **any change image**: dNDVI, Δγ⁰ or coherence drop. The direction of change is a
 parameter, and the module is covered by tests.
 

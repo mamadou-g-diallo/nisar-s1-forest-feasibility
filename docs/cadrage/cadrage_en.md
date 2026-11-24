@@ -95,7 +95,7 @@ and will be documented as such.
 | Compare deforestation detection S1 / NISAR / BIOMASS | Step 5 (BIOMASS: documented lack of coverage) |
 | Test the contribution of polarimetry | HH / HV / HV÷HH (GCOV) |
 | Compare interferograms over forested slopes affected by landslides | Outlook (qualitative look at coherence on slopes if time allows) |
-| Adapt the processing chain to L-band | Reusable modules in `src/nisar_s1/` (see § 9) |
+| Adapt the processing chain to L-band | Reusable modules in `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)) (see § 9) |
 | Automatic detection method | Thresholding prototype + F1 evaluation |
 | Prepare for ROSE-L | Sensor-independent chain (§ 9); ROSE-L (2028) and ISCE3 cited in the report |
 
@@ -108,12 +108,12 @@ The **final report** exists in **two complete versions, French and English**. Th
 | 2. Inventory | `docs/inventaire/inventaire_fr.md` + `inventaire_en.md` + `results/tables/inventory_*.csv` |
 | 3. Site | `config/site.geojson` (clear-cut + control) + NDVI figure |
 | 4. Download | `scripts/04_download.py` (calls `nisar_s1.download`), file log |
-| 5. Processing | SNAP graphs, `src/nisar_s1/` modules, statistics tables, figures |
+| 5. Processing | SNAP graphs, `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)) modules, statistics tables, figures |
 | 6. Report | `reports/latex/rapport_fr.tex` **and** `reports/latex/report_en.tex` (two complete reports) |
 
 ## 9. Reusable chain (preparing for ROSE-L)
 
-The code is **not** a set of throwaway scripts. All logic lives in the importable package `src/nisar_s1/`.
+The code is **not** a set of throwaway scripts. All logic lives in the importable package `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)).
 The files in `scripts/` and the notebooks only call these modules with the parameters from `config/params.yaml`.
 
 | Module | Role | Intended reuse |

@@ -37,3 +37,5 @@ dependencies:
   - python-dotenv
   - pyyaml
   - pytest
+  - pip:
+      - -r requirements.txt   # nisar_s1 package, pinned release

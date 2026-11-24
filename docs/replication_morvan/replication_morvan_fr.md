@@ -50,7 +50,7 @@ Le guide procède en six étapes :
    - précision globale ;
    - kappa.
 
-Le module réutilisable [`src/nisar_s1/guide_cr.py`](../../src/nisar_s1/guide_cr.py) implémente
+Le module réutilisable [`nisar_s1/guide_cr.py`](https://github.com/mamadou-g-diallo/nisar-s1/blob/v0.4.0/src/nisar_s1/guide_cr.py) implémente
 ces étapes pour **n'importe quelle image de changement** : ΔNDVI, Δγ⁰ ou baisse de cohérence. Le
 sens du changement est un paramètre, et le module est couvert par des tests.
 

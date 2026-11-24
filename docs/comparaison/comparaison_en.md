@@ -12,7 +12,7 @@
 | Coherence | `wrappedInterferogram/HH/coherenceMagnitude` (20 m) and `unwrappedInterferogram` (80 m) | Back-Geocoding (Copernicus 30 m DEM) → 10 × 3 coherence (flat-earth and topographic phase removed) → 20 m geocoding. No ESD: a single burst covers the site |
 | Pairs | 12 days; **the pair over the cut is a 24-day pair** (an acquisition is missing at the end of July) | 12 days (13 days at the S1A → S1C transition) |
 
-The SNAP graphs are in `src/nisar_s1/graphs/`. `scripts/05a_process_s1.py` runs the processing (25 products,
+The SNAP graphs are in `graphs/` of the [nisar_s1 package](https://github.com/mamadou-g-diallo/nisar-s1/blob/v0.4.0/src/nisar_s1/graphs). `scripts/05a_process_s1.py` runs the processing (25 products,
 ≈ 1 h). All layers are then resampled onto **a common 20 m grid in UTM 32N** (`nisar_s1.grid`): average in
 linear power for NISAR γ⁰, bilinear for Sentinel-1.
 
