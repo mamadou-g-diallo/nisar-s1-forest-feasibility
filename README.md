@@ -106,7 +106,7 @@ Parameters: [config/params.yaml](config/params.yaml).
 All the processing logic is in the separate package
 [**nisar-s1**](https://github.com/mamadou-g-diallo/nisar-s1) (Apache-2.0, tested, documented). This
 repository only holds the study: configuration, step scripts, notebooks, results and reports. The
-scripts and notebooks use the release pinned in [`requirements.txt`](requirements.txt) (v0.4.1).
+scripts and notebooks use the release pinned in [`requirements.txt`](requirements.txt) (v0.4.2).
 
 ### Install
 ```bash
