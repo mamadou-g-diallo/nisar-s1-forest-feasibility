@@ -1,157 +1,59 @@
-# NISAR vs Sentinel-1 — clear-cut detection feasibility (Vosges, then Morvan) and forested landslide (Séchilienne)
+# NISAR (L band) vs Sentinel-1 (C band) over forests in France
 
 [![tests](https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility/actions/workflows/tests.yml/badge.svg)](https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility/actions/workflows/tests.yml)
 
-Independent feasibility study on L and P bands (NISAR, BIOMASS) for monitoring forest clear-cuts and forested landslides.
+Independent study of what the first NISAR L-band products (June–November 2026) add to Sentinel-1 C band for two
+forest applications: **detecting clear-cuts** and **measuring a slow landslide under forest**. All the processing is
+in the [`nisar_s1`](https://github.com/mamadou-g-diallo/nisar-s1) package (release pinned in
+[`requirements.txt`](requirements.txt)); this repository holds the three case studies and a training kit.
+
+## Case studies
+
+| Study | Question | Main result | Folder |
+|---|---|---|---|
+| **Vosges** | Does L band separate a 2.4 ha clear-cut from intact forest better than C band? | Yes in coherence: AUC **0.995** in L against 0.74 in C; in backscatter the advantage depends on the geometry | [vosges/](vosges/README.md) |
+| **Morvan** | Does it hold on 7 clear-cuts, with the Irstea detection guide as reference and in equal geometry? | Guide method transposed to radar: kappa **0.41** in L (5 of 7 cuts) against 0.08–0.16 in C | [morvan/](morvan/README.md) |
+| **Séchilienne** | Does the L-band phase stay usable under forest on an unstable slope? | Phase consistency **0.92** in L against 0.11 in C; no displacement above noise in 4 months | [sechilienne/](sechilienne/README.md) |
+| **Training kit** | From a NISAR L2 product to dual-pol polarimetry, step by step | 19 executed notebooks on the Vosges clear-cut | [training/](training/notebooks/README.md) |
+
+The common message: **the robust L-band advantage under forest is interferometric** (coherence and phase); the
+backscatter advantage is smaller and depends on the acquisition geometry. These results prepare the exploitation
+of ESA's L-band mission ROSE-L (first launch foreseen around 2029).
 
 A sister study applies the same package to coastal mangroves in Senegal, with the tide at the satellite pass:
 [nisar-s1-saloum-mangroves](https://github.com/mamadou-g-diallo/nisar-s1-saloum-mangroves).
 
-## Question
-On a recent clear-cut (Vosges/Alsace, June–Nov. 2026), do **NISAR (L-band, GUNW / GCOV products)**
-coherence and backscatter separate the clear-cut from intact forest better than **Sentinel-1 (C-band)**?
-Validation with the **Sentinel-2** NDVI difference.
+## Layout
 
-## Main result
-On a 2.36 ha clear-cut (early August 2026, near Le Thillot): **yes for coherence**, in all three NISAR geometries; for
-backscatter, the L-band advantage **depends on the acquisition geometry**.
+```
+vosges/        clear-cut test site: scripts 02–08, results, step notes, report (FR, EN)
+morvan/        replication on 7 clear-cuts: scripts m1–m8, results, note, report (FR, EN)
+sechilienne/   forested landslide: scripts g0–g4, results, note
+training/      19 notebooks (NISAR GCOV to dual-pol polarimetry) and the scripts that build them
+config/        parameters and site files read by nisar_s1 (params.yaml, sites/*.yaml, site.geojson)
+tools/         import check of the pinned package, Earthdata and SNAP set-up helpers
+data/          links to the local data folder (not versioned)
+```
 
-| | NISAR (L band) | Sentinel-1 (C band) |
-|---|---|---|
-| Coherence of the pair spanning the cut (cut vs forest) | 0.29 vs 0.69, **AUC 0.995** (even over 24 days) | 0.23 vs 0.29, AUC 0.71–0.74 |
-| 12-day coherence of intact forest | 0.64–0.70 | 0.28 |
-| Coherence AUC, all three NISAR geometries | 0.91–0.995 | 0.74 |
-| Cross-pol backscatter drop (HV / VH), ascending L (A144) | −4.3 dB, **AUC 0.97** | −2.2 dB, AUC 0.91 |
-| Cross-pol backscatter, equal (descending) geometry D138 vs D139 | −2.3 dB, AUC 0.84 | −2.2 dB, AUC 0.91 |
-| Contrast in Oct.–Nov. (cross-pol AUC), ascending A144 | 0.91 (persists) | 0.74 (fades; 0.52 on 25/10) |
-| Contrast in Oct.–Nov., equal (descending) geometry | 0.76 | 0.74 |
+## Install and run
 
-![L vs C summary per geometry](results/figures/summary_L_vs_C.png)
-
-The robust L-band advantage is interferometric (hypotheses H1, H2, H4 confirmed; H3 on backscatter only partly).
-
-Single site: replicated on the Morvan below (tag `v1.0-vosges` marks the Vosges-only state).
-
-## Replication on the Morvan (sylvo-ecoregion G23, Irstea guide)
-The Vosges test is replicated on the area of the Irstea clear-cut detection guide (Ose & Deshayes, 2015), whose
-method is used twice: as the **optical reference** (on Sentinel-2) and as the **evaluation standard**
-(thresholds transposed to radar, area confusion matrix). A 20 × 20 km window gives an **equal-geometry**
-comparison in both look directions: L A173 vs C A59 (ascending), L D66 vs C D37 (descending).
-The main reference is 7 photo-interpreted clear-cuts of closed stands (15.4 ha).
-
-| | L band (NISAR) | C band (Sentinel-1) |
-|---|---|---|
-| 12-day coherence of intact forest | 0.35–0.71 | 0.25–0.36 (estimator floor) |
-| Minimum coherence AUC, ascending / descending | 0.60 / **0.81** | 0.51 / 0.52 |
-| Cross-pol Δγ⁰ AUC, ascending / descending | 0.80 / 0.83 | 0.73 / 0.83 |
-| Cohen's d of cross-pol Δγ⁰, ascending / descending | 1.89 / 2.13 | 1.03 / 1.63 |
-| Guide method on radar: kappa / cuts found | **0.41 / 5 of 7** | 0.08–0.16 / 2–3 of 7 |
-| False alarm audit (15 largest) | 2 probable late cuts | 0 cuts; 8 on plots already open in June |
-
-![Morvan L vs C summary](results/morvan/figures/m8_summary_L_vs_C.png)
-
-Findings:
-- Same message as in the Vosges: the clear L-band advantage is **interferometric**.
-- In backscatter the AUCs are close, but L band gives a stronger contrast. This contrast is what a threshold
-  method like the guide's needs.
-- The guide's statistical thresholds do not transfer to intra-season Sentinel-2 as is: 8.7 % of the forest is
-  flagged, mostly broadleaf senescence.
-- Reference quality dominates everything: with the automatic reference, the AUC is 0.51–0.56 in both bands.
-
-| # | Morvan step | Status |
-|---|------|--------|
-| m1–m3 | IGN data, guide on Sentinel-2, photo-interpretation, radar window | ✅ |
-| m4–m5 | NISAR remote reads, Sentinel-1 download and SNAP processing (15 dates per orbit) | ✅ |
-| m6–m8 | L vs C comparison (4 references), guide on radar, false alarm audits, dating, tables | ✅ |
-| Docs | [EN](docs/replication_morvan/replication_morvan_en.md) · [FR](docs/replication_morvan/replication_morvan_fr.md) | ✅ |
-| Reports | [EN PDF](reports/morvan/latex/report_morvan_en.pdf) · [FR PDF](reports/morvan/latex/rapport_morvan_fr.pdf) | ✅ |
-
-Site configuration: [config/sites/morvan.yaml](config/sites/morvan.yaml); scripts: `scripts/morvan/m1_*.py` to `m8_*.py`.
-
-## Landslide (reduced version): Séchilienne, phase under forest
-On the forested, unstable slope of Séchilienne (Isère), 17 paired 12/24-day interferograms
-(26 Jun – 24 Oct 2026) compare **NISAR GUNW (ISCE3)** with **Sentinel-1** (SNAP, same pairs).
-
-| Median over pairs | L A173 | C A161 | L D138 | C D139 |
-|---|---|---|---|---|
-| Coherence, forested slope | **0.58** | 0.28 | 0.32 | 0.29 |
-| Phase consistency, forested slope | **0.92** | 0.11 | **0.88** | 0.09 |
-
-- **C band is decorrelated under forest at 12 days**: its 0.27–0.30 forest coherence is the estimator
-  bias floor. The chain itself is fine, with 0.97–0.99 on built-up areas.
-- **L band keeps a consistent phase** through the canopy. This is the necessary condition for
-  displacement InSAR under forest, and an argument for NISAR, then ROSE-L.
-- **No displacement is detected above noise** in 4 months. The cumulative change ranges from −4 to
-  +5 mm, against a per-pair control spread of 3–10 mm. The expected velocity of 1–5 cm/yr is too slow
-  for single pairs, so a ≥ 1-year SBAS series is the next step.
-
-| Item | Link |
-|---|---|
-| Note | [EN](docs/glissement/glissement_sechilienne_en.md) · [FR](docs/glissement/glissement_sechilienne_fr.md) |
-| Config / scripts | [config/sites/sechilienne.yaml](config/sites/sechilienne.yaml) · `scripts/glissement/g0_*.py` to `g4_*.py` |
-| Resumable run | `bash scripts/glissement/run_pipeline.sh --install` (systemd user service, capped memory, auto-restart) |
-
-## Steps (Vosges)
-| # | Step | Status |
-|---|------|--------|
-| 0 | Environment, structure, repository, SNAP 14, Earthdata access | ✅ |
-| 1 | Scoping — [EN](docs/cadrage/cadrage_en.md) · [FR](docs/cadrage/cadrage_fr.md) | ✅ |
-| 2 | S1 / NISAR / BIOMASS inventory — [EN](docs/inventaire/inventaire_en.md) · [FR](docs/inventaire/inventaire_fr.md) | ✅ |
-| 3 | Site selection: clear-cut C11 (2.4 ha, July–August 2026) + control forest, S2 NDVI reference — [EN](docs/site/site_en.md) · [FR](docs/site/site_fr.md) | ✅ |
-| 4 | Download: NISAR remote window reads, reduced Sentinel-1 SAFE — [EN](docs/acquisition/acquisition_en.md) · [FR](docs/acquisition/acquisition_fr.md) | ✅ |
-| 5 | Processing and comparison: L-band coherence separates the cut best in all geometries (AUC 0.91–0.995 vs 0.74); the HV γ⁰ advantage and its autumn persistence hold in ascending geometry only — [EN](docs/comparaison/comparaison_en.md) · [FR](docs/comparaison/comparaison_fr.md) | ✅ |
-| 6 | LaTeX report in two complete versions (ROSE-L and ISCE3 cited) — [EN PDF](reports/latex/report_en.pdf) · [FR PDF](reports/latex/rapport_fr.pdf) | ✅ |
-
-Parameters: [config/params.yaml](config/params.yaml).
-
-## Processing code: the `nisar_s1` package
-All the processing logic is in the separate package
-[**nisar-s1**](https://github.com/mamadou-g-diallo/nisar-s1) (Apache-2.0, tested, documented). This
-repository only holds the study: configuration, step scripts, notebooks, results and reports. The
-scripts and notebooks use the release pinned in [`requirements.txt`](requirements.txt) (v0.4.2).
-
-### Install
 ```bash
 git clone https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility
 cd nisar-s1-forest-feasibility
 conda env create -f environment.yml && conda activate nisar_s1   # includes requirements.txt
-python scripts/check_imports.py                                   # every nisar_s1 name used here exists
-```
-Run the scripts from the repository root: `nisar_s1.config` reads `config/params.yaml` and
-`config/sites/<site>.yaml` from the current directory, or from the `NISAR_S1_ROOT` variable.
-Reading NISAR products requires a free NASA Earthdata account, with credentials in `~/.netrc`.
-ESA SNAP is only needed for the Sentinel-1 SLC steps.
-
-## Training notebooks
-[`notebooks/`](notebooks/README.md) holds 19 executed notebooks that go from a NISAR L2 product to
-dual-pol polarimetry on the Vosges clear-cut: product discovery, metadata, windowed access, AOI,
-QC, visualization, GeoTIFF export (01–12), then the 2x2 covariance matrix rebuilt from the complex
-GSLC, dual-pol H/A/α, DpRVI and Stokes parameters, the Sentinel-1 C-band counterpart and an L- vs
-C-band capstone (13–19). Their structure follows D. K. Pandey's NISAR GCOV training toolkit,
-adapted to the dual-pol HH/HV mode acquired over Europe; the code is in `nisar_s1.product`,
-`nisar_s1.polarimetry` and `nisar_s1.maps`.
-
-## Layout
-```
-config/        parameters (footprint, dates, thresholds) — no secrets
-docs/          step documents, in FR and EN
-notebooks/     19 training notebooks, NISAR GCOV to dual-pol polarimetry (see notebooks/README.md)
-scripts/       step orchestration (calls the nisar_s1 package)
-snap_graphs/   SNAP graphs (.xml)
-results/       tables and small outputs
-reports/       figures + LaTeX reports (FR and EN)
-data/raw, data/processed -> links to /media/dell/Transcend1/nisar_data (not versioned)
+python tools/check_imports.py                                     # every nisar_s1 name used here exists
 ```
 
-## Environment
-```bash
-conda env create -f environment.yml
-conda activate nisar_s1
-```
-Credentials: `~/.netrc` (Earthdata, `chmod 600`, script `scripts/setup/create_netrc.sh`), `.env` (ESA/GEE tokens) — excluded from Git.
-SNAP 14 (`~/esa-snap`, `-Xmx5G`); test: `bash scripts/setup/test_gpt.sh`.
-Machine constraints: ~8 GB RAM → SNAP on a small area (TOPSAR-Split, 2–3 bursts).
+Run every script from the repository root (for example `python vosges/scripts/05b_compare.py`): `nisar_s1.config`
+reads `config/params.yaml` and `config/sites/<site>.yaml` from there, or from the `NISAR_S1_ROOT` variable. Data
+paths are set in those files (`chemins.data_root`); set them to your own data folder.
+
+- Reading NISAR products requires a free NASA Earthdata account, with credentials in `~/.netrc`
+  (`tools/setup/create_netrc.sh`). Credentials are never versioned.
+- ESA SNAP 14 is only needed for the Sentinel-1 SLC steps (`tools/setup/test_gpt.sh` checks `gpt`). On a machine
+  with about 8 GB of RAM, SNAP works on 2–3 bursts of one sub-swath.
 
 ## License
-Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). NISAR L2 products are generated by
-JPL with ISCE3; the study also anticipates ESA's L-band mission ROSE-L.
+
+Apache License 2.0, see [LICENSE](LICENSE) and [NOTICE](NOTICE). NISAR L2 products are generated by JPL with ISCE3
+and distributed by the ASF DAAC; Sentinel data are provided by ESA and the European Union.

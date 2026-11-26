@@ -13,7 +13,7 @@ site:
 
 chemins:
   data_root: /media/dell/Transcend1/nisar_data/sechilienne
-  results: results/sechilienne
+  results: sechilienne/results
   gpt: ~/esa-snap/bin/gpt
 
 periode:

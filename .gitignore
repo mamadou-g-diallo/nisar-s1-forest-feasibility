@@ -37,17 +37,20 @@ data/*
 *.npz
 *.parquet
 
-# ---- Sorties lourdes ----
-results/**/*.tif
-reports/latex/*.aux
-reports/latex/*.log
-reports/latex/*.out
-reports/latex/*.toc
-reports/latex/*.bbl
-reports/latex/*.blg
-reports/latex/*.synctex.gz
-reports/latex/*.fdb_latexmk
-reports/latex/*.fls
+# ---- Sorties lourdes et compilation LaTeX ----
+*/results/**/*.tif
+*/report/*.aux
+*/report/*.bbl
+*/report/*.bcf
+*/report/*.blg
+*/report/*.fdb_latexmk
+*/report/*.fls
+*/report/*.out
+*/report/*.run.xml
+*/report/*.synctex.gz
+*/report/*.toc
+poster/*.aux
+poster/*.out
 
 # ---- Python / Jupyter ----
 __pycache__/
@@ -63,34 +66,6 @@ __pycache__/
 .vscode/
 .idea/
 *~
-reports/latex/*.bcf
-reports/latex/*.run.xml
-
-# Morvan LaTeX build files
-reports/morvan/**/*.aux
-reports/morvan/**/*.bbl
-reports/morvan/**/*.bcf
-reports/morvan/**/*.blg
-reports/morvan/**/*.fdb_latexmk
-reports/morvan/**/*.fls
-reports/morvan/**/*.out
-reports/morvan/**/*.run.xml
-reports/morvan/**/*.toc
-reports/morvan/**/*.nav
-reports/morvan/**/*.snm
-reports/morvan/**/*.vrb
-# Sechilienne LaTeX build files
-reports/*/presentation/*.aux
-reports/*/presentation/*.bbl
-reports/*/presentation/*.bcf*
-reports/*/presentation/*.blg
-reports/*/presentation/*.fdb_latexmk
-reports/*/presentation/*.fls
-reports/*/presentation/*.nav
-reports/*/presentation/*.out
-reports/*/presentation/*.run.xml
-reports/*/presentation/*.snm
-reports/*/presentation/*.toc
 
 # Construction du paquet
 build/

@@ -12,7 +12,7 @@ site:
 
 chemins:
   data_root: /media/dell/Transcend1/nisar_data/morvan
-  results: results/morvan          # relatif à la racine du dépôt
+  results: morvan/results          # relatif à la racine du dépôt
   gpt: ~/esa-snap/bin/gpt
 
 # Fenêtres temporelles (2026). Une coupe de référence est un changement forêt -> sol nu entre
