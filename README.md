@@ -23,8 +23,9 @@ The common message: **the robust L-band advantage under forest is interferometri
 backscatter advantage is smaller and depends on the acquisition geometry. These results prepare the exploitation
 of ESA's L-band mission ROSE-L (first launch foreseen around 2029).
 
-A sister study applies the same package to coastal mangroves in Senegal, with the tide at the satellite pass:
-[nisar-s1-mangroves-senegal](https://github.com/mamadou-g-diallo/nisar-s1-mangroves-senegal).
+The same package runs two sister studies, so the three are reproducible with the same code:
+[nisar-s1-mangroves-senegal](https://github.com/mamadou-g-diallo/nisar-s1-mangroves-senegal) (mangroves of the Saloum delta, Senegal) and
+[nisar-s1-budworm-canada](https://github.com/mamadou-g-diallo/nisar-s1-budworm-canada) (spruce budworm defoliation in Quebec, Canada).
 
 ## Layout
 
