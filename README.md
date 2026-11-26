@@ -1,6 +1,6 @@
 # NISAR (L band) vs Sentinel-1 (C band) over forests in France
 
-[![tests](https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility/actions/workflows/tests.yml/badge.svg)](https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility/actions/workflows/tests.yml)
+[![tests](https://github.com/mamadou-g-diallo/nisar-s1-forest-france/actions/workflows/tests.yml/badge.svg)](https://github.com/mamadou-g-diallo/nisar-s1-forest-france/actions/workflows/tests.yml)
 
 Independent study of what the first NISAR L-band products (June–November 2026) add to Sentinel-1 C band for two
 forest applications: **detecting clear-cuts** and **measuring a slow landslide under forest**. All the processing is
@@ -24,7 +24,7 @@ backscatter advantage is smaller and depends on the acquisition geometry. These 
 of ESA's L-band mission ROSE-L (first launch foreseen around 2029).
 
 A sister study applies the same package to coastal mangroves in Senegal, with the tide at the satellite pass:
-[nisar-s1-saloum-mangroves](https://github.com/mamadou-g-diallo/nisar-s1-saloum-mangroves).
+[nisar-s1-mangroves-senegal](https://github.com/mamadou-g-diallo/nisar-s1-mangroves-senegal).
 
 ## Layout
 
@@ -42,8 +42,8 @@ data/          links to the local data folder (not versioned)
 ## Install and run
 
 ```bash
-git clone https://github.com/mamadou-g-diallo/nisar-s1-forest-feasibility
-cd nisar-s1-forest-feasibility
+git clone https://github.com/mamadou-g-diallo/nisar-s1-forest-france
+cd nisar-s1-forest-france
 conda env create -f environment.yml && conda activate nisar_s1   # includes requirements.txt
 python tools/check_imports.py                                     # every nisar_s1 name used here exists
 ```

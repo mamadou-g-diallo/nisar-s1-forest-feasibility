@@ -56,7 +56,7 @@ print("[1/4] localisation", flush=True)
 if not NE.exists():
     NE.parent.mkdir(parents=True, exist_ok=True)
     req = urllib.request.Request("https://naciscdn.org/naturalearth/50m/cultural/ne_50m_admin_0_countries.zip",
-                                 headers={"User-Agent": "nisar-s1-forest-feasibility/1.0"})
+                                 headers={"User-Agent": "nisar-s1-forest-france/1.0"})
     NE.write_bytes(urllib.request.urlopen(req, timeout=300).read())
 world = gpd.read_file(f"zip://{NE}")
 fr = world[world.ADMIN == "France"].explode(index_parts=False)

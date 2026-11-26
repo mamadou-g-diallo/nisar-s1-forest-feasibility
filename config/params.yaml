@@ -2,7 +2,7 @@
 # Les valeurs marquées "a_affiner" seront précisées aux étapes 2-3.
 
 projet:
-  nom: nisar-s1-forest-feasibility
+  nom: nisar-s1-forest-france
   crs_travail: EPSG:32632          # UTM 32N (Vosges / Alsace)
 
 chemins:
