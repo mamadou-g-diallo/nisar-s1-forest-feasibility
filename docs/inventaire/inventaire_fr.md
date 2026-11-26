@@ -92,8 +92,8 @@ un écran de phase ionosphérique (fourni, **non appliqué** par défaut). L'ion
 
 - Les données sont ouvertes depuis la fin de la recette en orbite (janvier 2026).
 - **Aucune acquisition sur l'Europe et l'Amérique du Nord** : le masque d'observation exclut la zone couverte par le
-  radar américain de surveillance spatiale (SOTR). Cela confirme ce qu'indique la fiche de stage.
-- Conséquence : BIOMASS **n'est pas utilisable sur ce site**. La bande P reste une perspective pour le stage, par
+  radar américain de surveillance spatiale (SOTR).
+- Conséquence : BIOMASS **n'est pas utilisable sur ce site**. La bande P reste une perspective, par
   exemple sur des sites de forêt tropicale, où elle apporterait la sensibilité à la biomasse (troncs, grosses branches).
 
 ## 5. Conséquences pour les étapes suivantes
@@ -111,11 +111,11 @@ un écran de phase ionosphérique (fourni, **non appliqué** par défaut). L'ion
 
 ## 6. Outils pour la chaîne de traitement
 
-| Outil | Usage dans ce projet | Intérêt pour le SERTIT / ROSE-L |
-|-------|----------------------|---------------------------------|
+| Outil | Usage dans ce projet | Intérêt pour ROSE-L |
+|-------|----------------------|---------------------|
 | `asf_search`, `earthaccess` | recherche dans le catalogue, téléchargement authentifié (`nisar_s1.search`) | même API pour toute mission hébergée par l'ASF |
 | `h5py` / `xarray` | lecture des HDF5 GCOV/GUNW par fenêtre, pour limiter la mémoire | base de `nisar_s1.io_nisar` |
-| SNAP 14 (`gpt`) | cohérence et γ⁰ S1 (TOPSAR-Split, Back-Geocoding, Coherence, Terrain-Flattening) | chaîne bande C existante du SERTIT |
+| SNAP 14 (`gpt`) | cohérence et γ⁰ S1 (TOPSAR-Split, Back-Geocoding, Coherence, Terrain-Flattening) | chaîne bande C Sentinel-1 standard |
 | ISCE3 | processeur officiel de NISAR (produit GCOV, GUNW…) ; permettrait de former des paires sur mesure ou les termes hors diagonale à partir des RSLC/GSLC | voie probable pour traiter ROSE-L |
 | ASF HyP3 | cohérence S1 calculée à la demande (solution de repli si la RAM limite) | — |
 

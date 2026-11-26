@@ -91,8 +91,8 @@ for coherence magnitude.
 
 - Data have been open since the end of commissioning (January 2026).
 - **No acquisitions over Europe and North America**: the observation mask excludes the zone covered by the US
-  Space Objects Tracking Radar (SOTR). This matches the internship description.
-- Consequence: BIOMASS is **not usable for this site**. P-band remains an outlook for the internship, for example
+  Space Objects Tracking Radar (SOTR).
+- Consequence: BIOMASS is **not usable for this site**. P-band remains an outlook, for example
   on tropical forest sites, where it would add biomass sensitivity (trunks, large branches).
 
 ## 5. Implications for the next steps
@@ -110,11 +110,11 @@ for coherence magnitude.
 
 ## 6. Tools for the processing chain
 
-| Tool | Use in this project | Note for SERTIT / ROSE-L |
-|------|---------------------|--------------------------|
+| Tool | Use in this project | Note for ROSE-L |
+|------|---------------------|-----------------|
 | `asf_search`, `earthaccess` | catalogue search, authenticated download (`nisar_s1.search`) | same API for any ASF-hosted mission |
 | `h5py` / `xarray` | read GCOV/GUNW HDF5 by window, so memory use stays low | basis of `nisar_s1.io_nisar` |
-| SNAP 14 (`gpt`) | S1 coherence and γ⁰ (TOPSAR-Split, Back-Geocoding, Coherence, Terrain-Flattening) | existing SERTIT C-band chain |
+| SNAP 14 (`gpt`) | S1 coherence and γ⁰ (TOPSAR-Split, Back-Geocoding, Coherence, Terrain-Flattening) | standard Sentinel-1 C-band chain |
 | ISCE3 | official NISAR processor (produces GCOV, GUNW…); could build custom pairs or off-diagonal terms from RSLC/GSLC | likely path for ROSE-L processing |
 | ASF HyP3 | on-demand S1 coherence (fallback if RAM is limiting) | — |
 

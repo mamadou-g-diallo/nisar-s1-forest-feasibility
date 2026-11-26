@@ -28,13 +28,13 @@ interferometric coherence and backscatter separate the clear-cut from intact for
 - validation with the Sentinel-2 NDVI difference.
 
 **Inventoried but not processed on this site:**
-- **BIOMASS (P-band)**: according to the internship description it does not acquire over Western Europe. The inventory
+- **BIOMASS (P-band)**: according to ESA it does not acquire over Western Europe. The inventory
   (step 2) will document this with the coverage map, and P-band will remain an outlook (e.g. tropical forest).
 
 **Out of scope, discussed as outlook in the report:**
 - NISAR vs S1 interferograms over forested slopes affected by landslides (unwrapped phase, displacement);
 - storm damage; full polarimetry (decompositions); biomass quantification;
-- ROSE-L (Copernicus, launch planned for 2028): the L-band chain developed here must be transferable to it.
+- ROSE-L (Copernicus, launch planned around 2029): the L-band chain developed here must be transferable to it.
 
 ## 3. Data (details to be confirmed in step 2)
 
@@ -86,10 +86,10 @@ and will be documented as such.
 | Clouds and snow in autumn | Degraded S2 reference or coherence | Wider date windows; record the weather |
 | Vosges relief (radar layover and shadow) | γ⁰ bias | Terrain flattening; layover/shadow mask; control forest with same slope and aspect |
 
-## 7. Mapping to the internship description
+## 7. Objectives and how they are addressed
 
-| Internship task | How this test addresses it |
-|-----------------|---------------------------|
+| Objective | How this test addresses it |
+|-----------|---------------------------|
 | Inventory NISAR / BIOMASS products (processing levels, polarisations, coverage, revisit) and tools | Step 2 (+ tools: asf_search, earthaccess, h5py, SNAP, ISCE3 cited) |
 | Select sites with clear-cuts observed by S1 and NISAR / BIOMASS | Step 3 |
 | Compare deforestation detection S1 / NISAR / BIOMASS | Step 5 (BIOMASS: documented lack of coverage) |
@@ -97,7 +97,7 @@ and will be documented as such.
 | Compare interferograms over forested slopes affected by landslides | Outlook (qualitative look at coherence on slopes if time allows) |
 | Adapt the processing chain to L-band | Reusable modules in `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)) (see § 9) |
 | Automatic detection method | Thresholding prototype + F1 evaluation |
-| Prepare for ROSE-L | Sensor-independent chain (§ 9); ROSE-L (2028) and ISCE3 cited in the report |
+| Prepare for ROSE-L | Sensor-independent chain (§ 9); ROSE-L (around 2029) and ISCE3 cited in the report |
 
 ## 8. Deliverables and indicative schedule
 
@@ -134,7 +134,7 @@ The files in `scripts/` and the notebooks only call these modules with the param
 - minimal tests (`tests/`) on synthetic data, like the existing `gpt` test.
 
 The report will position this chain relative to **ISCE3** (NISAR's official processing software, which produces
-GUNW and GCOV) and to **ROSE-L** (Copernicus L-band mission, launch planned for 2028), to which it must remain transferable.
+GUNW and GCOV) and to **ROSE-L** (Copernicus L-band mission, launch planned around 2029), to which it must remain transferable.
 
 ## Reference cited
 

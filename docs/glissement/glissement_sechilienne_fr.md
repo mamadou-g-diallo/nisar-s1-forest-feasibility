@@ -123,7 +123,7 @@ Sur ce versant boisé, la question posée a une réponse nette.
 
 La condition nécessaire à l'interférométrie de déplacement sous couvert forestier est donc remplie
 en bande L et pas en bande C. Pour la suite, c'est l'argument principal en faveur de NISAR, puis de
-**ROSE-L** (mission Copernicus en bande L prévue vers 2028), pour le suivi des glissements boisés.
+**ROSE-L** (mission Copernicus en bande L prévue vers 2029), pour le suivi des glissements boisés.
 
 La mesure du déplacement lui-même n'est pas atteinte avec 4 mois de données. La vitesse attendue
 est trop faible devant le bruit d'une paire isolée.

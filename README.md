@@ -61,7 +61,7 @@ Findings:
 | m4–m5 | NISAR remote reads, Sentinel-1 download and SNAP processing (15 dates per orbit) | ✅ |
 | m6–m8 | L vs C comparison (4 references), guide on radar, false alarm audits, dating, tables | ✅ |
 | Docs | [EN](docs/replication_morvan/replication_morvan_en.md) · [FR](docs/replication_morvan/replication_morvan_fr.md) | ✅ |
-| Reports | [EN PDF](reports/morvan/latex/report_morvan_en.pdf) · [FR PDF](reports/morvan/latex/rapport_morvan_fr.pdf) · [presentation (FR)](reports/morvan/presentation/presentation_morvan_fr.pdf) | ✅ |
+| Reports | [EN PDF](reports/morvan/latex/report_morvan_en.pdf) · [FR PDF](reports/morvan/latex/rapport_morvan_fr.pdf) | ✅ |
 
 Site configuration: [config/sites/morvan.yaml](config/sites/morvan.yaml); scripts: `scripts/morvan/m1_*.py` to `m8_*.py`.
 
@@ -85,7 +85,6 @@ On the forested, unstable slope of Séchilienne (Isère), 17 paired 12/24-day in
 | Item | Link |
 |---|---|
 | Note | [EN](docs/glissement/glissement_sechilienne_en.md) · [FR](docs/glissement/glissement_sechilienne_fr.md) |
-| Slides (FR) | [presentation_glissement_fr.pdf](reports/sechilienne/presentation/presentation_glissement_fr.pdf) |
 | Config / scripts | [config/sites/sechilienne.yaml](config/sites/sechilienne.yaml) · `scripts/glissement/g0_*.py` to `g4_*.py` |
 | Resumable run | `bash scripts/glissement/run_pipeline.sh --install` (systemd user service, capped memory, auto-restart) |
 

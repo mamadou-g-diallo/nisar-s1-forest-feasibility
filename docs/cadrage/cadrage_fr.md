@@ -28,13 +28,13 @@ de la forêt intacte que **Sentinel-1 (bande C, λ ≈ 5,6 cm)** ?
 - validation par différence de NDVI Sentinel-2.
 
 **Inventorié mais non traité sur ce site :**
-- **BIOMASS (bande P)** : d'après la fiche de stage, il n'acquiert pas sur l'Europe de l'Ouest. L'inventaire
+- **BIOMASS (bande P)** : d'après l'ESA, il n'acquiert pas sur l'Europe de l'Ouest. L'inventaire
   (étape 2) le documentera avec la carte de couverture, et la bande P restera une perspective (forêt tropicale par exemple).
 
 **Hors périmètre, en perspective dans le rapport :**
 - interférogrammes NISAR vs S1 sur versant boisé touché par un glissement de terrain (phase déroulée, déplacement) ;
 - dégâts de tempête ; polarimétrie complète (décompositions) ; quantification de la biomasse ;
-- ROSE-L (Copernicus, lancement prévu en 2028) : la chaîne bande L développée ici doit lui être transposable.
+- ROSE-L (Copernicus, lancement prévu vers 2029) : la chaîne bande L développée ici doit lui être transposable.
 
 ## 3. Données (détails à confirmer à l'étape 2)
 
@@ -86,10 +86,10 @@ indisponibles, coupe trop petite) est **un résultat de faisabilité valable** e
 | Nuages et neige en automne | Référence S2 ou cohérence dégradées | Fenêtres de dates élargies ; noter la météo |
 | Relief vosgien (zones de recouvrement et d'ombre radar) | Biais de γ⁰ | Aplanissement topographique ; masque des zones de recouvrement et d'ombre ; témoin de même pente et exposition |
 
-## 7. Correspondance avec la fiche de stage
+## 7. Objectifs et traitement dans ce test
 
-| Mission de la fiche | Traitement dans ce test |
-|---------------------|------------------------|
+| Objectif | Traitement dans ce test |
+|----------|------------------------|
 | Recenser les produits NISAR / BIOMASS (niveaux, polarisations, couverture, répétitivité) et les outils | Étape 2 (+ outils : asf_search, earthaccess, h5py, SNAP, ISCE3 cité) |
 | Choisir des sites avec coupes rases observés par S1 et NISAR / BIOMASS | Étape 3 |
 | Comparer la détection de la déforestation S1 / NISAR / BIOMASS | Étape 5 (BIOMASS : constat de non-couverture) |
@@ -97,7 +97,7 @@ indisponibles, coupe trop petite) est **un résultat de faisabilité valable** e
 | Comparer les interférogrammes sur versants boisés touchés par des glissements | Perspective (aperçu qualitatif de la cohérence sur versant si le temps le permet) |
 | Adapter la chaîne de traitement à la bande L | Modules réutilisables dans `nisar_s1` ([nisar-s1](https://github.com/mamadou-g-diallo/nisar-s1)) (voir § 9) |
 | Méthode de détection automatique | Prototype par seuillage + évaluation F1 |
-| Préparer ROSE-L | Chaîne indépendante du capteur (§ 9) ; ROSE-L (2028) et ISCE3 cités dans le rapport |
+| Préparer ROSE-L | Chaîne indépendante du capteur (§ 9) ; ROSE-L (vers 2029) et ISCE3 cités dans le rapport |
 
 ## 8. Livrables et calendrier indicatif
 
@@ -135,7 +135,7 @@ paramètres de `config/params.yaml`.
 - tests minimaux (`tests/`) sur données synthétiques, comme le test `gpt` déjà en place.
 
 Le rapport situera cette chaîne par rapport à **ISCE3** (logiciel de traitement officiel de NISAR, qui produit
-GUNW et GCOV) et à **ROSE-L** (mission Copernicus en bande L, lancement prévu en 2028), pour laquelle elle doit rester transposable.
+GUNW et GCOV) et à **ROSE-L** (mission Copernicus en bande L, lancement prévu vers 2029), pour laquelle elle doit rester transposable.
 
 ## Référence citée
 

@@ -122,7 +122,7 @@ On this forested slope, the question has a clear answer.
 
 The necessary condition for displacement interferometry under forest cover is therefore met at
 L band and not at C band. Going forward, this is the main argument for NISAR, and then for
-**ROSE-L** (the Copernicus L-band mission planned around 2028), for monitoring forested landslides.
+**ROSE-L** (the Copernicus L-band mission planned around 2029), for monitoring forested landslides.
 
 Measuring the displacement itself is out of reach with 4 months of data. The expected velocity is
 too low compared with the noise of a single pair.
