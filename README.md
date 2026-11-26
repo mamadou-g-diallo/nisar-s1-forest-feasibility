@@ -4,6 +4,9 @@
 
 Independent feasibility study on L and P bands (NISAR, BIOMASS) for monitoring forest clear-cuts and forested landslides.
 
+A sister study applies the same package to coastal mangroves in Senegal, with the tide at the satellite pass:
+[nisar-s1-saloum-mangroves](https://github.com/mamadou-g-diallo/nisar-s1-saloum-mangroves).
+
 ## Question
 On a recent clear-cut (Vosges/Alsace, June–Nov. 2026), do **NISAR (L-band, GUNW / GCOV products)**
 coherence and backscatter separate the clear-cut from intact forest better than **Sentinel-1 (C-band)**?
