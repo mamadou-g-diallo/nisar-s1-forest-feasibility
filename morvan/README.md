@@ -24,7 +24,7 @@ The main reference is 7 photo-interpreted clear-cuts of closed stands (15.4 ha).
   flagged, mostly broadleaf senescence.
 - Reference quality dominates everything: with the automatic reference, the AUC is 0.51–0.56 in both bands.
 
-**Report:** [English (PDF)](report/report_morvan_en.pdf) · [French (PDF)](report/rapport_morvan_fr.pdf) ·
+**Poster (French):** [poster/poster_forets_fr.pdf](../poster/poster_forets_fr.pdf) ·
 **Note:** [EN](docs/replication_morvan_en.md) · [FR](docs/replication_morvan_fr.md)
 
 Site configuration: [config/sites/morvan.yaml](../config/sites/morvan.yaml). Scripts `morvan/scripts/m1_*.py` to

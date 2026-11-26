@@ -19,7 +19,7 @@ acquisition geometry.
 
 ![L vs C summary per geometry](results/figures/summary_L_vs_C.png)
 
-**Report:** [English (PDF)](report/report_en.pdf) · [French (PDF)](report/rapport_fr.pdf)
+**Poster (French):** [poster/poster_forets_fr.pdf](../poster/poster_forets_fr.pdf)
 
 ## Step notes
 

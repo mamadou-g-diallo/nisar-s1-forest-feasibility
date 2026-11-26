@@ -71,3 +71,7 @@ __pycache__/
 build/
 dist/
 *.egg-info/
+
+# ---- Rapports LaTeX/PDF : conservés en local seulement (seul le poster est publié) ----
+vosges/report/
+morvan/report/

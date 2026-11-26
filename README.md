@@ -29,8 +29,8 @@ A sister study applies the same package to coastal mangroves in Senegal, with th
 ## Layout
 
 ```
-vosges/        clear-cut test site: scripts 02–08, results, step notes, report (FR, EN)
-morvan/        replication on 7 clear-cuts: scripts m1–m8, results, note, report (FR, EN)
+vosges/        clear-cut test site: scripts 02–08, results, step notes
+morvan/        replication on 7 clear-cuts: scripts m1–m8, results, note
 sechilienne/   forested landslide: scripts g0–g4, results, note
 training/      19 notebooks (NISAR GCOV to dual-pol polarimetry) and the scripts that build them
 poster/        poster summarising the three studies (French) and its figure script

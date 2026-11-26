@@ -93,5 +93,4 @@ python vosges/scripts/05b_compare.py --erode 20 --tag _erode20
 python vosges/scripts/06_make_tables.py
 ```
 
-Figures : `vosges/results/figures/comparison_*.png` ; tables : `vosges/results/tables/comparison_*.csv` et
-`vosges/report/tables/`.
+Figures : `vosges/results/figures/comparison_*.png` ; tables : `vosges/results/tables/comparison_*.csv`.
