@@ -7,6 +7,9 @@ forest applications: **detecting clear-cuts** and **measuring a slow landslide u
 in the [`nisar_s1`](https://github.com/mamadou-g-diallo/nisar-s1) package (release pinned in
 [`requirements.txt`](requirements.txt)); this repository holds the three case studies and a training kit.
 
+**Poster (French):** [poster/poster_forets_fr.pdf](poster/poster_forets_fr.pdf) — figures built from the result
+tables by [`poster/poster_figures.py`](poster/poster_figures.py).
+
 ## Case studies
 
 | Study | Question | Main result | Folder |
@@ -30,6 +33,7 @@ vosges/        clear-cut test site: scripts 02–08, results, step notes, report
 morvan/        replication on 7 clear-cuts: scripts m1–m8, results, note, report (FR, EN)
 sechilienne/   forested landslide: scripts g0–g4, results, note
 training/      19 notebooks (NISAR GCOV to dual-pol polarimetry) and the scripts that build them
+poster/        poster summarising the three studies (French) and its figure script
 config/        parameters and site files read by nisar_s1 (params.yaml, sites/*.yaml, site.geojson)
 tools/         import check of the pinned package, Earthdata and SNAP set-up helpers
 data/          links to the local data folder (not versioned)

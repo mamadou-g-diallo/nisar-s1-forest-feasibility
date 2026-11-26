@@ -1,0 +1,21 @@
+geometry,serie,variable,auc,lo,hi
+asc,L A173,d_g0_HV,0.801,0.61,0.934
+asc,L A173,d_g0_HH,0.701,0.601,0.858
+asc,L A173,g0_post_HV,0.885,0.866,0.906
+asc,L A173,coh_min_HH,0.604,0.525,0.656
+asc,L A173,coh_post_HH,0.663,0.514,0.757
+asc,C A59,d_g0_VH,0.732,0.648,0.856
+asc,C A59,d_g0_VV,0.626,0.525,0.771
+asc,C A59,g0_post_VH,0.763,0.722,0.842
+asc,C A59,coh_min_VV,0.506,0.501,0.554
+asc,C A59,coh_post_VV,0.681,0.614,0.792
+desc,L D66,d_g0_HV,0.829,0.664,0.934
+desc,L D66,d_g0_HH,0.715,0.604,0.816
+desc,L D66,g0_post_HV,0.853,0.815,0.908
+desc,L D66,coh_min_HH,0.807,0.754,0.858
+desc,L D66,coh_post_HH,0.54,0.503,0.778
+desc,C D37,d_g0_VH,0.828,0.778,0.906
+desc,C D37,d_g0_VV,0.743,0.673,0.818
+desc,C D37,g0_post_VH,0.822,0.754,0.886
+desc,C D37,coh_min_VV,0.521,0.501,0.547
+desc,C D37,coh_post_VV,0.738,0.66,0.83
